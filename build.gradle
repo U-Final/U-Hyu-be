@@ -37,6 +37,10 @@ dependencies {
 
 	// liquibase
 	implementation 'org.liquibase:liquibase-core'
+
+	// TODO 버전 선정 이유 말하기
+	implementation 'org.hibernate:hibernate-spatial:6.3.1.Final' // Hibernate 버전에 따라 조정
+	implementation 'org.locationtech.jts:jts-core:1.18.2'         // 또는 최신
 }
 
 tasks.named('test') {
