@@ -1,49 +1,52 @@
 package com.ureca.uhyu.domain.user.entity;
 
 import com.ureca.uhyu.domain.user.enums.Gender;
-import com.ureca.uhyu.domain.user.enums.Role;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.Status;
+import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.global.entity.BaseEntity;
-import com.ureca.uhyu.global.enums.Grade;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "Users")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class User extends BaseEntity {
-    @Column(name = "user_name", nullable = false)
+
+    @Column(length = 20, nullable = false)
     private String userName;
 
-    @Column(name = "kakao_id", nullable = false)
+    @Column(unique = true)
     private Long kakaoId;
 
-    @Column(name = "email", nullable = false)
+    @Column(length = 200, unique = true)
     private String email;
 
-    @Column(name = "age", nullable = false)
-    private int age;
+    private Byte age;
 
-    @Column(name = "gender", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "role", nullable = false)
-    private Role role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
 
-    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Status status;
 
-    @Column(name = "grade", nullable = false)
+    @Column(length = 10)
     private Grade grade;
 
-    @Column(name = "profile_image", nullable = false)
+    @Column(length = 500)
     private String profileImage;
+
+    public void withdraw() {
+        this.status = Status.DELETED;
+        this.updatedAt = LocalDateTime.now(); // 업데이트 시간도 갱신
+    }
 }

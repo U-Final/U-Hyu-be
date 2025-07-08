@@ -2,7 +2,7 @@ package com.ureca.uhyu.domain.user.dto.response;
 
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
-import com.ureca.uhyu.global.enums.Grade;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "유저 정보 조회 응답")

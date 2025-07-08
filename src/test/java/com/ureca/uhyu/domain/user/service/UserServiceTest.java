@@ -3,10 +3,10 @@ package com.ureca.uhyu.domain.user.service;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
-import com.ureca.uhyu.domain.user.enums.Role;
+import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
-import com.ureca.uhyu.global.enums.Grade;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class UserServiceTest {
                 .email("asdad@kakao.com")
                 .age(32)
                 .gender(Gender.MALE)
-                .role(Role.TMP_USER)
+                .role(UserRole.TMP_USER)
                 .status(Status.ACTIVE)
                 .grade(Grade.GOOD)
                 .profileImage("asdsad.png")

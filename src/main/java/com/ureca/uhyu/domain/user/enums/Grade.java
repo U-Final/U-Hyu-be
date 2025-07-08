@@ -1,4 +1,4 @@
-package com.ureca.uhyu.global.enums;
+package com.ureca.uhyu.domain.user.enums;
 
 public enum Grade {
     GOOD, VIP, VVIP

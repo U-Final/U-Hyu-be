@@ -1,5 +1,5 @@
 package com.ureca.uhyu.domain.user.enums;
 
-public enum Role {
+public enum UserRole {
     ADMIN, USER, TMP_USER
 }
