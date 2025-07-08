@@ -14,7 +14,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("UHYU API")
-                        .description("요금제 추천 서비스 API 명세서")
+                        .description("U-HYU API 명세서")
                         .version("v1.0"));
     }
 
