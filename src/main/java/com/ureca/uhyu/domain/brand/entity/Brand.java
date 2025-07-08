@@ -12,6 +12,8 @@ import java.util.List;
 @Table(name = "brands")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Brand extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

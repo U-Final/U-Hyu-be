@@ -10,9 +10,11 @@ import org.locationtech.jts.geom.Point;
 @Table(name = "Store")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Store extends BaseEntity {
 
-    private String storeName;
+    private String name;
 
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point geom;

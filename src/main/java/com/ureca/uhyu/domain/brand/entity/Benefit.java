@@ -1,7 +1,7 @@
 package com.ureca.uhyu.domain.brand.entity;
 
+import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.global.entity.BaseEntity;
-import com.ureca.uhyu.global.enums.Grade;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +9,8 @@ import lombok.*;
 @Table(name = "Benefit")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Benefit extends BaseEntity {
 
     private String description;

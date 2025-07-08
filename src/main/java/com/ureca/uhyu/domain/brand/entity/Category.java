@@ -10,6 +10,8 @@ import java.util.List;
 @Table(name = "categories")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Category extends BaseEntity {
 
     private String categoryName;
