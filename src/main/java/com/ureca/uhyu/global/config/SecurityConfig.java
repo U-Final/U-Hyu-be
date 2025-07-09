@@ -68,11 +68,18 @@ public class SecurityConfig {
 
                 // request 인증, 인가 설정
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers(
-                                new AntPathRequestMatcher("/"),
-                                new AntPathRequestMatcher("/auth")
+                                // 인증 없이 접근 가능
+                        request
+                                // 인증 없이 접근 허용
+                                .requestMatchers(
+                                        new AntPathRequestMatcher("/"),
+                                        new AntPathRequestMatcher("/map/**"),
+                                        new AntPathRequestMatcher("/brand-list/**")
                                 ).permitAll()
-                .anyRequest().authenticated()
+                                // ADMIN 권한 필요
+                                .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+                                // 그 외는 인증 필요
+                                .anyRequest().authenticated()
                 )
 
                 // oauth2 설정
