@@ -4,12 +4,14 @@ import com.ureca.uhyu.domain.user.enums.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
@@ -59,17 +61,17 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-            System.out.println("❌ JWT 만료: " + e.getMessage());
+            log.warn("JWT 만료: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            System.out.println("❌ 지원하지 않는 JWT: " + e.getMessage());
+            log.warn("지원하지 않는 JWT: {}", e.getMessage());
         } catch (MalformedJwtException e) {
-            System.out.println("❌ JWT 형식 오류: " + e.getMessage());
+            log.warn("JWT 형식 오류: {}", e.getMessage());
         } catch (SignatureException e) {
-            System.out.println("❌ JWT 서명 오류: " + e.getMessage());
+            log.warn("JWT 서명 오류: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ JWT 파라미터 오류 (null 또는 공백): " + e.getMessage());
+            log.warn("JWT 파라미터 오류 (null 또는 공백): {}", e.getMessage());
         } catch (Exception e) {
-            System.out.println("❌ 기타 오류: " + e.getMessage());
+            log.warn("기타 오류: {}", e.getMessage());
         }
         return false;
     }

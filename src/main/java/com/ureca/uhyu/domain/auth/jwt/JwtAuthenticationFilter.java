@@ -1,8 +1,9 @@
 package com.ureca.uhyu.domain.auth.jwt;
 
 import com.ureca.uhyu.domain.user.enums.UserRole;
-import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.config.PermitAllURI;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,7 +22,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-// jwt access token 에 대한 인가 확인 필터
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -37,11 +37,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         return PermitAllURI.isPermit(uri);
     }
-    
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
         try {
             String accessToken = extractAccessTokenFromCookie(request);
 
@@ -53,18 +52,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String role = jwtTokenProvider.getRoleFromToken(accessToken);
 
                 if (role == null) {
-                    log.error("❌ access token에서 role을 추출하지 못했습니다. token: {}", accessToken);
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 인증 실패 : 401에러
-                    return; // 필터
+                    throw new GlobalException(ResultCode.INVALID_ROLE_IN_ACCESS_TOKEN);
                 }
 
                 log.info("✅ access token 인증 성공 - userId: {}, role: {}", userId, role);
 
-                // SecurityContext에 인증 정보를 설정하고 다음 필터로 진행
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userId, null, List.of(new SimpleGrantedAuthority(role)));
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                setAuthenticationContext(request, userId, role);
 
                 filterChain.doFilter(request, response);
                 return;
@@ -91,10 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 newAccessTokenCookie.setMaxAge((int) ACCESS_TOKEN_EXP);
                 response.addCookie(newAccessTokenCookie);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority(roleString)));
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                setAuthenticationContext(request, userId, roleString);
 
                 log.info("♻️ access token 재발급 완료 - userId: {}", userId);
 
@@ -118,29 +108,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private String extractAccessTokenFromCookie(HttpServletRequest request) {
+    // SecurityContext에 인증 정보를 설정하고 다음 필터로 진행
+    private void setAuthenticationContext(HttpServletRequest request, String userId, String role) {
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority(role)));
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private String extractTokenFromCookie(HttpServletRequest request, String tokenName) {
         if (request.getCookies() == null) {
             return null;
         }
-
         for (Cookie cookie : request.getCookies()) {
-            if ("access_token".equals(cookie.getName())) {
+            if (tokenName.equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
         return null;
+    }
+
+    private String extractAccessTokenFromCookie(HttpServletRequest request) {
+        return extractTokenFromCookie(request, "access_token");
     }
 
     private String extractRefreshTokenFromCookie(HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            return null;
-        }
-        for (Cookie cookie : request.getCookies()) {
-            if ("refresh_token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
+        return extractTokenFromCookie(request, "refresh_token");
     }
 }
-

@@ -51,10 +51,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         // 토큰 및 쿠키 생성
         Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), userRole);
-        Cookie refreshCookie = tokenService.createRefreshTokenCookie(user);
+//        Cookie refreshCookie = tokenService.createRefreshTokenCookie(user);
 
         response.addCookie(accessCookie);
-        response.addCookie(refreshCookie);
+//        response.addCookie(refreshCookie);
 
         // 신규/기존 유저에 따라 redirect
         String redirectUrl = resolveRedirectUrl(request, isNewUser);
