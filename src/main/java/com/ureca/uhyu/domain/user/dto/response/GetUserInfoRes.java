@@ -12,9 +12,10 @@ public record GetUserInfoRes(
         int age,
         Gender gender,
         Grade grade
-        ) {
-    public GetUserInfoRes(User user){
-        this(user.getUserName(),
+) {
+    public static GetUserInfoRes from(User user){
+        return new GetUserInfoRes(
+                user.getUserName(),
                 user.getEmail(),
                 user.getAge(),
                 user.getGender(),

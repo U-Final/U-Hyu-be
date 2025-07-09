@@ -14,13 +14,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public GetUserInfoRes findUserInfo(User user) {
-        return new GetUserInfoRes(
-                user.getUserName(),
-                user.getEmail(),
-                user.getAge(),
-                user.getGender(),
-                user.getGrade()
-        );
+        return GetUserInfoRes.from(user);
     }
 
     public UpdateUserRes updateByUser(User user) {
