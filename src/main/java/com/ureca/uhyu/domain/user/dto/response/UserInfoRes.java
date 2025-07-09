@@ -5,7 +5,7 @@ import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 
-public record UserInfoResponse (
+public record UserInfoRes(
     String name,
     String nickname,
     String email,
