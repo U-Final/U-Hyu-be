@@ -52,4 +52,14 @@ public class User extends BaseEntity {
         this.status = Status.DELETED;
         this.updatedAt = LocalDateTime.now(); // 업데이트 시간도 갱신
     }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

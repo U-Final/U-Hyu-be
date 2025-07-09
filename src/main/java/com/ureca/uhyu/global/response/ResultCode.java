@@ -25,8 +25,17 @@ public enum ResultCode {
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, 2003, "Access Token이 만료되었습니다."),
     REISSUE_SUCCESS(HttpStatus.OK, 2004, "토큰 재발급에 성공했습니다. "),
     LOGOUT_SUCCESS(HttpStatus.OK, 2005, "로그아웃에 성공했습니다."),
-    SIGNUP_SUCCESS(HttpStatus.OK, 2006, "회원가입을 위한 추가정보 입력에 성공했습니다.");
+    SIGNUP_SUCCESS(HttpStatus.OK, 2006, "회원가입을 위한 추가정보 입력에 성공했습니다."),
 
+    /**
+     * 3000번대 (사용자 관련)
+     */
+
+    /**
+     * 4000번대 (브랜드 관련)
+     */
+    INVALID_BRAND(HttpStatus.BAD_REQUEST, 4000, "유효하지 않은 브랜드입니다.");
+    
     private final HttpStatus status;
     private final int code;
     private final String message;

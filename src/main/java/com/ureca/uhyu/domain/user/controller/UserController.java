@@ -27,6 +27,6 @@ public class UserController {
     @PatchMapping
     public CommonResponse<UpdateUserRes> updateByUser(
              User user, @RequestBody UpdateUserReq request) {
-        return CommonResponse.success(userService.updateByUser(user));
+        return CommonResponse.success(userService.updateByUser(user, request));
     }
 }

@@ -1,9 +1,18 @@
 package com.ureca.uhyu.domain.user.service;
 
+import com.ureca.uhyu.domain.brand.entity.Brand;
+import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
+import com.ureca.uhyu.domain.recommendation.enums.DataType;
+import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
+import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +21,42 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RecommendationBaseDataRepository recommendationRepository;
+    private final BrandRepository brandRepository;
 
     public GetUserInfoRes findUserInfo(User user) {
         return GetUserInfoRes.from(user);
     }
 
-    public UpdateUserRes updateByUser(User user) {
-        return new UpdateUserRes(user.getId()); //임시용
+    @Transactional
+    public UpdateUserRes updateByUser(User user, UpdateUserReq request) {
+
+        if (request.updatedProfileImage() != null) {
+            user.updateProfileImage(request.updatedProfileImage());
+        }
+
+        if (request.updatedNickName() != null) {
+            user.updateNickName(request.updatedNickName());
+        }
+
+        if (request.updatedBrandIdList() != null && !request.updatedBrandIdList().isEmpty()) {
+            recommendationRepository.deleteByUserAndDataType(user, DataType.INTEREST);
+
+            for (Long brandId : request.updatedBrandIdList()) {
+                Brand brand = brandRepository.findById(brandId)
+                        .orElseThrow(() -> new GlobalException(ResultCode.INVALID_BRAND));
+
+                RecommendationBaseData newInterest = RecommendationBaseData.builder()
+                        .user(user)
+                        .brand(brand)
+                        .dataType(DataType.INTEREST)
+                        .build();
+
+                recommendationRepository.save(newInterest);
+            }
+        }
+
+        User savedUser = userRepository.save(user);
+        return UpdateUserRes.from(savedUser);
     }
 }
