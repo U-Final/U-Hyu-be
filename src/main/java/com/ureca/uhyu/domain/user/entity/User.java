@@ -20,6 +20,9 @@ public class User extends BaseEntity {
     @Column(length = 20, nullable = false)
     private String userName;
 
+    @Column(length = 20)
+    private String nickname;
+
     @Column(unique = true)
     private Long kakaoId;
 
