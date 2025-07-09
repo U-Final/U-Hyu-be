@@ -60,13 +60,13 @@ class UserServiceTest {
 
     @DisplayName("개인정보 조회")
     @Test
-    void findByUser() {
+    void findUserInfo() {
         //given
         User user = createUser();
         setId(user, 1L);
 
         //when
-        GetUserInfoRes getUserInfoRes =  userService.findByUser(user);
+        GetUserInfoRes getUserInfoRes =  userService.findUserInfo(user);
 
         //then
         assertEquals("홍길동", getUserInfoRes.userName());

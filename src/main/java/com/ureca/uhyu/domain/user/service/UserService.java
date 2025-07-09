@@ -12,7 +12,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public GetUserInfoRes findByUser(User user) {
+    public GetUserInfoRes findUserInfo(User user) {
         return new GetUserInfoRes(
                 user.getUserName(),
                 user.getEmail(),
