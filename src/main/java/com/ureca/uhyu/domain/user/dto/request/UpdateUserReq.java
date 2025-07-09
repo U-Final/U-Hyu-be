@@ -8,6 +8,7 @@ import java.util.List;
 public record UpdateUserReq(
         String updatedProfileImage,
         String updatedNickName,
-        List<Long> updatedBrandIdList
+        List<Long> updatedBrandIdList,
+        Long markerId
 ) {
 }

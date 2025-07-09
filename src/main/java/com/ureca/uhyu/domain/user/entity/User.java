@@ -48,6 +48,10 @@ public class User extends BaseEntity {
     @Column(length = 500)
     private String profileImage;
 
+    @OneToOne
+    @JoinColumn(name = "marker_id")
+    private Marker marker;
+
     public void withdraw() {
         this.status = Status.DELETED;
         this.updatedAt = LocalDateTime.now(); // 업데이트 시간도 갱신
@@ -65,5 +69,9 @@ public class User extends BaseEntity {
     public void updateNickName(String nickName) {
         this.nickname = nickName;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateMarker(Marker marker) {
+        this.marker = marker;
     }
 }
