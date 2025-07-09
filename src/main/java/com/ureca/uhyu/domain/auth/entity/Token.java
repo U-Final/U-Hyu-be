@@ -25,8 +25,9 @@ public class Token extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    public void updateRefreshToken(String refreshToken, LocalDateTime expireDate) {
+    public Token updateRefreshToken(String refreshToken, LocalDateTime expireDate) {
         this.refreshToken = refreshToken;
         this.expireDate = expireDate;
+        return this;
     }
 }

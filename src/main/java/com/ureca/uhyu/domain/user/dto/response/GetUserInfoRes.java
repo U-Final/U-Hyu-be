@@ -5,21 +5,23 @@ import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
+
 @Schema(description = "유저 정보 조회 응답")
 public record GetUserInfoRes(
+        String profileImage,
         String userName,
-        String email,
-        int age,
-        Gender gender,
-        Grade grade
+        String nickName,
+        Grade grade,
+        LocalDateTime updatedAt
 ) {
     public static GetUserInfoRes from(User user){
         return new GetUserInfoRes(
+                user.getProfileImage(),
                 user.getUserName(),
-                user.getEmail(),
-                user.getAge(),
-                user.getGender(),
-                user.getGrade()
+                user.getNickname(),
+                user.getGrade(),
+                user.getUpdatedAt()
         );
     }
 }

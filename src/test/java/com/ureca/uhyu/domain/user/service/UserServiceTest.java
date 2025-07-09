@@ -17,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,12 +35,13 @@ class UserServiceTest {
                 .userName("홍길동")
                 .kakaoId(456465L)
                 .email("asdad@kakao.com")
-                .age(32)
+                .age((byte)32)
                 .gender(Gender.MALE)
                 .role(UserRole.TMP_USER)
                 .status(Status.ACTIVE)
                 .grade(Grade.GOOD)
                 .profileImage("asdsad.png")
+                .nickname("nick")
                 .build();
     }
 
@@ -48,6 +50,16 @@ class UserServiceTest {
             Field idField = target.getClass().getSuperclass().getDeclaredField("id");
             idField.setAccessible(true);
             idField.set(target, idValue);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setUpdatedAt(Object target, LocalDateTime timeValue) {
+        try {
+            Field idField = target.getClass().getSuperclass().getDeclaredField("updatedAt");
+            idField.setAccessible(true);
+            idField.set(target, timeValue);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -64,15 +76,17 @@ class UserServiceTest {
         //given
         User user = createUser();
         setId(user, 1L);
+        LocalDateTime timeValue = LocalDateTime.now();
+        setUpdatedAt(user, timeValue);
 
         //when
         GetUserInfoRes getUserInfoRes =  userService.findUserInfo(user);
 
         //then
         assertEquals("홍길동", getUserInfoRes.userName());
-        assertEquals("asdad@kakao.com", getUserInfoRes.email());
-        assertEquals(32, getUserInfoRes.age());
-        assertEquals(Gender.MALE, getUserInfoRes.gender());
+        assertEquals("asdsad.png", getUserInfoRes.profileImage());
+        assertEquals("nick", getUserInfoRes.nickName());
+        assertEquals(timeValue, getUserInfoRes.updatedAt());
         assertEquals(Grade.GOOD, getUserInfoRes.grade());
     }
 }
