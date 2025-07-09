@@ -42,6 +42,19 @@ dependencies {
 	// PostGIS spatial support (버전 맞추기)
 	implementation 'org.hibernate.orm:hibernate-spatial:6.6.18.Final'
 	implementation 'org.locationtech.jts:jts-core:1.18.2'
+
+    // Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly('io.jsonwebtoken:jjwt-jackson:0.11.5')
+
+    // Oauth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
