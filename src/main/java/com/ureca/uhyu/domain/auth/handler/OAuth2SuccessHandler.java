@@ -1,8 +1,12 @@
 package com.ureca.uhyu.domain.auth.handler;
 
 import com.ureca.uhyu.domain.auth.dto.CustomOAuth2User;
-import com.ureca.uhyu.domain.auth.jwt.JwtTokenProvider;
+import com.ureca.uhyu.domain.auth.service.TokenService;
+import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.UserRepository;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +26,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
+    private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -35,48 +40,31 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         }
 
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+        User user = userRepository.findById(customOAuth2User.getUserId())
+                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
         Long userId = customOAuth2User.getUserId();
         UserRole userRole = customOAuth2User.getUserRole();
         Boolean isNewUser = customOAuth2User.isNewUser();
 
-        log.info("토큰 새로 생성");
+        log.info("토큰 발급");
 
-        String accessToken = jwtTokenProvider.generateToken(String.valueOf(userId), userRole);
-        String refreshToken = jwtTokenProvider.generateToken(String.valueOf(userId), userRole);
-
-//        log.info("AccessToken = {}", accessToken);
-//        log.info("RefreshToken = {}", refreshToken);
-
-        // 만든 토큰 쿠키에 담기
-        Cookie accessCookie = new Cookie("access_token", accessToken);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(true);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge((int) jwtTokenProvider.getAccessTokenExp());
-
-        Cookie refreshCookie = new Cookie("refresh_token", refreshToken);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge((int) jwtTokenProvider.getRefreshTokenExp());
+        // 토큰 및 쿠키 생성
+        Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), userRole);
+        Cookie refreshCookie = tokenService.createRefreshTokenCookie(user);
 
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
 
         // 신규/기존 유저에 따라 redirect
-        String host = request.getHeader("host");
-        String frontBaseUrl = "http://localhost:3000";
-
-//        String frontBaseUrl = (host != null && host.contains("localhost"))
-//                ? "http://localhost:3000"
-//                : "https://ixiu.site";
-
-        String redirectUrl = isNewUser
-                ? frontBaseUrl + "/user/extra-info"
-                : frontBaseUrl + "/main";
+        String redirectUrl = resolveRedirectUrl(request, isNewUser);
 
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", redirectUrl);
+    }
+
+    private String resolveRedirectUrl(HttpServletRequest request, boolean isNewUser) {
+        String frontBaseUrl = "http://localhost:3000";
+        return isNewUser ? frontBaseUrl + "/user/extra-info" : frontBaseUrl + "/main";
     }
 }

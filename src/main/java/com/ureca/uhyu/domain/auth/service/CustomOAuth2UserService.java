@@ -1,6 +1,7 @@
 package com.ureca.uhyu.domain.auth.service;
 
 import com.ureca.uhyu.domain.auth.dto.CustomOAuth2User;
+import com.ureca.uhyu.domain.auth.dto.KakaoUserInfoResponse;
 import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
@@ -28,58 +29,57 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
-        // kakao_id(pk)
-        Long kakaoId = Long.valueOf(attributes.get("id").toString());
+        KakaoUserInfoResponse userInfo = extractUserInfo(attributes);
 
-        // profile_nickname
-        String nickname = profile.get("nickname") != null ? profile.get("nickname").toString() : "사용자";
-
-        // profile_image
-        String profileImage = profile.get("profile_image_url") != null ? profile.get("profile_image_url").toString() : null;
-
-        // account_email
-        String email = kakaoAccount.get("email") != null ? kakaoAccount.get("email").toString()
-                : "temp_kakao_" + kakaoId + "@example.com";
-
-        // name
-        String name = kakaoAccount.get("name") != null ? kakaoAccount.get("name").toString() : "익명";
-
-        // gender
-        String genderStr = kakaoAccount.get("gender") != null ? kakaoAccount.get("gender").toString() : null;
-        Gender gender = null;
-        if ("male".equalsIgnoreCase(genderStr)) gender = Gender.MALE;
-        else if ("female".equalsIgnoreCase(genderStr)) gender = Gender.FEMALE;
-
-
-        // 신규/기존 유저에 따라 redirect 위치 달라짐
-        Optional<User> optionalUser = userRepository.findByKakaoId(kakaoId);
+        Optional<User> optionalUser = userRepository.findByKakaoId(userInfo.kakaoId());
         User user;
         boolean isNewUser;
 
-        // 신규 / 기존 유저 구분
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
             isNewUser = false;
         } else {
-            user = userRepository.save(User.builder()
-                    .kakaoId(kakaoId)
-                    .userName(nickname)
-                    .email(email)
-                    .profileImage(profileImage)
-                    .gender(gender)
-                    .status(Status.ACTIVE)
-                    .role(UserRole.USER)
-                    .build());
+            user = createNewUser(userInfo);
             isNewUser = true;
         }
 
-        // 토큰 생성에 필요한 정보들
-        return new CustomOAuth2User(nickname, user.getId(), user.getRole(), isNewUser);
+        return new CustomOAuth2User(userInfo.nickname(), user.getId(), user.getRole(), isNewUser);
+    }
+
+    private KakaoUserInfoResponse extractUserInfo(Map<String, Object> attributes) {
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+
+        Long kakaoId = Long.valueOf(attributes.get("id").toString());
+        String nickname = profile.getOrDefault("nickname", "사용자").toString();
+        String profileImage = profile.getOrDefault("profile_image_url", null) != null
+                ? profile.get("profile_image_url").toString() : null;
+        String email = kakaoAccount.getOrDefault("email", "temp_kakao_" + kakaoId + "@example.com").toString();
+        String name = kakaoAccount.getOrDefault("name", "익명").toString();
+        String genderStr = kakaoAccount.get("gender") != null ? kakaoAccount.get("gender").toString() : null;
+        Gender gender = parseGender(genderStr);
+
+        return new KakaoUserInfoResponse(kakaoId, nickname, email, name, profileImage, gender);
+    }
+
+    private Gender parseGender(String genderStr) {
+        if ("male".equalsIgnoreCase(genderStr)) return Gender.MALE;
+        if ("female".equalsIgnoreCase(genderStr)) return Gender.FEMALE;
+        return null;
+    }
+
+    private User createNewUser(KakaoUserInfoResponse userInfo) {
+        return userRepository.save(User.builder()
+                .kakaoId(userInfo.kakaoId())
+                .userName(userInfo.nickname())
+                .email(userInfo.email())
+                .profileImage(userInfo.profileImage())
+                .gender(userInfo.gender())
+                .status(Status.ACTIVE)
+                .role(UserRole.TMP_USER)
+                .build());
     }
 
     public void expireCookie(String name, HttpServletResponse response) {
