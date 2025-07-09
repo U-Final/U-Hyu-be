@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.auth.handler.OAuth2SuccessHandler;
 import com.ureca.uhyu.domain.auth.jwt.JwtAuthenticationFilter;
 import com.ureca.uhyu.domain.auth.jwt.JwtTokenProvider;
 import com.ureca.uhyu.domain.auth.repository.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
+    private final TokenService tokenService;
 
     @Bean
     public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
@@ -43,7 +45,7 @@ public class SecurityConfig {
 
     @Bean
     public OAuth2SuccessHandler oAuth2SuccessHandler() {
-        return new OAuth2SuccessHandler(jwtTokenProvider);
+        return new OAuth2SuccessHandler(tokenService, userRepository);
     }
 
     @Bean
