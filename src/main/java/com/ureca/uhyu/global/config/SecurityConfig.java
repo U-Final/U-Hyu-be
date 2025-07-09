@@ -95,7 +95,7 @@ public class SecurityConfig {
                 )
 
                 // jwt 관련 설정
-                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider, userRepository),
+                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider),
                         OAuth2LoginAuthenticationFilter.class);
 
         return http.build();
