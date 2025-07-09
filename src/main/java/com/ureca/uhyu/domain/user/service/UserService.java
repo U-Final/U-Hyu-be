@@ -32,7 +32,7 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateUserRes updateByUser(User user, UpdateUserReq request) {
+    public UpdateUserRes updateUserInfo(User user, UpdateUserReq request) {
 
         if (request.updatedProfileImage() != null) {
             user.updateProfileImage(request.updatedProfileImage());

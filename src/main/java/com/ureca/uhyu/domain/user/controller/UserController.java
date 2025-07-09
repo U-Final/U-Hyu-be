@@ -8,7 +8,6 @@ import com.ureca.uhyu.domain.user.service.UserService;
 import com.ureca.uhyu.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,6 +27,6 @@ public class UserController {
     @PatchMapping
     public CommonResponse<UpdateUserRes> updateByUser(
              User user, @RequestBody UpdateUserReq request) {
-        return CommonResponse.success(userService.updateByUser(user, request));
+        return CommonResponse.success(userService.updateUserInfo(user, request));
     }
 }
