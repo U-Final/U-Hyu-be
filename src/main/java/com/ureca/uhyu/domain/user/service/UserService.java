@@ -24,5 +24,6 @@ public class UserService {
     }
 
     public UpdateUserRes updateByUser(User user) {
+        return new UpdateUserRes(user.getId()); //임시용
     }
 }

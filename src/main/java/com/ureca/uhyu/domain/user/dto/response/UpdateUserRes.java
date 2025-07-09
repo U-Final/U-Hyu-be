@@ -1,6 +1,5 @@
 package com.ureca.uhyu.domain.user.dto.response;
 
-import com.ureca.uhyu.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
