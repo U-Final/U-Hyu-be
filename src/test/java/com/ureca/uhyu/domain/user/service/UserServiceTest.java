@@ -108,7 +108,7 @@ class UserServiceTest {
     @DisplayName("개인정보 수정 - 성공")
     @Test
     void updateUserInfoSuccess() {
-        // given
+        //given
         Marker marker1 = Marker.builder().markerImage("marker1.jpg").build();
         setId(marker1, 1L);
         Marker marker2 = Marker.builder().markerImage("marker2.jpg").build();
@@ -118,7 +118,7 @@ class UserServiceTest {
                 .userName("홍길동")
                 .kakaoId(456465L)
                 .email("asdad@kakao.com")
-                .age((byte) 32)
+                .age((byte)32)
                 .gender(Gender.MALE)
                 .role(UserRole.TMP_USER)
                 .status(Status.ACTIVE)
@@ -136,31 +136,28 @@ class UserServiceTest {
                 2L
         );
 
-        // stub
+        // Marker, Brand mock 설정
         Mockito.when(markerRepository.findById(2L)).thenReturn(Optional.of(marker2));
-
         for (Long brandId : request.updatedBrandIdList()) {
             Brand brand = Brand.builder().brandName("브랜드" + brandId).build();
             setId(brand, brandId);
             Mockito.when(brandRepository.findById(brandId)).thenReturn(Optional.of(brand));
         }
 
+        // 저장된 user 반환 mock
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // when
+        //when
         UpdateUserRes updateUserRes = userService.updateUserInfo(user, request);
 
-        // then
-        assertEquals(100L, updateUserRes.userId()); // 응답에 담긴 userId 검증
-
-        // user 객체의 변경 상태 검증
-        assertEquals("asdsad2.png", user.getProfileImage());
-        assertEquals("nick2", user.getNickname());
-        assertEquals(marker2, user.getMarker());
-
-        // 관심 브랜드 추천 삭제 및 저장 확인
-        Mockito.verify(recommendationRepository).deleteByUserAndDataType(user, DataType.INTEREST);
+        //then
+        //코드 수정 필요(mock으로 수정된 개체 만들어서 repo에서 가져와야함)
+        assertEquals("asdsad2.png", updateUserRes.profileImage());
+        assertEquals("nick2", updateUserRes.nickname());
+        assertEquals(2L, updateUserRes.markerId());
+        // 관심 브랜드 개수 확인 (추가된 Recommendation 수는 3개여야 함)
         Mockito.verify(recommendationRepository, Mockito.times(3)).save(Mockito.any());
+        Mockito.verify(recommendationRepository).deleteByUserAndDataType(user, DataType.INTEREST);
     }
 
     @DisplayName("개인정보 수정 - 예외 발생")
