@@ -44,7 +44,7 @@ public class UserService {
 
         if (request.markerId() != null) {
             Marker marker = markerRepository.findById(request.markerId())
-                    .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));      //임시로 넣은 에러코드
+                    .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
             user.updateMarker(marker);
         }
 
@@ -53,7 +53,7 @@ public class UserService {
 
             for (Long brandId : request.updatedBrandIdList()) {
                 Brand brand = brandRepository.findById(brandId)
-                        .orElseThrow(() -> new GlobalException(ResultCode.INVALID_BRAND));
+                        .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
 
                 RecommendationBaseData newInterest = RecommendationBaseData.builder()
                         .user(user)

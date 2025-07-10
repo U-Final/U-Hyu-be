@@ -34,7 +34,6 @@ public enum ResultCode {
     /**
      * 4000번대 (브랜드 관련)
      */
-    INVALID_BRAND(HttpStatus.BAD_REQUEST, 4000, "잘못된 브랜드입니다.");
     
     private final HttpStatus status;
     private final int code;

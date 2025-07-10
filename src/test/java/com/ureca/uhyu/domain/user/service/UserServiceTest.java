@@ -15,6 +15,8 @@ import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.enums.Grade;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,18 +53,24 @@ class UserServiceTest {
     private UserService userService;
 
     private User createUser() {
-        return User.builder()
+        Marker marker = Marker.builder().markerImage("marker.jpg").build();
+        setId(marker, 1L);
+
+        User user = User.builder()
                 .userName("홍길동")
                 .kakaoId(456465L)
                 .email("asdad@kakao.com")
-                .age((byte)32)
+                .age((byte) 32)
                 .gender(Gender.MALE)
                 .role(UserRole.TMP_USER)
                 .status(Status.ACTIVE)
                 .grade(Grade.GOOD)
                 .profileImage("asdsad.png")
                 .nickname("nick")
+                .marker(marker)
                 .build();
+        setId(user, 1L);
+        return user;
     }
 
     private void setId(Object target, Long idValue) {
@@ -109,25 +117,10 @@ class UserServiceTest {
     @Test
     void updateUserInfoSuccess() {
         // given
-        Marker marker1 = Marker.builder().markerImage("marker1.jpg").build();
-        setId(marker1, 1L);
+        User user = createUser();
+
         Marker marker2 = Marker.builder().markerImage("marker2.jpg").build();
         setId(marker2, 2L);
-
-        User user = User.builder()
-                .userName("홍길동")
-                .kakaoId(456465L)
-                .email("asdad@kakao.com")
-                .age((byte) 32)
-                .gender(Gender.MALE)
-                .role(UserRole.TMP_USER)
-                .status(Status.ACTIVE)
-                .grade(Grade.GOOD)
-                .profileImage("asdsad.png")
-                .nickname("nick")
-                .marker(marker1)
-                .build();
-        setId(user, 100L);
 
         UpdateUserReq request = new UpdateUserReq(
                 "asdsad2.png",
@@ -151,7 +144,7 @@ class UserServiceTest {
         UpdateUserRes updateUserRes = userService.updateUserInfo(user, request);
 
         // then
-        assertEquals(100L, updateUserRes.userId()); // 응답에 담긴 userId 검증
+        assertEquals(1L, updateUserRes.userId()); // 응답에 담긴 userId 검증
 
         // user 객체의 변경 상태 검증
         assertEquals("asdsad2.png", user.getProfileImage());
@@ -163,16 +156,53 @@ class UserServiceTest {
         Mockito.verify(recommendationRepository, Mockito.times(3)).save(Mockito.any());
     }
 
-    @DisplayName("개인정보 수정 - 예외 발생")
+    @DisplayName("개인정보 수정 - 존재하지 않는 마커 ID로 실패")
     @Test
-    void updateUserInfoException() {
-        //given
+    void updateUserInfoFail_InvalidMarker() {
+        // given
         User user = createUser();
-        setId(user, 1L);
+        Long invalidMarkerId = 999L;
 
-        //when
+        UpdateUserReq request = new UpdateUserReq(
+                null,
+                null,
+                null,
+                invalidMarkerId
+        );
 
-        //then
+        Mockito.when(markerRepository.findById(invalidMarkerId))
+                .thenReturn(Optional.empty());
 
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            userService.updateUserInfo(user, request);
+        });
+
+        assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
+    }
+
+    @DisplayName("개인정보 수정 - 존재하지 않는 브랜드 ID로 실패")
+    @Test
+    void updateUserInfoFail_InvalidBrand() {
+        // given
+        User user = createUser();
+        Long invalidBrandId = 888L;
+
+        UpdateUserReq request = new UpdateUserReq(
+                null,
+                null,
+                List.of(invalidBrandId),
+                null
+        );
+
+        Mockito.when(brandRepository.findById(invalidBrandId))
+                .thenReturn(Optional.empty());
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            userService.updateUserInfo(user, request);
+        });
+
+        assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
     }
 }
