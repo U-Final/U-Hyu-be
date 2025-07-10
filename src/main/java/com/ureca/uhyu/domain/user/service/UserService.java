@@ -14,6 +14,8 @@ import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,9 @@ public class UserService {
     private final BrandRepository brandRepository;
     private final MarkerRepository markerRepository;
 
-    public GetUserInfoRes findUserInfo(User user) {
+    public GetUserInfoRes findUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
         return GetUserInfoRes.from(user);
     }
 

@@ -39,9 +39,15 @@ dependencies {
 	implementation 'org.liquibase:liquibase-core'
 
 	// TODO 버전 선정 이유 말하기
-	// PostGIS spatial support (버전 맞추기)
+	// PostGIS spatial support
 	implementation 'org.hibernate.orm:hibernate-spatial:6.6.18.Final'
 	implementation 'org.locationtech.jts:jts-core:1.18.2'
+
+	// QueryDsl
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -59,4 +65,22 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
+sourceSets {
+	main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+clean.doLast {
+	file(querydslDir).deleteDir()
+}
+
+
+clean {
+	delete file('src/main/generated')
 }
