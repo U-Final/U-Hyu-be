@@ -1,6 +1,10 @@
 package com.ureca.uhyu.domain.user.service;
 
+import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
+import com.ureca.uhyu.domain.recommendation.enums.DataType;
+import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.entity.User;
@@ -20,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
+    private final RecommendationBaseDataRepository recommendationBaseDataRepository;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request) {
@@ -28,15 +33,17 @@ public class UserService {
 
         // 1. 유저 조회
         User user = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
         // 2. 온보딩 정보 반영
-        user.setGrade(request.grade());
-        user.setRole(UserRole.USER); // TMP_USER → USER 변경
+        user.setUserGrade(request.grade());
+        user.setUserRole(UserRole.USER); // TMP_USER → USER 변경
 
-        // 3. 최근 이용 브랜드/관심 브랜드 저장 (연관 관계 처리 필요)
-        brandRepository.saveAllForUser(user, request.recentBrands(), true);
-        brandRepository.saveAllForUser(user, request.interestedBrands(), false);
+//       최근 이용 브랜드 저장
+        saveUserBrandData(user, request.recentBrands(), DataType.RECENT);
+
+        // 관심 브랜드 저장
+        saveUserBrandData(user, request.interestedBrands(), DataType.INTEREST);
 
         return user.getId();
     }
@@ -50,5 +57,28 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
         return GetUserInfoRes.from(user);
+    }
+
+    private void saveUserBrandData(User user, List<String> brandNames, DataType dataType) {
+        List<Brand> brands = brandRepository.findByBrandNameIn(brandNames);
+
+        if (brands.size() != brandNames.size()) {
+            throw new GlobalException(ResultCode.INVALID_INPUT); // 일부 브랜드가 존재하지 않음
+        }
+
+        List<RecommendationBaseData> dataList = brands.stream()
+                .map(brand -> RecommendationBaseData.builder()
+                        .user(user)
+                        .brand(brand)
+                        .dataType(dataType)
+                        .build())
+                .toList();
+
+        recommendationBaseDataRepository.saveAll(dataList);
+    }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
     }
 }

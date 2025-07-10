@@ -6,10 +6,14 @@ import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
 import com.ureca.uhyu.domain.user.dto.response.UserOnboardingResponse;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.entity.User;
+import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.service.UserService;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.Map;
 
 @RestController
@@ -34,23 +39,20 @@ public class UserController {
      */
     @Operation(summary = "신규 유저 추가 입력 정보 저장", description = "신규 유저 추가 입력 정보 저장, user_role 변경, 토큰 재발급")
     @PostMapping("/extra-info")
-    public ResponseEntity<UserOnboardingResponse> onboarding(
-            @Valid @RequestBody UserOnboardingRequest request
+    public CommonResponse<UserOnboardingResponse> onboarding( // 응답 객체에 UserOnboardingResponse dto 객체를 body에 담아 리턴
+            @Valid @RequestBody UserOnboardingRequest request, HttpServletResponse response
     ) {
         // 1. 온보딩 정보 저장 및 유저 권한 변경
         Long userId = userService.saveOnboardingInfo(request);
+        User user = userService.getUserById(userId);
 
         // 2. access, refresh 토큰 재발급
-        TokenResponse tokens = tokenService.createTokenSet(userId);
+        Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), UserRole.USER);
+        tokenService.createRefreshToken(user);
 
-        // 3. 응답 DTO 구성 - 토큰은 쿠키에
-//        UserOnboardingResponse response = new UserOnboardingResponse(
-//                userId
-//                tokens.accessToken(),
-//                tokens.refreshToken()
-//        );
+        response.addCookie(accessCookie);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
+        return CommonResponse.success(null); // 보내줄 데이터 없음 - 성공했다는 응답만
     }
 
     @Operation(summary = "개인정보 조회", description = "개인정보 조회: 로그인 필요")

@@ -48,6 +48,9 @@ public class User extends BaseEntity {
     @Column(length = 500)
     private String profileImage;
 
+    @Column(length = 20)
+    private String age_range;
+
     public void withdraw() {
         this.status = Status.DELETED;
         this.updatedAt = LocalDateTime.now(); // 업데이트 시간도 갱신
@@ -55,5 +58,13 @@ public class User extends BaseEntity {
 
     public UserRole getUserRole() {
         return role;
+    }
+
+    public void setUserGrade(Grade grade) {
+        this.grade = grade;
+    }
+
+    public void setUserRole(UserRole role) {
+        this.role = role;
     }
 }
