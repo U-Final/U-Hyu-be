@@ -71,20 +71,28 @@ public class SecurityConfig {
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음
 
                 // request 인증, 인가 설정
-                .authorizeHttpRequests(request ->
-                                // 인증 없이 접근 가능
-                        request
-                                // 인증 없이 접근 허용 : 로그인을 하지 않아도 접근 가능
-                                .requestMatchers(
-                                        new AntPathRequestMatcher("/"),
-                                        new AntPathRequestMatcher("/map/**"),
-                                        new AntPathRequestMatcher("/brand-list/**")
-                                ).permitAll()
-                                // ADMIN 권한 필요 : user role이 admin인 사용자만 접근 가
-                                .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
-                                // 그 외는 인증 필요 : 로그인한 사용자만 접근 가능
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
                 )
+
+
+                /**
+                 * 개발을 위해 모든 요청에 대해 인증인가를 하지 않고 허용
+                 */
+//                .authorizeHttpRequests(request ->
+//                                // 인증 없이 접근 가능
+//                        request
+//                                // 인증 없이 접근 허용 : 로그인을 하지 않아도 접근 가능
+//                                .requestMatchers(
+//                                        new AntPathRequestMatcher("/"),
+//                                        new AntPathRequestMatcher("/map/**"),
+//                                        new AntPathRequestMatcher("/brand-list/**")
+//                                ).permitAll()
+//                                // ADMIN 권한 필요 : user role이 admin인 사용자만 접근 가
+//                                .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+//                                // 그 외는 인증 필요 : 로그인한 사용자만 접근 가능
+//                                .anyRequest().authenticated()
+//                )
 
                 // oauth2 설정
                 .oauth2Login(oauth2 -> oauth2
