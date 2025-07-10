@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -31,12 +32,15 @@ public class TokenService {
         Instant expireDate = Instant.now().plusMillis(refreshTokenExpMillis);
 
         Token token = optionalToken.map(existingToken ->
-                existingToken.updateRefreshToken(refreshToken, LocalDateTime.from(expireDate))
+                existingToken.updateRefreshToken(
+                        refreshToken,
+                        LocalDateTime.ofInstant(expireDate, ZoneId.systemDefault())
+                )
         ).orElseGet(() ->
                 Token.builder()
                         .user(user)
                         .refreshToken(refreshToken)
-                        .expireDate(LocalDateTime.from(expireDate))
+                        .expireDate(LocalDateTime.ofInstant(expireDate, ZoneId.systemDefault()))
                         .build()
         );
         tokenRepository.save(token);
