@@ -2,9 +2,12 @@ package com.ureca.uhyu.domain.user.service;
 
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
+import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,5 +44,11 @@ public class UserService {
     private Long getCurrentUserId() {
         // TODO: JWT 또는 SecurityContext에서 userId 추출하는 실제 로직 구현
         return 1L; // 테스트용 ID (임시)
+    }
+
+    public GetUserInfoRes findUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
+        return GetUserInfoRes.from(user);
     }
 }
