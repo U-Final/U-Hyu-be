@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.user.dto.request;
 
+import com.ureca.uhyu.domain.user.enums.Grade;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 public record UpdateUserReq(
         String updatedProfileImage,
         String updatedNickName,
+        Grade updatedGrade,
         List<Long> updatedBrandIdList,
         Long markerId
 ) {

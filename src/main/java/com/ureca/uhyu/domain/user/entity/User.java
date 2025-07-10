@@ -71,6 +71,11 @@ public class User extends BaseEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updateGrade(Grade grade) {
+        this.grade = grade;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void updateMarker(Marker marker) {
         this.marker = marker;
     }

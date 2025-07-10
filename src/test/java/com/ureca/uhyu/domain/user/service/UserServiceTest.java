@@ -134,6 +134,7 @@ class UserServiceTest {
         UpdateUserReq request = new UpdateUserReq(
                 "asdsad2.png",
                 "nick2",
+                Grade.VIP,
                 List.of(1L, 2L, 3L),
                 2L
         );
@@ -158,6 +159,7 @@ class UserServiceTest {
         assertEquals(1L, updateUserRes.userId());
         assertEquals("asdsad2.png", user.getProfileImage());
         assertEquals("nick2", user.getNickname());
+        assertEquals(Grade.VIP, user.getGrade());
         assertEquals(marker2, user.getMarker());
 
         Mockito.verify(recommendationRepository).deleteByUserAndDataType(user, DataType.INTEREST);
@@ -176,6 +178,7 @@ class UserServiceTest {
                 null,
                 null,
                 null,
+                null,
                 invalidMarkerId
         );
 
@@ -190,6 +193,7 @@ class UserServiceTest {
 
         assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
     }
+
     @DisplayName("개인정보 수정 - 존재하지 않는 브랜드 ID로 실패")
     @Test
     void updateUserInfoFail_InvalidBrand() {
@@ -199,6 +203,7 @@ class UserServiceTest {
         Long invalidBrandId = 888L;
 
         UpdateUserReq request = new UpdateUserReq(
+                null,
                 null,
                 null,
                 List.of(invalidBrandId),

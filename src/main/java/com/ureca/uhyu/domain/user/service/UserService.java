@@ -48,6 +48,10 @@ public class UserService {
             user.updateNickName(request.updatedNickName());
         }
 
+        if (request.updatedGrade() != null) {
+            user.updateGrade(request.updatedGrade());
+        }
+
         if (request.markerId() != null) {
             Marker marker = markerRepository.findById(request.markerId())
                     .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
