@@ -28,6 +28,11 @@ public enum ResultCode {
     SIGNUP_SUCCESS(HttpStatus.OK, 2006, "회원가입을 위한 추가정보 입력에 성공했습니다."),
     INVALID_ROLE_IN_TOKEN(HttpStatus.OK, 2007, "token에서 role을 추출할 수 없습니다.");
 
+    /**
+     * 3000번대 (사용자 관련)
+     */
+
+
     private final HttpStatus status;
     private final int code;
     private final String message;
