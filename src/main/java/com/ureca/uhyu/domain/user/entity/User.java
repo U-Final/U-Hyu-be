@@ -42,6 +42,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private Status status;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 10)
     private Grade grade;
 
