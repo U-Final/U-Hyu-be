@@ -20,6 +20,9 @@ public class User extends BaseEntity {
     @Column(length = 20, nullable = false)
     private String userName;
 
+    @Column(length = 20)
+    private String nickname;
+
     @Column(unique = true)
     private Long kakaoId;
 
@@ -48,5 +51,9 @@ public class User extends BaseEntity {
     public void withdraw() {
         this.status = Status.DELETED;
         this.updatedAt = LocalDateTime.now(); // 업데이트 시간도 갱신
+    }
+
+    public UserRole getUserRole() {
+        return role;
     }
 }

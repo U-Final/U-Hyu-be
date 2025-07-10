@@ -36,5 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
+### husky+Jira ###
 node_modules/
 package-lock.json
+
+application-dev.properties
