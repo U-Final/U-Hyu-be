@@ -61,6 +61,6 @@ public class UserController {
 //        }
 
         // 로직 진행
-        return CommonResponse.success(userService.findBookmarkList());
+        return CommonResponse.success(userService.findBookmarkList(userId));
     }
 }

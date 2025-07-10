@@ -5,4 +5,7 @@ import java.util.List;
 public record GetBookmarkRes (
         List<BookmarkRes> bookmarkIdList
 ){
+    public static GetBookmarkRes from() {
+        return new GetBookmarkRes();
+    }
 }

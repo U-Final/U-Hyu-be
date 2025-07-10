@@ -1,4 +1,6 @@
 package com.ureca.uhyu.domain.user.dto.response;
 
-public class BookmarkRes {
+public record BookmarkRes (
+        Long bookmarkId
+) {
 }

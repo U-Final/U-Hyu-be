@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.user.service;
 
+import com.ureca.uhyu.domain.user.dto.response.GetBookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
@@ -18,5 +19,10 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
         return GetUserInfoRes.from(user);
+    }
+
+    public GetBookmarkRes findBookmarkList(String userId) {
+
+        return GetBookmarkRes.from();
     }
 }
