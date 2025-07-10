@@ -7,6 +7,7 @@ import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class TokenService {
     private final TokenRepository tokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Value("${jwt.refresh-token-expiration-time}")
+    @Value("${jwt.refresh-token-expiration-days}")
     private long refreshTokenExpMillis;
 
     public void saveOrUpdateRefreshToken(User user, String refreshToken) {
@@ -48,11 +49,10 @@ public class TokenService {
     }
 
     // Refresh 토큰 쿠키 생성 및 DB 저장
-    public Cookie createRefreshTokenCookie(User user) {
+    public void createRefreshToken(User user) {
         String refreshToken = jwtTokenProvider.generateToken(
                 String.valueOf(user.getId()), user.getUserRole());
         saveOrUpdateRefreshToken(user, refreshToken);
-        return buildHttpOnlyCookie("refresh_token", refreshToken, refreshTokenExpMillis);
     }
 
     private Cookie buildHttpOnlyCookie(String name, String token, long maxAgeMillis) {

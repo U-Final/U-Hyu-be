@@ -19,6 +19,12 @@ spring:
               - account_email
               - name
               - gender
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
 
   datasource:
     url: jdbc:postgresql://localhost:5432/testdb
@@ -37,6 +43,11 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.yaml
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  access-token-expiration-time: ${ACCESS_TOKEN_EXP}
+  refresh-token-expiration-days: ${REFRESH_TOKEN_EXP}
 
 logging:
   level:
