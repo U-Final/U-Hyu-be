@@ -66,8 +66,8 @@ public class User extends BaseEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateNickName(String nickName) {
-        this.nickname = nickName;
+    public void updateNickName(String nickname) {
+        this.nickname = nickname;
         this.updatedAt = LocalDateTime.now();
     }
 

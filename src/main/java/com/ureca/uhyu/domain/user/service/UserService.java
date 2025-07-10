@@ -36,7 +36,9 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateUserRes updateUserInfo(User user, UpdateUserReq request) {
+    public UpdateUserRes updateUserInfo(Long userId, UpdateUserReq request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
         if (request.updatedProfileImage() != null) {
             user.updateProfileImage(request.updatedProfileImage());

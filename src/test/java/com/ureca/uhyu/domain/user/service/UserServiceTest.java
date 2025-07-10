@@ -126,6 +126,7 @@ class UserServiceTest {
     void updateUserInfoSuccess() {
         // given
         User user = createUser();
+        setId(user, 1L);
 
         Marker marker2 = Marker.builder().markerImage("marker2.jpg").build();
         setId(marker2, 2L);
@@ -137,7 +138,8 @@ class UserServiceTest {
                 2L
         );
 
-        // stub
+        // mock
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         Mockito.when(markerRepository.findById(2L)).thenReturn(Optional.of(marker2));
 
         for (Long brandId : request.updatedBrandIdList()) {
@@ -146,20 +148,18 @@ class UserServiceTest {
             Mockito.when(brandRepository.findById(brandId)).thenReturn(Optional.of(brand));
         }
 
-        Mockito.when(userRepository.save(Mockito.any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        Mockito.when(userRepository.save(Mockito.any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        UpdateUserRes updateUserRes = userService.updateUserInfo(user, request);
+        UpdateUserRes updateUserRes = userService.updateUserInfo(1L, request);
 
         // then
-        assertEquals(1L, updateUserRes.userId()); // 응답에 담긴 userId 검증
-
-        // user 객체의 변경 상태 검증
+        assertEquals(1L, updateUserRes.userId());
         assertEquals("asdsad2.png", user.getProfileImage());
         assertEquals("nick2", user.getNickname());
         assertEquals(marker2, user.getMarker());
 
-        // 관심 브랜드 추천 삭제 및 저장 확인
         Mockito.verify(recommendationRepository).deleteByUserAndDataType(user, DataType.INTEREST);
         Mockito.verify(recommendationRepository, Mockito.times(3)).save(Mockito.any());
     }
@@ -169,6 +169,7 @@ class UserServiceTest {
     void updateUserInfoFail_InvalidMarker() {
         // given
         User user = createUser();
+        setId(user, 1L);
         Long invalidMarkerId = 999L;
 
         UpdateUserReq request = new UpdateUserReq(
@@ -178,22 +179,23 @@ class UserServiceTest {
                 invalidMarkerId
         );
 
-        Mockito.when(markerRepository.findById(invalidMarkerId))
-                .thenReturn(Optional.empty());
+        // mock
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        Mockito.when(markerRepository.findById(invalidMarkerId)).thenReturn(Optional.empty());
 
         // when & then
         GlobalException exception = assertThrows(GlobalException.class, () -> {
-            userService.updateUserInfo(user, request);
+            userService.updateUserInfo(1L, request);
         });
 
         assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
     }
-
     @DisplayName("개인정보 수정 - 존재하지 않는 브랜드 ID로 실패")
     @Test
     void updateUserInfoFail_InvalidBrand() {
         // given
         User user = createUser();
+        setId(user, 1L);
         Long invalidBrandId = 888L;
 
         UpdateUserReq request = new UpdateUserReq(
@@ -203,12 +205,13 @@ class UserServiceTest {
                 null
         );
 
-        Mockito.when(brandRepository.findById(invalidBrandId))
-                .thenReturn(Optional.empty());
+        // mock
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        Mockito.when(brandRepository.findById(invalidBrandId)).thenReturn(Optional.empty());
 
         // when & then
         GlobalException exception = assertThrows(GlobalException.class, () -> {
-            userService.updateUserInfo(user, request);
+            userService.updateUserInfo(1L, request);
         });
 
         assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
