@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.service.UserService;
 import com.ureca.uhyu.global.response.CommonResponse;
+import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,11 +29,11 @@ public class UserController {
 
         // 인가 로직
         if (!currentUserId.equals(user.getId())) {
-            return CommonResponse.status(HttpStatus.FORBIDDEN).body("본인의 정보만 조회할 수 있습니다.");
+            return CommonResponse.fail(ResultCode.FORBIDDEN, "본인의 정보만 조회할 수 있습니다.");
         }
 
         if (!role.equals("ROLE_USER")) {
-            return CommonResponse.status(HttpStatus.FORBIDDEN).body("일반 사용자만 접근 가능합니다.");
+            return CommonResponse.fail(ResultCode.FORBIDDEN, "일반 사용자만 접근 가능합니다.");
         }
 
         // 로직 진행
