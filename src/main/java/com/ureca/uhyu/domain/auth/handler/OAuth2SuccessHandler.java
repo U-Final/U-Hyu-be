@@ -63,6 +63,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private String resolveRedirectUrl(HttpServletRequest request, boolean isNewUser) {
         String frontBaseUrl = "http://localhost:3000";
-        return isNewUser ? frontBaseUrl + "/user/extra-info" : frontBaseUrl + "/main";
+        return isNewUser ? frontBaseUrl + "/user/extra-info" : frontBaseUrl + "/home/recommend";
     }
 }
