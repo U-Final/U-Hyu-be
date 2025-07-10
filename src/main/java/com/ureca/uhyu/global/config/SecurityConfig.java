@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.auth.handler.OAuth2SuccessHandler;
 import com.ureca.uhyu.domain.auth.jwt.JwtAuthenticationFilter;
 import com.ureca.uhyu.domain.auth.jwt.JwtTokenProvider;
 import com.ureca.uhyu.domain.auth.repository.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ureca.uhyu.domain.auth.repository.TokenRepository;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
     private final TokenService tokenService;
+    private final TokenRepository tokenRepository;
 
     @Bean
     public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
@@ -95,7 +97,7 @@ public class SecurityConfig {
                 )
 
                 // jwt 관련 설정
-                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider),
+                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository),
                         OAuth2LoginAuthenticationFilter.class);
 
         return http.build();
