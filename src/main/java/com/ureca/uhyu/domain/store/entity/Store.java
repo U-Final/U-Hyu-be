@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.locationtech.jts.geom.Point;
 
 @Entity
@@ -11,7 +12,7 @@ import org.locationtech.jts.geom.Point;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Store extends BaseEntity {
 
     private String name;
