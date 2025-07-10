@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.map.dto.Response;
+package com.ureca.uhyu.domain.map.dto.response;
 
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;

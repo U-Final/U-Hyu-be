@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.map.dto.Request;
+package com.ureca.uhyu.domain.map.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
