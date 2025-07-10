@@ -72,7 +72,7 @@ class MapServiceImplTest {
                     .geom(point)
                     .build();
 
-            when(storeRepository.findStoresWithBrandAndBenefitWithinRadius(lat, lon, radius))
+            when(storeRepository.findStoresInRadius(lat, lon, radius))
                     .thenReturn(List.of(store1,store2));
 
             // when

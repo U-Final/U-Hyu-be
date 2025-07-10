@@ -21,7 +21,7 @@ public class MapServiceImpl implements MapService{
         double lon = req.lon();
         double radius = req.radius();
 
-        List<Store> stores = storeRepository.findStoresWithBrandAndBenefitWithinRadius(lat, lon, radius);
+        List<Store> stores = storeRepository.findStoresInRadius(lat, lon, radius);
 
         return stores.stream()
                 .map(MapRes::from)

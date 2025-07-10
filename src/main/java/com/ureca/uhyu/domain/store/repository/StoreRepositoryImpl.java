@@ -18,7 +18,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Store> findStoresWithBrandAndBenefitWithinRadius(double lat, double lon, double radius) {
+    public List<Store> findStoresInRadius(double lat, double lon, double radius) {
         QStore store = QStore.store;
         QBrand brand = QBrand.brand;
         QCategory category = QCategory.category;
