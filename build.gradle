@@ -36,7 +36,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
 	// liquibase
-	implementation 'org.liquibase:liquibase-core'
+	// implementation 'org.liquibase:liquibase-core'
 
 	// TODO 버전 선정 이유 말하기
 	// PostGIS spatial support

@@ -48,11 +48,10 @@ public class TokenService {
     }
 
     // Refresh 토큰 쿠키 생성 및 DB 저장
-    public Cookie createRefreshTokenCookie(User user) {
+    public void createRefreshToken(User user) {
         String refreshToken = jwtTokenProvider.generateToken(
                 String.valueOf(user.getId()), user.getUserRole());
         saveOrUpdateRefreshToken(user, refreshToken);
-        return buildHttpOnlyCookie("refresh_token", refreshToken, refreshTokenExpMillis);
     }
 
     private Cookie buildHttpOnlyCookie(String name, String token, long maxAgeMillis) {
