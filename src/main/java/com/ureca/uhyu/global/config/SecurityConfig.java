@@ -5,6 +5,7 @@ import com.ureca.uhyu.domain.auth.jwt.JwtAuthenticationFilter;
 import com.ureca.uhyu.domain.auth.jwt.JwtTokenProvider;
 import com.ureca.uhyu.domain.auth.repository.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.ureca.uhyu.domain.auth.repository.TokenRepository;
+import com.ureca.uhyu.domain.auth.service.CustomUserDetailsService;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,6 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -39,6 +39,7 @@ public class SecurityConfig {
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
     private final TokenService tokenService;
     private final TokenRepository tokenRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
@@ -105,7 +106,7 @@ public class SecurityConfig {
                 )
 
                 // jwt 관련 설정
-                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository),
+                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository, customUserDetailsService),
                         OAuth2LoginAuthenticationFilter.class);
 
         return http.build();
