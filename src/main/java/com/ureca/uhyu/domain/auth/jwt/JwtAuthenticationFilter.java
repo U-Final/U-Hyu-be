@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.auth.jwt;
 
+import com.ureca.uhyu.domain.auth.repository.TokenRepository;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.global.config.PermitAllURI;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -30,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private long ACCESS_TOKEN_EXP;
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenRepository tokenRepository;
 
     // spring security의 인증 필터와 맞춰 줘야 함
     @Override
@@ -52,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String role = jwtTokenProvider.getRoleFromToken(accessToken);
 
                 if (role == null) {
-                    throw new GlobalException(ResultCode.INVALID_ROLE_IN_ACCESS_TOKEN);
+                    throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
                 }
 
                 log.info("✅ access token 인증 성공 - userId: {}, role: {}", userId, role);
@@ -66,17 +68,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("❌ access token 인증 실패 - 재발급 시도");
             log.info("❗ refresh token 유효성 검사");
 
-            String refreshToken = extractRefreshTokenFromCookie(request);
+            String expiredAccessToken = extractAccessTokenFromCookie(request);
+            String userId = jwtTokenProvider.getUserIdFromExpiredToken(expiredAccessToken);
+
+            String refreshToken = tokenRepository.findRefreshTokenByUserId(userId);
 
             if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
+                log.info("✅ 저장된 refresh 토큰 유효 - userId: {}", userId);
 
-                log.info("✅ refresh 토큰 유효");
-
-                String userId = jwtTokenProvider.getUserIdFromToken(refreshToken).toString();
                 String roleString = jwtTokenProvider.getRoleFromToken(refreshToken);
+                if (roleString == null) {
+                    throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
+                }
 
                 UserRole userRole = UserRole.valueOf(roleString);
-
                 String newAccessToken = jwtTokenProvider.generateToken(userId, userRole);
                 Cookie newAccessTokenCookie = new Cookie("access_token", newAccessToken);
                 newAccessTokenCookie.setHttpOnly(true);
@@ -85,7 +90,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.addCookie(newAccessTokenCookie);
 
                 setAuthenticationContext(request, userId, roleString);
-
                 log.info("♻️ access token 재발급 완료 - userId: {}", userId);
 
                 filterChain.doFilter(request, response);
@@ -130,9 +134,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractAccessTokenFromCookie(HttpServletRequest request) {
         return extractTokenFromCookie(request, "access_token");
-    }
-
-    private String extractRefreshTokenFromCookie(HttpServletRequest request) {
-        return extractTokenFromCookie(request, "refresh_token");
     }
 }

@@ -56,6 +56,18 @@ public class JwtTokenProvider {
                 .getBody().get("role", String.class);
     }
 
+    public String getUserIdFromExpiredToken(String token) {
+        try {
+            return Jwts.parser()
+                    .setSigningKey(key)
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();  // 만료된 토큰에서 subject(userId) 추출
+        }
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
