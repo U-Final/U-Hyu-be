@@ -7,13 +7,11 @@ import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.enums.Grade;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
@@ -65,11 +63,6 @@ class UserServiceTest {
         }
     }
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @DisplayName("개인정보 조회")
     @Test
     void findUserInfo() {
@@ -86,6 +79,9 @@ class UserServiceTest {
         assertEquals("홍길동", getUserInfoRes.userName());
         assertEquals("asdsad.png", getUserInfoRes.profileImage());
         assertEquals("nick", getUserInfoRes.nickName());
+        assertEquals("asdad@kakao.com", getUserInfoRes.email());
+        assertEquals((byte) 32, getUserInfoRes.age());
+        assertEquals(Gender.MALE, getUserInfoRes.gender());
         assertEquals(timeValue, getUserInfoRes.updatedAt());
         assertEquals(Grade.GOOD, getUserInfoRes.grade());
     }

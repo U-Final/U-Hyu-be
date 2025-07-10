@@ -12,6 +12,9 @@ public record GetUserInfoRes(
         String profileImage,
         String userName,
         String nickName,
+        String email,
+        Byte age,
+        Gender gender,
         Grade grade,
         LocalDateTime updatedAt
 ) {
@@ -20,6 +23,9 @@ public record GetUserInfoRes(
                 user.getProfileImage(),
                 user.getUserName(),
                 user.getNickname(),
+                user.getEmail(),
+                user.getAge(),
+                user.getGender(),
                 user.getGrade(),
                 user.getUpdatedAt()
         );
