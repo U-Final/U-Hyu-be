@@ -1,6 +1,8 @@
 package com.ureca.uhyu.domain.auth.jwt;
 
+import com.ureca.uhyu.domain.auth.dto.CustomUserDetails;
 import com.ureca.uhyu.domain.auth.repository.TokenRepository;
+import com.ureca.uhyu.domain.auth.service.CustomUserDetailsService;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.global.config.PermitAllURI;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -15,13 +17,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenRepository tokenRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     // spring security의 인증 필터와 맞춰 줘야 함
     @Override
@@ -47,26 +48,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = extractAccessTokenFromCookie(request);
 
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-
-                log.info("❗ access token 유효");
-
-                String userId = jwtTokenProvider.getUserIdFromToken(accessToken).toString();
+                String userId = jwtTokenProvider.getUserIdFromToken(accessToken);
                 String role = jwtTokenProvider.getRoleFromToken(accessToken);
 
                 if (role == null) {
                     throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
                 }
 
-                log.info("✅ access token 인증 성공 - userId: {}, role: {}", userId, role);
-
                 setAuthenticationContext(request, userId, role);
-
                 filterChain.doFilter(request, response);
                 return;
             }
-
-            log.info("❌ access token 인증 실패 - 재발급 시도");
-            log.info("❗ refresh token 유효성 검사");
 
             String expiredAccessToken = extractAccessTokenFromCookie(request);
             String userId = jwtTokenProvider.getUserIdFromExpiredToken(expiredAccessToken);
@@ -74,8 +66,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String refreshToken = tokenRepository.findRefreshTokenByUserId(userId);
 
             if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-                log.info("✅ 저장된 refresh 토큰 유효 - userId: {}", userId);
-
                 String roleString = jwtTokenProvider.getRoleFromToken(refreshToken);
                 if (roleString == null) {
                     throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
@@ -90,13 +80,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.addCookie(newAccessTokenCookie);
 
                 setAuthenticationContext(request, userId, roleString);
-                log.info("♻️ access token 재발급 완료 - userId: {}", userId);
-
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            log.warn("❌ access + refresh token 모두 유효하지 않음 -> 로그인하지 않은 사용자 : 로그인화면 리다이렉트");
             response.sendRedirect("/login");
             return;
 
@@ -114,8 +101,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // SecurityContext에 인증 정보를 설정하고 다음 필터로 진행
     private void setAuthenticationContext(HttpServletRequest request, String userId, String role) {
+        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(userId);
         UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userId, null, List.of(new SimpleGrantedAuthority(role)));
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }

@@ -42,11 +42,19 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private Status status;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 10)
     private Grade grade;
 
     @Column(length = 500)
     private String profileImage;
+
+    @Column(length = 20)
+    private String age_range;
+
+    @OneToOne
+    @JoinColumn(name = "marker_id")
+    private Marker marker;
 
     public void withdraw() {
         this.status = Status.DELETED;
@@ -55,5 +63,22 @@ public class User extends BaseEntity {
 
     public UserRole getUserRole() {
         return role;
+    }
+
+    public void updateUser(
+            String profileImage, String nickname, Grade grade, Marker marker
+    ){
+        this.profileImage = profileImage;
+        this.nickname = nickname;
+        this.grade = grade;
+        this.marker = marker;
+    }
+
+    public void setUserGrade(Grade grade) {
+        this.grade = grade;
+    }
+
+    public void setUserRole(UserRole role) {
+        this.role = role;
     }
 }

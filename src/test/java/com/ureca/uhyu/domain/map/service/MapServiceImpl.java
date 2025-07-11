@@ -2,8 +2,7 @@ package com.ureca.uhyu.domain.map.service;
 
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
-import com.ureca.uhyu.domain.map.dto.Request.MapReq;
-import com.ureca.uhyu.domain.map.dto.Response.MapRes;
+import com.ureca.uhyu.domain.map.dto.response.MapRes;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.store.repository.StoreRepositoryCustom;
 import org.junit.jupiter.api.Nested;
@@ -40,8 +39,6 @@ class MapServiceImplTest {
             double lon = 127.0;
             double radius = 1000.0;
 
-            MapReq request = new MapReq(lat, lon, radius);
-
 
             GeometryFactory geometryFactory = new GeometryFactory();
             Point point = geometryFactory.createPoint(new Coordinate(lon, lat));
@@ -76,7 +73,7 @@ class MapServiceImplTest {
                     .thenReturn(List.of(store1,store2));
 
             // when
-            List<MapRes> result = mapService.getStoresInRange(request);
+            List<MapRes> result = mapService.getStoresInRange(lat,lon,radius);
 
             // then
             assertThat(result).hasSize(2);
