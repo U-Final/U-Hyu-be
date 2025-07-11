@@ -22,7 +22,7 @@ public class RecommendationBaseData extends BaseEntity {
     @JoinColumn(name = "user_id")
     User user;
 
-    @ManyToOne
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     Brand brand;
 }
