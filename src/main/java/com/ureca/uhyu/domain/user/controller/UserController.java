@@ -55,7 +55,9 @@ public class UserController {
     @Operation(summary = "개인정보 수정", description = "개인정보 수정: 수정 요청한 값들만 수정")
     @PatchMapping("{userId}")
     public CommonResponse<UpdateUserRes> updateByUser(
-             @CurrentUser User user, @RequestBody UpdateUserReq request) {
+             @CurrentUser User user,
+             @RequestBody UpdateUserReq request
+    ) {
         return CommonResponse.success(userService.updateUserInfo(user, request));
     }
 }
