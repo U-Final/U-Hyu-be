@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -225,6 +225,88 @@ class UserServiceTest {
         assertEquals("스토어A", res.storeName());
         assertEquals("서울시 마포구", res.addressDetail());
         assertNull(res.benefit());  // TODO 로직 결정 후 benefit 부분 테스트 코드 수정 예정
+    }
+
+    @DisplayName("즐겨찾기 삭제 - 성공")
+    @Test
+    void deleteBookmarkSuccess() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        Bookmark bookmark = createBookmark(user);
+        setId(bookmark, 10L);
+
+        Brand brand = createBrand();
+        setId(brand, 20L);
+
+        Store store = createStore(brand);
+        setId(store, 30L);
+
+        BookmarksList bookmarksList = createBookmarksList(bookmark, store);
+        setId(bookmarksList, 100L);
+
+        // mock
+        when(bookmarksListRepository.findById(100L)).thenReturn(Optional.of(bookmarksList));
+
+        // when
+        userService.deleteBookmark(user, 100L);
+
+        // then
+        verify(bookmarksListRepository).delete(bookmarksList);
+    }
+
+    @DisplayName("즐겨찾기 삭제 - 유저 인증 실패")
+    @Test
+    void deleteBookmarkFail_User() {
+        // given
+        User owner = createUser();
+        setId(owner, 1L);
+
+        User attacker = createUser();
+        setId(attacker, 2L); // 다른 유저
+
+        Bookmark bookmark = createBookmark(owner);
+        setId(bookmark, 10L);
+
+        Brand brand = createBrand();
+        setId(brand, 20L);
+
+        Store store = createStore(brand);
+        setId(store, 30L);
+
+        BookmarksList bookmarksList = createBookmarksList(bookmark, store);
+        setId(bookmarksList, 100L);
+
+        // mock
+        when(bookmarksListRepository.findById(100L)).thenReturn(Optional.of(bookmarksList));
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            userService.deleteBookmark(attacker, 100L);
+        });
+
+        assertEquals(ResultCode.FORBIDDEN, exception.getResultCode());
+        verify(bookmarksListRepository, never()).delete(any());
+    }
+
+    @DisplayName("즐겨찾기 삭제 - 잘못된 북마크 접근으로 인한 실패")
+    @Test
+    void deleteBookmarkFail_NotFound() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        // mock
+        when(bookmarksListRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            userService.deleteBookmark(user, 999L);
+        });
+
+        assertEquals(ResultCode.BOOKMARK_NOT_FOUND, exception.getResultCode());
+        verify(bookmarksListRepository, never()).delete(any());
     }
 
     private User createUser() {
