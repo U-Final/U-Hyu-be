@@ -31,7 +31,12 @@ public enum ResultCode {
     /**
      * 3000번대 (매장 관련)
      */
-    NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 3001,"매장을 찾을 수 없습니다.");
+    NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 3001,"매장을 찾을 수 없습니다."),
+
+    /**
+     * 4000번대 (유저 관련)
+     */
+    USER_ONBOARDING_SUCCESS(HttpStatus.CREATED, 4001, "유저 정보가 성공적으로 저장되었습니다.");
 
 
     private final HttpStatus status;

@@ -17,9 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import org.springframework.security.core.context.SecurityContextHolder;
-import com.ureca.uhyu.domain.auth.dto.CustomOAuth2User;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +27,7 @@ public class UserService {
     private final RecommendationBaseDataRepository recommendationBaseDataRepository;
 
     @Transactional
-    public Long saveOnboardingInfo(UserOnboardingRequest request) {
-
-        Long currentUserId = getCurrentUserId();
-
-        User user = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
+    public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
 
         user.setUserGrade(request.grade());
         user.setUserRole(UserRole.USER); // TMP_USER → USER 변경
@@ -44,14 +36,6 @@ public class UserService {
         saveUserBrandData(user, request.interestedBrands(), DataType.INTEREST);
 
         return user.getId();
-    }
-
-    private Long getCurrentUserId() {
-        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .map(auth -> auth.getPrincipal())
-                .filter(principal -> principal instanceof CustomOAuth2User)
-                .map(principal -> ((CustomOAuth2User) principal).getUserId())
-                .orElseThrow(() -> new GlobalException(ResultCode.UNAUTHORIZED));
     }
 
     public GetUserInfoRes findUserInfo(Long userId) {
