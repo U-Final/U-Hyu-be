@@ -26,7 +26,12 @@ public enum ResultCode {
     REISSUE_SUCCESS(HttpStatus.OK, 2004, "토큰 재발급에 성공했습니다. "),
     LOGOUT_SUCCESS(HttpStatus.OK, 2005, "로그아웃에 성공했습니다."),
     SIGNUP_SUCCESS(HttpStatus.OK, 2006, "회원가입을 위한 추가정보 입력에 성공했습니다."),
-    INVALID_ROLE_IN_TOKEN(HttpStatus.OK, 2007, "token에서 role을 추출할 수 없습니다.");
+    INVALID_ROLE_IN_TOKEN(HttpStatus.OK, 2007, "token에서 role을 추출할 수 없습니다."),
+
+    /**
+     * 3000번대 (매장 관련)
+     */
+    NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 3001,"매장을 찾을 수 없습니다.");
 
 
     private final HttpStatus status;
