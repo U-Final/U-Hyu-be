@@ -42,6 +42,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private Status status;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 10)
     private Grade grade;
 
@@ -51,6 +52,10 @@ public class User extends BaseEntity {
     @Column(length = 20)
     private String age_range;
 
+    @OneToOne
+    @JoinColumn(name = "marker_id")
+    private Marker marker;
+
     public void withdraw() {
         this.status = Status.DELETED;
         this.updatedAt = LocalDateTime.now(); // 업데이트 시간도 갱신
@@ -58,6 +63,15 @@ public class User extends BaseEntity {
 
     public UserRole getUserRole() {
         return role;
+    }
+
+    public void updateUser(
+            String profileImage, String nickname, Grade grade, Marker marker
+    ){
+        this.profileImage = profileImage;
+        this.nickname = nickname;
+        this.grade = grade;
+        this.marker = marker;
     }
 
     public void setUserGrade(Grade grade) {
