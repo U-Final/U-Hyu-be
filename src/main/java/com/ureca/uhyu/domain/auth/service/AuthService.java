@@ -29,7 +29,7 @@ public class AuthService {
         }
 
         // 1. refresh 토큰 삭제
-        tokenRepository.deleteByUserId(userId);
+        tokenRepository.deleteByUser_Id(userId);
 
         // 2. access 토큰 만료
         TokenCookieUtil.expireAccessTokenCookie(response);

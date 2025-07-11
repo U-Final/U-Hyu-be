@@ -22,11 +22,9 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 
     Optional<Token> findByUserId(Long id);
 
-    @Query("SELECT t.refreshToken FROM Token t WHERE t.user.id = :userId")
-    String findRefreshTokenByUserId(@Param("userId") String userId);
+    Long findTokenByUserId(Long userId);
 
-    @Modifying // delete, update 쿼리에서 필수
-    @Transactional // 메서드가 트랜잭션 에서 실행되도록 보장
-    @Query("DELETE FROM Token t WHERE t.user.id =:userId")
-    void deleteByUserId(@Param("userId") Long userId);
+    @Transactional
+    @Modifying
+    void deleteByUser_Id(Long userId);
 }

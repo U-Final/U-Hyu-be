@@ -63,7 +63,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String expiredAccessToken = extractAccessTokenFromCookie(request);
             String userId = jwtTokenProvider.getUserIdFromExpiredToken(expiredAccessToken);
 
-            String refreshToken = tokenRepository.findRefreshTokenByUserId(userId);
+            String refreshToken = tokenRepository.findTokenByUserId(Long.parseLong(userId)).toString();
+            //String refreshToken = tokenRepository.findRefreshTokenByUserId(userId);
 
             if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
                 String roleString = jwtTokenProvider.getRoleFromToken(refreshToken);
