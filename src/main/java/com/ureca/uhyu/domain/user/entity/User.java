@@ -62,22 +62,12 @@ public class User extends BaseEntity {
         return role;
     }
 
-    public void updateProfileImage(String profileImage) {
+    public void updateUser(
+            String profileImage, String nickname, Grade grade, Marker marker
+    ){
         this.profileImage = profileImage;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void updateNickName(String nickname) {
         this.nickname = nickname;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void updateGrade(Grade grade) {
         this.grade = grade;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void updateMarker(Marker marker) {
         this.marker = marker;
     }
 }

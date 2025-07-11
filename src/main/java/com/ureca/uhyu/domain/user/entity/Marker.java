@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Marker extends BaseEntity {
-
-    @Column(length = 250)
-    private String markerImage;
+        // TODO : 마커 로직 확정 후 구현
+//    @Column(length = 250)
+//    private String markerImage;
 }

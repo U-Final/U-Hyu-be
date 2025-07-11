@@ -10,6 +10,7 @@ import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -40,23 +41,20 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
-        if (request.updatedProfileImage() != null) {
-            user.updateProfileImage(request.updatedProfileImage());
-        }
+        String image = (request.updatedProfileImage() != null)?
+                request.updatedProfileImage():user.getProfileImage();
 
-        if (request.updatedNickName() != null) {
-            user.updateNickName(request.updatedNickName());
-        }
+        String nickname = (request.updatedNickName() != null)?
+            request.updatedNickName():user.getNickname();
 
-        if (request.updatedGrade() != null) {
-            user.updateGrade(request.updatedGrade());
-        }
+        Grade grade = (request.updatedGrade() != null)?
+                request.updatedGrade():user.getGrade();
 
-        if (request.markerId() != null) {
-            Marker marker = markerRepository.findById(request.markerId())
-                    .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
-            user.updateMarker(marker);
-        }
+        Marker marker = (request.markerId() != null)?
+            markerRepository.findById(request.markerId())
+                    .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT)):user.getMarker();
+
+        user.updateUser(image, nickname, grade, marker);
 
         if (request.updatedBrandIdList() != null && !request.updatedBrandIdList().isEmpty()) {
             recommendationRepository.deleteByUserAndDataType(user, DataType.INTEREST);

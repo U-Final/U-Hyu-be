@@ -18,7 +18,7 @@ public class RecommendationBaseData extends BaseEntity {
     @Column(nullable = false)
     DataType dataType;
 
-    @ManyToOne
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
 
