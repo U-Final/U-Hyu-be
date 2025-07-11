@@ -65,9 +65,7 @@ public class UserController {
     @Operation(summary = "이메일 중복 확인", description = "신규 유저 이메일 입력 중복 확인")
     @GetMapping("/check-email")
     public CommonResponse<ResultCode> checkEmailDuplicate(@RequestParam String email) {
-        if (userService.isEmailDuplicate(email)) {
-            throw new GlobalException(ResultCode.EMAIL_DUPLICATED);
-        }
+        userService.validateEmailAvailability(email);
         return CommonResponse.success(ResultCode.EMAIL_CHECK_SUCCESS); // true : 중복됨
     }
 }
