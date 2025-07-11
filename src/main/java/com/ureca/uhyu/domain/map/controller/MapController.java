@@ -30,12 +30,24 @@ public class MapController {
         return CommonResponse.success(ResultCode.SUCCESS, mapService.getStoresInRange(lat, lon, radius));
     }
 
-    @Operation(summary = "매장 상세정보 조회", description = "지도 마커를 클릭하면 등급별 혜택/제공 횟수/이용방법")
+    @Operation(summary = "매장 상세정보 조회", description = "지도 마커를 클릭하면 등급별 혜택/제공 횟수/이용방법을 반환")
     @GetMapping("/{storeId}")
     public CommonResponse<StoreDetailRes> getStoreDetail(
             @PathVariable Long storeId,
             @CurrentUser User user
     ){
         return CommonResponse.success(ResultCode.SUCCESS, mapService.getStoreDetail(storeId,user));
+    }
+
+    @Operation(summary = "브랜드 검색", description = "브랜드 이름으로 검색 시 반경 내 해당 브랜드 목록 반환")
+    @GetMapping("/brand")
+    public CommonResponse<List<MapRes>> getSearchedStoresInRange(
+            @RequestParam Double lat,
+            @RequestParam Double lon,
+            @RequestParam Double radius,
+            @RequestParam String brandName
+    ) {
+        System.out.println("브랜드명 검색 파라미터: " + brandName);
+        return CommonResponse.success(ResultCode.SUCCESS, mapService.getSearchedStoresInRange(lat, lon, radius, brandName));
     }
 }

@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface StoreRepositoryCustom {
     List<Store> findStoresInRadius(double lat, double lon, double radiusInKm);
+    List<Store> findSearchedStoresInRadius(double lat, double lon, double radiusInKm, String brandName);
 }
