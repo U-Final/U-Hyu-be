@@ -24,6 +24,10 @@ public class Brand extends BaseEntity {
 
     private String logoImage;
 
+    private String usageMethod;
+
+    private String usageLimit;
+
     @Enumerated(EnumType.STRING)
     private StoreType storeType;
 

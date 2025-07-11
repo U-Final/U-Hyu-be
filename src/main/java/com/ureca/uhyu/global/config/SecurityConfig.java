@@ -5,6 +5,7 @@ import com.ureca.uhyu.domain.auth.jwt.JwtAuthenticationFilter;
 import com.ureca.uhyu.domain.auth.jwt.JwtTokenProvider;
 import com.ureca.uhyu.domain.auth.repository.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.ureca.uhyu.domain.auth.repository.TokenRepository;
+import com.ureca.uhyu.domain.auth.service.CustomUserDetailsService;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -39,6 +40,7 @@ public class SecurityConfig {
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService;
     private final TokenService tokenService;
     private final TokenRepository tokenRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
@@ -69,30 +71,18 @@ public class SecurityConfig {
                         FrameOptionsConfig::disable).disable()) // X-Frame-Options 비활성화
                 .sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음
-
-                // request 인증, 인가 설정
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                .authorizeHttpRequests(request ->
+                        request
+                                .requestMatchers( // 인증 없이 접근 허용 : 로그인을 하지 않아도 접근 가능
+                                        new AntPathRequestMatcher("/"),
+                                        new AntPathRequestMatcher("/map/**"),
+                                        new AntPathRequestMatcher("/brand-list/**")
+                                ).permitAll()
+                                // ADMIN 권한 필요 : user role이 admin인 사용자만 접근 가능
+                                .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+                                // 그 외는 인증 필요 : 로그인한 사용자만 접근 가능
+                                .anyRequest().authenticated()
                 )
-
-
-                /**
-                 * 개발을 위해 모든 요청에 대해 인증인가를 하지 않고 허용
-                 */
-//                .authorizeHttpRequests(request ->
-//                                // 인증 없이 접근 가능
-//                        request
-//                                // 인증 없이 접근 허용 : 로그인을 하지 않아도 접근 가능
-//                                .requestMatchers(
-//                                        new AntPathRequestMatcher("/"),
-//                                        new AntPathRequestMatcher("/map/**"),
-//                                        new AntPathRequestMatcher("/brand-list/**")
-//                                ).permitAll()
-//                                // ADMIN 권한 필요 : user role이 admin인 사용자만 접근 가
-//                                .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
-//                                // 그 외는 인증 필요 : 로그인한 사용자만 접근 가능
-//                                .anyRequest().authenticated()
-//                )
 
                 // oauth2 설정
                 .oauth2Login(oauth2 -> oauth2
@@ -105,8 +95,8 @@ public class SecurityConfig {
                 )
 
                 // jwt 관련 설정
-                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository),
-                        OAuth2LoginAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository, customUserDetailsService),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
