@@ -10,6 +10,7 @@ import com.ureca.uhyu.global.annotation.CurrentUser;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
 import com.ureca.uhyu.global.util.TokenCookieUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ public class AuthController {
     private final AuthService authService;
     private final TokenRepository tokenRepository;
 
+    @Operation(summary = "로그아웃", description = "로그인한 사용자의 Access Token 만료, Refresh Token 삭제, Security Context 유저 정보 삭제")
     @PostMapping("/logout")
     public CommonResponse<ResultCode> logout(HttpServletRequest request, HttpServletResponse response,
                                              @CurrentUser User user) {
