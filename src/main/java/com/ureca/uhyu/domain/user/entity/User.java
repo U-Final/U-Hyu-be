@@ -49,6 +49,9 @@ public class User extends BaseEntity {
     @Column(length = 500)
     private String profileImage;
 
+    @Column(length = 20)
+    private String age_range;
+
     @OneToOne
     @JoinColumn(name = "marker_id")
     private Marker marker;
@@ -69,5 +72,13 @@ public class User extends BaseEntity {
         this.nickname = nickname;
         this.grade = grade;
         this.marker = marker;
+    }
+
+    public void setUserGrade(Grade grade) {
+        this.grade = grade;
+    }
+
+    public void setUserRole(UserRole role) {
+        this.role = role;
     }
 }

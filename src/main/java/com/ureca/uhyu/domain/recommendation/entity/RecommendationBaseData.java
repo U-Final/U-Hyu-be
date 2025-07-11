@@ -15,14 +15,15 @@ import lombok.*;
 @Builder
 public class RecommendationBaseData extends BaseEntity {
 
-    @Column(nullable = false)
-    private DataType dataType;
-
-    @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DataType dataType;
 }
