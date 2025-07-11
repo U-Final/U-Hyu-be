@@ -63,9 +63,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private String resolveRedirectUrl(HttpServletRequest request, boolean isNewUser) {
         if (isNewUser) {
-            return "http://localhost:5173/";
+            return "http://localhost:5173/user/extra-info";
         } else {
-            return "http://localhost:3000/home/recommend";
+            return "http://localhost:5173";
         }
     }
 }
