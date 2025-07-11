@@ -10,6 +10,7 @@ import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.service.UserService;
 import com.ureca.uhyu.global.annotation.CurrentUser;
+import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,6 +61,13 @@ public class UserController {
              @RequestBody UpdateUserReq request
     ) {
         return CommonResponse.success(userService.updateUserInfo(user, request));
+    }
+
+    @Operation(summary = "이메일 중복 확인", description = "신규 유저 이메일 입력 중복 확인")
+    @GetMapping("/check-email")
+    public CommonResponse<ResultCode> checkEmailDuplicate(@RequestParam String email) {
+        userService.validateEmailAvailability(email);
+        return CommonResponse.success(ResultCode.EMAIL_CHECK_SUCCESS); // true : 중복됨
     }
 
 
