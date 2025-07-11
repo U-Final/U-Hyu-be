@@ -16,13 +16,13 @@ import lombok.*;
 public class RecommendationBaseData extends BaseEntity {
 
     @Column(nullable = false)
-    DataType dataType;
+    private DataType dataType;
 
     @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "brand_id")
-    Brand brand;
+    private Brand brand;
 }
