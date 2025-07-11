@@ -63,68 +63,68 @@ class MapServiceImplTest {
             .build();
 
     @Nested
-    class GetStoresInRangeTest {
+    class GetFilteredStoresTest {
 
         @Test
-        void shouldReturnMappedStoreList() {
-            // given
+        void shouldReturnStoresWithCategoryAndBrandFilters() {
             double lat = 37.5;
             double lon = 127.0;
             double radius = 1000.0;
+            String categoryName = "카페";
+            String brandName = "이디야";
 
-            when(storeRepositoryCustom.findStoresInRadius(lat, lon, radius))
+            when(storeRepositoryCustom.findStoresByFilters(lat, lon, radius, categoryName, brandName))
                     .thenReturn(List.of(store));
 
-            // when
-            List<MapRes> result = mapService.getStoresInRange(lat, lon, radius);
+            List<MapRes> result = mapService.getFilteredStores(lat, lon, radius, categoryName, brandName);
 
-            // then
             assertThat(result).hasSize(1);
             assertThat(result.get(0).storeName()).isEqualTo("이디야 판교점");
         }
-    }
-
-    @Nested
-    class GetCategoryStoreInRangeTest {
 
         @Test
-        void shouldReturnStoresMatchingCategoryInRange() {
-            // given
+        void shouldReturnStoresWithOnlyCategoryFilter() {
             double lat = 37.5;
             double lon = 127.0;
             double radius = 1000.0;
-            String categoryName = "커피";
+            String categoryName = "카페";
 
-            when(storeRepositoryCustom.findCategoryStoresInRadius(lat, lon, radius, categoryName))
+            when(storeRepositoryCustom.findStoresByFilters(lat, lon, radius, categoryName, null))
                     .thenReturn(List.of(store));
 
-            // when
-            List<MapRes> result = mapService.getCategoryStoreInRange(lat, lon, radius, categoryName);
+            List<MapRes> result = mapService.getFilteredStores(lat, lon, radius, categoryName, null);
 
-            // then
             assertThat(result).hasSize(1);
             assertThat(result.get(0).storeName()).isEqualTo("이디야 판교점");
         }
-    }
-
-    @Nested
-    class GetBrandStoreInRangeTest {
 
         @Test
-        void shouldReturnStoresMatchingBrandInRange() {
-            // given
+        void shouldReturnStoresWithOnlyBrandFilter() {
             double lat = 37.5;
             double lon = 127.0;
             double radius = 1000.0;
-            String brandName = "이디야.";
+            String brandName = "이디야";
 
-            when(storeRepositoryCustom.findSearchedStoresInRadius(lat, lon, radius, brandName))
+            when(storeRepositoryCustom.findStoresByFilters(lat, lon, radius, null, brandName))
                     .thenReturn(List.of(store));
 
-            // when
-            List<MapRes> result = mapService.getSearchedStoresInRange(lat, lon, radius, brandName);
+            List<MapRes> result = mapService.getFilteredStores(lat, lon, radius, null, brandName);
 
-            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).storeName()).isEqualTo("이디야 판교점");
+        }
+
+        @Test
+        void shouldReturnStoresWithoutAnyFilter() {
+            double lat = 37.5;
+            double lon = 127.0;
+            double radius = 1000.0;
+
+            when(storeRepositoryCustom.findStoresByFilters(lat, lon, radius, null, null))
+                    .thenReturn(List.of(store));
+
+            List<MapRes> result = mapService.getFilteredStores(lat, lon, radius, null, null);
+
             assertThat(result).hasSize(1);
             assertThat(result.get(0).storeName()).isEqualTo("이디야 판교점");
         }
@@ -135,7 +135,6 @@ class MapServiceImplTest {
 
         @Test
         void shouldReturnBenefitMatchingUserGrade() {
-            // given
             User user = mock(User.class);
             when(user.getGrade()).thenReturn(Grade.VIP);
 
@@ -146,22 +145,18 @@ class MapServiceImplTest {
                     .build();
 
             brand.setBenefits(List.of(vipBenefit));
-
             when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
 
-            // when
             StoreDetailRes res = mapService.getStoreDetail(1L, user);
 
-            // then
             assertThat(res.benefits().benefitText()).isEqualTo("음료 2잔 무료");
             assertThat(res.usageLimit()).isEqualTo("1일 1회");
         }
 
         @Test
         void shouldReturnGoodBenefitIfNoExactMatch() {
-            // given
             User user = mock(User.class);
-            when(user.getGrade()).thenReturn(Grade.VIP); // fallback 케이스
+            when(user.getGrade()).thenReturn(Grade.VIP);
 
             Benefit goodBenefit = Benefit.builder()
                     .grade(Grade.GOOD)
@@ -170,31 +165,24 @@ class MapServiceImplTest {
                     .build();
 
             brand.setBenefits(List.of(goodBenefit));
-
             when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
 
-            // when
             StoreDetailRes res = mapService.getStoreDetail(1L, user);
 
-            // then
             assertThat(res.benefits().grade()).isEqualTo("GOOD");
             assertThat(res.benefits().benefitText()).isEqualTo("1+1 혜택");
         }
 
         @Test
         void shouldReturnNullIfNoBenefitExists() {
-            // given
             User user = mock(User.class);
             when(user.getGrade()).thenReturn(Grade.VIP);
 
-            brand.setBenefits(List.of()); // 혜택 없음
-
+            brand.setBenefits(List.of());
             when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
 
-            // when
             StoreDetailRes res = mapService.getStoreDetail(1L, user);
 
-            // then
             assertThat(res.benefits()).isNull();
         }
     }
