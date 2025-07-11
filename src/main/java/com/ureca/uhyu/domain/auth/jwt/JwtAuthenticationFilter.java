@@ -48,26 +48,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = extractAccessTokenFromCookie(request);
 
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-
-                log.info("❗ access token 유효");
-
-                String userId = jwtTokenProvider.getUserIdFromToken(accessToken).toString();
+                String userId = jwtTokenProvider.getUserIdFromToken(accessToken);
                 String role = jwtTokenProvider.getRoleFromToken(accessToken);
 
                 if (role == null) {
                     throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
                 }
 
-                log.info("✅ access token 인증 성공 - userId: {}, role: {}", userId, role);
-
                 setAuthenticationContext(request, userId, role);
-
                 filterChain.doFilter(request, response);
                 return;
             }
-
-            log.info("❌ access token 인증 실패 - 재발급 시도");
-            log.info("❗ refresh token 유효성 검사");
 
             String expiredAccessToken = extractAccessTokenFromCookie(request);
             String userId = jwtTokenProvider.getUserIdFromExpiredToken(expiredAccessToken);
@@ -75,8 +66,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String refreshToken = tokenRepository.findRefreshTokenByUserId(userId);
 
             if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-                log.info("✅ 저장된 refresh 토큰 유효 - userId: {}", userId);
-
                 String roleString = jwtTokenProvider.getRoleFromToken(refreshToken);
                 if (roleString == null) {
                     throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
@@ -91,13 +80,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.addCookie(newAccessTokenCookie);
 
                 setAuthenticationContext(request, userId, roleString);
-                log.info("♻️ access token 재발급 완료 - userId: {}", userId);
-
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            log.warn("❌ access + refresh token 모두 유효하지 않음 -> 로그인하지 않은 사용자 : 로그인화면 리다이렉트");
             response.sendRedirect("/login");
             return;
 
