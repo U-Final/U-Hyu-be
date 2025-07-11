@@ -63,24 +63,9 @@ public class UserController {
     }
 
 
-    @Operation(summary = "개인정보 조회", description = "개인정보 조회: 로그인 필요")
+    @Operation(summary = "즐겨찾기 조회", description = "즐겨찾기 목록 조회: 로그인 필요")
     @GetMapping("bookmark/{userId}")
-    public CommonResponse<GetBookmarkRes> getBookmarkList(@PathVariable String userId) {
-        //스웨거 상에서 api 동작 테스트를 해야하는 경우 해당 부분 주석 처리 후 실행할 것
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String currentUserId = (String) authentication.getPrincipal();
-//        String role = authentication.getAuthorities().iterator().next().getAuthority();
-//
-//        // 인가 로직
-//        if (!currentUserId.equals(userId)) {
-//            return CommonResponse.fail(ResultCode.FORBIDDEN, "본인의 정보만 조회할 수 있습니다.");
-//        }
-//
-//        if (!role.equals("ROLE_USER")) {
-//            return CommonResponse.fail(ResultCode.FORBIDDEN, "일반 사용자만 접근 가능합니다.");
-//        }
-
-        // 로직 진행
-        return CommonResponse.success(userService.findBookmarkList(userId));
+    public CommonResponse<GetBookmarkRes> getBookmarkList(@CurrentUser User user) {
+        return CommonResponse.success(userService.findBookmarkList(user));
     }
 }

@@ -110,7 +110,7 @@ public class UserService {
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
     }
 
-    public GetBookmarkRes findBookmarkList(String userId) {
+    public GetBookmarkRes findBookmarkList(User user) {
         return GetBookmarkRes.from();
     }
 }
