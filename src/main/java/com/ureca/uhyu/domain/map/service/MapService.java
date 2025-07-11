@@ -11,4 +11,5 @@ public interface MapService {
     List<MapRes> getStoresInRange(Double lat, Double lon, Double radius);
     StoreDetailRes getStoreDetail(Long storeId, User user);
     List<com.ureca.uhyu.domain.map.dto.response.MapRes> getSearchedStoresInRange(Double lat, Double lon, Double radius, String brandName);
+    List<MapRes> getCategoryStoreInRange(Double lat, Double lon, Double radius, String categoryName);
 }

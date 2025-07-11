@@ -26,7 +26,6 @@ public class MapServiceImpl implements MapService {
 
     @Override
     public List<MapRes> getStoresInRange(Double lat, Double lon, Double radius) {
-
         List<Store> stores = storeRepositoryCustom.findStoresInRadius(lat, lon, radius);
 
         return stores.stream()
@@ -77,6 +76,15 @@ public class MapServiceImpl implements MapService {
     @Override
     public List<MapRes> getSearchedStoresInRange(Double lat, Double lon, Double radius, String brandName) {
         List<Store> stores = storeRepositoryCustom.findSearchedStoresInRadius(lat, lon, radius,brandName);
+
+        return stores.stream()
+                .map(MapRes::from)
+                .toList();
+    }
+
+    @Override
+    public List<MapRes> getCategoryStoreInRange(Double lat, Double lon, Double radius, String categoryName) {
+        List<Store> stores = storeRepositoryCustom.findCategoryStoresInRadius(lat, lon, radius,categoryName);
 
         return stores.stream()
                 .map(MapRes::from)
