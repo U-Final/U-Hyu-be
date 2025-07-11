@@ -47,13 +47,13 @@ public class UserController {
     }
 
     @Operation(summary = "개인정보 조회", description = "개인정보 조회: 로그인 필요")
-    @GetMapping()
+    @GetMapping
     public CommonResponse<GetUserInfoRes> getByUser(@CurrentUser User user) {
         return CommonResponse.success(userService.findUserInfo(user));
     }
 
     @Operation(summary = "개인정보 수정", description = "개인정보 수정: 수정 요청한 값들만 수정")
-    @PatchMapping("")
+    @PatchMapping
     public CommonResponse<UpdateUserRes> updateByUser(
              @CurrentUser User user,
              @RequestBody UpdateUserReq request
