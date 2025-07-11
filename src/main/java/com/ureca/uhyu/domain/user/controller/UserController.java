@@ -1,16 +1,12 @@
 package com.ureca.uhyu.domain.user.controller;
 
-import com.nimbusds.oauth2.sdk.TokenResponse;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
-import com.ureca.uhyu.domain.user.dto.response.UserOnboardingResponse;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
-import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.service.UserService;
 import com.ureca.uhyu.global.annotation.CurrentUser;
-import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,15 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.http.HttpResponse;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
