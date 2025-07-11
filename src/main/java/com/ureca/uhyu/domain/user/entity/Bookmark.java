@@ -4,6 +4,9 @@ import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "bookmark")
 @Getter
@@ -11,4 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Bookmark extends BaseEntity {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

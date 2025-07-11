@@ -7,13 +7,17 @@ import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
-import com.ureca.uhyu.domain.user.dto.response.GetBookmarkRes;
+import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
+import com.ureca.uhyu.domain.user.entity.Bookmark;
+import com.ureca.uhyu.domain.user.entity.BookmarksList;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
+import com.ureca.uhyu.domain.user.repository.BookmarksListRepository;
 import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -32,6 +36,8 @@ public class UserService {
     private final BrandRepository brandRepository;
     private final RecommendationBaseDataRepository recommendationRepository;
     private final MarkerRepository markerRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final BookmarksListRepository bookmarksListRepository;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
@@ -115,7 +121,12 @@ public class UserService {
         }
     }
 
-    public GetBookmarkRes findBookmarkList(User user) {
-        return GetBookmarkRes.from();
+    public List<BookmarkRes> findBookmarkList(User user) {
+        Bookmark bookmark = bookmarkRepository.findByUser(user);
+        List<BookmarksList> bookmarks = bookmarksListRepository.findByBookmark(bookmark);
+
+        return bookmarks.stream()
+                .map(BookmarkRes::from)
+                .toList();
     }
 }

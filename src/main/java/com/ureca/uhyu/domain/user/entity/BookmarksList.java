@@ -1,8 +1,8 @@
 package com.ureca.uhyu.domain.user.entity;
 
+import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.global.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -12,4 +12,11 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class BookmarksList extends BaseEntity {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bookmark_id", nullable = false)
+    private Bookmark bookmark;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 }
