@@ -5,10 +5,15 @@ import com.ureca.uhyu.domain.brand.repository.BrandRepository;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
+import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
+import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
+import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
@@ -24,7 +29,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
-    private final RecommendationBaseDataRepository recommendationBaseDataRepository;
+    private final RecommendationBaseDataRepository recommendationRepository;
+    private final MarkerRepository markerRepository;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
@@ -38,10 +44,46 @@ public class UserService {
         return user.getId();
     }
 
-    public GetUserInfoRes findUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
+    public GetUserInfoRes findUserInfo(User user) {
         return GetUserInfoRes.from(user);
+    }
+
+    @Transactional
+    public UpdateUserRes updateUserInfo(User user, UpdateUserReq request) {
+        String image = (request.updatedProfileImage() != null)?
+                request.updatedProfileImage():user.getProfileImage();
+
+        String nickname = (request.updatedNickName() != null)?
+                request.updatedNickName():user.getNickname();
+
+        Grade grade = (request.updatedGrade() != null)?
+                request.updatedGrade():user.getGrade();
+
+        Marker marker = (request.markerId() != null)?
+                markerRepository.findById(request.markerId())
+                        .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT)):user.getMarker();
+
+        user.updateUser(image, nickname, grade, marker);
+
+        if (request.updatedBrandIdList() != null && !request.updatedBrandIdList().isEmpty()) {
+            recommendationRepository.deleteByUserAndDataType(user, DataType.INTEREST);
+
+            for (Long brandId : request.updatedBrandIdList()) {
+                Brand brand = brandRepository.findById(brandId)
+                        .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
+
+                RecommendationBaseData newInterest = RecommendationBaseData.builder()
+                        .user(user)
+                        .brand(brand)
+                        .dataType(DataType.INTEREST)
+                        .build();
+
+                recommendationRepository.save(newInterest);
+            }
+        }
+
+        User savedUser = userRepository.save(user);
+        return UpdateUserRes.from(savedUser);
     }
 
     private void saveUserBrandData(User user, List<String> brandNames, DataType dataType) {
@@ -59,7 +101,7 @@ public class UserService {
                         .build())
                 .toList();
 
-        recommendationBaseDataRepository.saveAll(dataList);
+        recommendationRepository.saveAll(dataList);
     }
 
     public User getUserById(Long userId) {
