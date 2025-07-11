@@ -73,4 +73,13 @@ public class MapServiceImpl implements MapService {
                 brand.getUsageMethod()
         );
     }
+
+    @Override
+    public List<MapRes> getSearchedStoresInRange(Double lat, Double lon, Double radius, String brandName) {
+        List<Store> stores = storeRepositoryCustom.findSearchedStoresInRadius(lat, lon, radius,brandName);
+
+        return stores.stream()
+                .map(MapRes::from)
+                .toList();
+    }
 }
