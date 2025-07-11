@@ -39,7 +39,7 @@ public class MapController {
         return CommonResponse.success(ResultCode.SUCCESS, mapService.getStoreDetail(storeId,user));
     }
 
-    @Operation(summary = "브랜드 검색", description = "브랜드 이름으로 검색 시 반경 내 해당 브랜드 목록 반환")
+    @Operation(summary = "브랜드 검색", description = "브랜드 이름으로 검색 시 반경 내 해당 브랜드 매장 목록 반환")
     @GetMapping("/brand")
     public CommonResponse<List<MapRes>> getSearchedStoresInRange(
             @RequestParam Double lat,
@@ -47,7 +47,17 @@ public class MapController {
             @RequestParam Double radius,
             @RequestParam String brandName
     ) {
-        System.out.println("브랜드명 검색 파라미터: " + brandName);
         return CommonResponse.success(ResultCode.SUCCESS, mapService.getSearchedStoresInRange(lat, lon, radius, brandName));
+    }
+
+    @Operation(summary = "카테고리 검색", description = "카테고리 검색을 시 반경 내 해당 카테고리 매장 목록 반환")
+    @GetMapping("/category")
+    public CommonResponse<List<MapRes>> getCategoryStoreInRange(
+            @RequestParam Double lat,
+            @RequestParam Double lon,
+            @RequestParam Double radius,
+            @RequestParam String categoryName
+    ){
+        return CommonResponse.success(ResultCode.SUCCESS, mapService.getCategoryStoreInRange(lat, lon, radius, categoryName));
     }
 }

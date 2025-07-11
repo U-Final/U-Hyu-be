@@ -85,6 +85,52 @@ class MapServiceImplTest {
     }
 
     @Nested
+    class GetCategoryStoreInRangeTest {
+
+        @Test
+        void shouldReturnStoresMatchingCategoryInRange() {
+            // given
+            double lat = 37.5;
+            double lon = 127.0;
+            double radius = 1000.0;
+            String categoryName = "커피";
+
+            when(storeRepositoryCustom.findCategoryStoresInRadius(lat, lon, radius, categoryName))
+                    .thenReturn(List.of(store));
+
+            // when
+            List<MapRes> result = mapService.getCategoryStoreInRange(lat, lon, radius, categoryName);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).storeName()).isEqualTo("이디야 판교점");
+        }
+    }
+
+    @Nested
+    class GetBrandStoreInRangeTest {
+
+        @Test
+        void shouldReturnStoresMatchingBrandInRange() {
+            // given
+            double lat = 37.5;
+            double lon = 127.0;
+            double radius = 1000.0;
+            String brandName = "이디야.";
+
+            when(storeRepositoryCustom.findSearchedStoresInRadius(lat, lon, radius, brandName))
+                    .thenReturn(List.of(store));
+
+            // when
+            List<MapRes> result = mapService.getSearchedStoresInRange(lat, lon, radius, brandName);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).storeName()).isEqualTo("이디야 판교점");
+        }
+    }
+
+    @Nested
     class GetStoreDetailTest {
 
         @Test
