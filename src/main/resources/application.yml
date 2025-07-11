@@ -19,6 +19,7 @@ spring:
               - account_email
               - name
               - gender
+              - age_range
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
