@@ -44,17 +44,12 @@ public class UserService {
         return user.getId();
     }
 
-    public GetUserInfoRes findUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
+    public GetUserInfoRes findUserInfo(User user) {
         return GetUserInfoRes.from(user);
     }
 
     @Transactional
-    public UpdateUserRes updateUserInfo(Long userId, UpdateUserReq request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
-
+    public UpdateUserRes updateUserInfo(User user, UpdateUserReq request) {
         String image = (request.updatedProfileImage() != null)?
                 request.updatedProfileImage():user.getProfileImage();
 

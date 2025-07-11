@@ -17,24 +17,20 @@ import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -104,11 +100,8 @@ class UserServiceTest {
         LocalDateTime timeValue = LocalDateTime.now();
         setUpdatedAt(user, timeValue);
 
-        // mocking
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
         // when
-        GetUserInfoRes getUserInfoRes = userService.findUserInfo(user.getId());
+        GetUserInfoRes getUserInfoRes = userService.findUserInfo(user);
 
         // then
         assertEquals("홍길동", getUserInfoRes.userName());
@@ -140,7 +133,6 @@ class UserServiceTest {
         );
 
         // mock
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         Mockito.when(markerRepository.findById(2L)).thenReturn(Optional.of(marker2));
 
         for (Long brandId : request.updatedBrandIdList()) {
@@ -153,7 +145,7 @@ class UserServiceTest {
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        UpdateUserRes updateUserRes = userService.updateUserInfo(1L, request);
+        UpdateUserRes updateUserRes = userService.updateUserInfo(user, request);
 
         // then
         assertEquals(1L, updateUserRes.userId());
@@ -183,12 +175,11 @@ class UserServiceTest {
         );
 
         // mock
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         Mockito.when(markerRepository.findById(invalidMarkerId)).thenReturn(Optional.empty());
 
         // when & then
         GlobalException exception = assertThrows(GlobalException.class, () -> {
-            userService.updateUserInfo(1L, request);
+            userService.updateUserInfo(user, request);
         });
 
         assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
@@ -211,12 +202,11 @@ class UserServiceTest {
         );
 
         // mock
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         Mockito.when(brandRepository.findById(invalidBrandId)).thenReturn(Optional.empty());
 
         // when & then
         GlobalException exception = assertThrows(GlobalException.class, () -> {
-            userService.updateUserInfo(1L, request);
+            userService.updateUserInfo(user, request);
         });
 
         assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
