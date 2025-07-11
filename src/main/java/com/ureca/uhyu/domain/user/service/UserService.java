@@ -108,4 +108,8 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
     }
+
+    public boolean isEmailDuplicate(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
