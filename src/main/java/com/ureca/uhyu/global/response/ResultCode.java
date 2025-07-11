@@ -36,8 +36,9 @@ public enum ResultCode {
     /**
      * 4000번대 (유저 관련)
      */
-    USER_ONBOARDING_SUCCESS(HttpStatus.CREATED, 4001, "유저 정보가 성공적으로 저장되었습니다.");
-
+    USER_ONBOARDING_SUCCESS(HttpStatus.CREATED, 4001, "유저 정보가 성공적으로 저장되었습니다."),
+    EMAIL_CHECK_SUCCESS(HttpStatus.OK, 4002, "사용 가능한 이메일 입니다."),
+    EMAIL_DUPLICATED(HttpStatus.BAD_REQUEST, 4003, "이미 사용중인 이메일입니다.");
 
     private final HttpStatus status;
     private final int code;

@@ -104,8 +104,13 @@ public class UserService {
         recommendationRepository.saveAll(dataList);
     }
 
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
+    public boolean isEmailDuplicate(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public void validateEmailAvailability(String email) {
+        if (isEmailDuplicate(email)) {
+            throw new GlobalException(ResultCode.EMAIL_DUPLICATED);
+        }
     }
 }
