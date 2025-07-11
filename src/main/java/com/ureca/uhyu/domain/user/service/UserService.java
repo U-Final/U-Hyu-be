@@ -94,12 +94,6 @@ public class UserService {
             throw new GlobalException(ResultCode.INVALID_INPUT); // 일부 브랜드가 존재하지 않음
         }
 
-    public GetBookmarkRes findBookmarkList(String userId) {
-
-        return GetBookmarkRes.from();
-    }
-}
-
         List<RecommendationBaseData> dataList = brands.stream()
                 .map(brand -> RecommendationBaseData.builder()
                         .user(user)
@@ -114,5 +108,9 @@ public class UserService {
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
+    }
+
+    public GetBookmarkRes findBookmarkList(String userId) {
+        return GetBookmarkRes.from();
     }
 }
