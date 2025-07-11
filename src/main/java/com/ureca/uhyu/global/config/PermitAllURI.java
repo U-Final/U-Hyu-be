@@ -3,14 +3,12 @@ package com.ureca.uhyu.global.config;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Getter
 public enum PermitAllURI {
     OAUTH2("/oauth2"),
     LOGIN("/login"),
-    ROOT("/"),
-    MAP("/map"),
+    //MAP("/map"),
     BRAND_LIST("/brand-list"),
     HEALTH("/actuator/health");
 
@@ -35,5 +33,4 @@ public enum PermitAllURI {
      *                 .toList();
      *     }
      */
-
 }
