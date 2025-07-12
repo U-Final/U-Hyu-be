@@ -1,6 +1,9 @@
 package com.ureca.uhyu.domain.store.repository;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.uhyu.domain.brand.entity.QBenefit;
 import com.ureca.uhyu.domain.brand.entity.QBrand;
@@ -14,7 +17,8 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class StoreRepositoryCustomImpl implements StoreRepositoryCustom{
+public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
+
     private final JPAQueryFactory queryFactory;
 
     private final QStore store = QStore.store;
@@ -22,7 +26,7 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom{
     private final QCategory category = QCategory.category;
     private final QBenefit benefit = QBenefit.benefit;
 
-    private com.querydsl.core.types.Predicate withinRadius(double lat, double lon, double radius) {
+    private Predicate withinRadius(double lat, double lon, double radius) {
         return Expressions.booleanTemplate(
                 "cast(ST_DWithin(" +
                         "ST_Transform({0}, 3857), " +
@@ -32,11 +36,7 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom{
         );
     }
 
-    private JPAQueryFactory baseQuery() {
-        return queryFactory;
-    }
-
-    private com.querydsl.jpa.impl.JPAQuery<Store> baseStoreQuery() {
+    private JPAQuery<Store> baseStoreQuery() {
         return queryFactory
                 .selectFrom(store)
                 .leftJoin(store.brand, brand).fetchJoin()
@@ -46,29 +46,21 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom{
     }
 
     @Override
-    public List<Store> findStoresInRadius(double lat, double lon, double radius) {
-        return baseStoreQuery()
-                .where(withinRadius(lat, lon, radius))
-                .fetch();
-    }
+    public List<Store> findStoresByFilters(Double lat, Double lon, Double radius, String categoryName, String brandName) {
+        BooleanBuilder builder = new BooleanBuilder();
 
-    @Override
-    public List<Store> findSearchedStoresInRadius(double lat, double lon, double radius, String brandName) {
-        return baseStoreQuery()
-                .where(
-                        withinRadius(lat, lon, radius),
-                        brand.brandName.containsIgnoreCase(brandName)
-                )
-                .fetch();
-    }
+        builder.and(withinRadius(lat, lon, radius));
 
-    @Override
-    public List<Store> findCategoryStoresInRadius(Double lat, Double lon, Double radius, String categoryName) {
+        if (categoryName != null && !categoryName.isBlank()) {
+            builder.and(category.categoryName.containsIgnoreCase(categoryName));
+        }
+
+        if (brandName != null && !brandName.isBlank()) {
+            builder.and(brand.brandName.containsIgnoreCase(brandName));
+        }
+
         return baseStoreQuery()
-                .where(
-                        withinRadius(lat, lon, radius),
-                        category.categoryName.containsIgnoreCase(categoryName)
-                )
+                .where(builder)
                 .fetch();
     }
 }

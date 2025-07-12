@@ -25,14 +25,12 @@ public class MapServiceImpl implements MapService {
     private final StoreRepository storeRepository;
 
     @Override
-    public List<MapRes> getStoresInRange(Double lat, Double lon, Double radius) {
-        List<Store> stores = storeRepositoryCustom.findStoresInRadius(lat, lon, radius);
-
+    public List<MapRes> getFilteredStores(Double lat, Double lon, Double radius, String categoryName, String brandName) {
+        List<Store> stores = storeRepositoryCustom.findStoresByFilters(lat, lon, radius, categoryName, brandName);
         return stores.stream()
                 .map(MapRes::from)
                 .toList();
     }
-
 
     @Override
     public StoreDetailRes getStoreDetail(Long storeId, User user) {
@@ -71,23 +69,5 @@ public class MapServiceImpl implements MapService {
                 brand.getUsageLimit(),
                 brand.getUsageMethod()
         );
-    }
-
-    @Override
-    public List<MapRes> getSearchedStoresInRange(Double lat, Double lon, Double radius, String brandName) {
-        List<Store> stores = storeRepositoryCustom.findSearchedStoresInRadius(lat, lon, radius,brandName);
-
-        return stores.stream()
-                .map(MapRes::from)
-                .toList();
-    }
-
-    @Override
-    public List<MapRes> getCategoryStoreInRange(Double lat, Double lon, Double radius, String categoryName) {
-        List<Store> stores = storeRepositoryCustom.findCategoryStoresInRadius(lat, lon, radius,categoryName);
-
-        return stores.stream()
-                .map(MapRes::from)
-                .toList();
     }
 }
