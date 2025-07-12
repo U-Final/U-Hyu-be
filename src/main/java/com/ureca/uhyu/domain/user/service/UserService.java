@@ -9,10 +9,12 @@ import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
+import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -31,6 +33,7 @@ public class UserService {
     private final BrandRepository brandRepository;
     private final RecommendationBaseDataRepository recommendationRepository;
     private final MarkerRepository markerRepository;
+    private final ActionLogsRepository actionLogsRepository;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
@@ -112,5 +115,10 @@ public class UserService {
         if (isEmailDuplicate(email)) {
             throw new GlobalException(ResultCode.EMAIL_DUPLICATED);
         }
+    }
+
+    public UserStatisticsRes findUserStatisticsRes(User user) {
+        
+        return UserStatisticsRes.from();
     }
 }
