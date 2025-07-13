@@ -234,8 +234,8 @@ class UserServiceTest {
         User user = createUser();
         setId(user, 1L);
 
-        Bookmark bookmark = createBookmark(user);
-        setId(bookmark, 10L);
+        BookmarkList bookmarkList = createBookmarkList(user);
+        setId(bookmarkList, 10L);
 
         Brand brand = createBrand();
         setId(brand, 20L);
@@ -243,17 +243,17 @@ class UserServiceTest {
         Store store = createStore(brand);
         setId(store, 30L);
 
-        BookmarksList bookmarksList = createBookmarksList(bookmark, store);
-        setId(bookmarksList, 100L);
+        Bookmark bookmark = createBookmark(bookmarkList, store);
+        setId(bookmark, 100L);
 
         // mock
-        when(bookmarksListRepository.findById(100L)).thenReturn(Optional.of(bookmarksList));
+        when(bookmarkRepository.findById(100L)).thenReturn(Optional.of(bookmark));
 
         // when
         userService.deleteBookmark(user, 100L);
 
         // then
-        verify(bookmarksListRepository).delete(bookmarksList);
+        verify(bookmarkRepository).delete(bookmark);
     }
 
     @DisplayName("즐겨찾기 삭제 - 유저 인증 실패")
@@ -266,8 +266,8 @@ class UserServiceTest {
         User attacker = createUser();
         setId(attacker, 2L); // 다른 유저
 
-        Bookmark bookmark = createBookmark(owner);
-        setId(bookmark, 10L);
+        BookmarkList bookmarkList = createBookmarkList(owner);
+        setId(bookmarkList, 10L);
 
         Brand brand = createBrand();
         setId(brand, 20L);
@@ -275,11 +275,11 @@ class UserServiceTest {
         Store store = createStore(brand);
         setId(store, 30L);
 
-        BookmarksList bookmarksList = createBookmarksList(bookmark, store);
-        setId(bookmarksList, 100L);
+        Bookmark bookmark = createBookmark(bookmarkList, store);
+        setId(bookmark, 100L);
 
         // mock
-        when(bookmarksListRepository.findById(100L)).thenReturn(Optional.of(bookmarksList));
+        when(bookmarkRepository.findById(100L)).thenReturn(Optional.of(bookmark));
 
         // when & then
         GlobalException exception = assertThrows(GlobalException.class, () -> {
@@ -287,7 +287,7 @@ class UserServiceTest {
         });
 
         assertEquals(ResultCode.FORBIDDEN, exception.getResultCode());
-        verify(bookmarksListRepository, never()).delete(any());
+        verify(bookmarkRepository, never()).delete(any());
     }
 
     @DisplayName("즐겨찾기 삭제 - 잘못된 북마크 접근으로 인한 실패")
@@ -298,7 +298,7 @@ class UserServiceTest {
         setId(user, 1L);
 
         // mock
-        when(bookmarksListRepository.findById(999L)).thenReturn(Optional.empty());
+        when(bookmarkRepository.findById(999L)).thenReturn(Optional.empty());
 
         // when & then
         GlobalException exception = assertThrows(GlobalException.class, () -> {
@@ -306,7 +306,7 @@ class UserServiceTest {
         });
 
         assertEquals(ResultCode.BOOKMARK_NOT_FOUND, exception.getResultCode());
-        verify(bookmarksListRepository, never()).delete(any());
+        verify(bookmarkRepository, never()).delete(any());
     }
 
     private User createUser() {

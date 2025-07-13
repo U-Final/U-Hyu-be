@@ -132,13 +132,13 @@ public class UserService {
 
     @Transactional
     public void deleteBookmark(User user, Long bookmarkId) {
-        BookmarksList bookmark = bookmarksListRepository.findById(bookmarkId)
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new GlobalException(ResultCode.BOOKMARK_NOT_FOUND));
 
-        if (!bookmark.getBookmark().getUser().getId().equals(user.getId())) {
+        if (!bookmark.getBookmarkList().getUser().getId().equals(user.getId())) {
             throw new GlobalException(ResultCode.FORBIDDEN);
         }
 
-        bookmarksListRepository.delete(bookmark);
+        bookmarkRepository.delete(bookmark);
     }
 }
