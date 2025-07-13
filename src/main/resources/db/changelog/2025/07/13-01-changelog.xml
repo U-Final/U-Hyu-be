@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1752383828650-6" author="c">
+        <dropForeignKeyConstraint baseTableName="bookmark" constraintName="fk_bookmark_on_user"/>
+    </changeSet>
+    <changeSet id="1752383828650-7" author="c">
+        <dropForeignKeyConstraint baseTableName="bookmarks_list" constraintName="fk_bookmarks_list_on_bookmark"/>
+    </changeSet>
+    <changeSet id="1752383828650-8" author="c">
+        <dropForeignKeyConstraint baseTableName="bookmarks_list" constraintName="fk_bookmarks_list_on_store"/>
+    </changeSet>
+    <changeSet id="1752383828650-1" author="c">
+        <createTable tableName="bookmark_list">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_bookmark_list"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1752383828650-2" author="c">
+        <createTable tableName="bookmarks">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_bookmarks"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="bookmark_list_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="store_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1752383828650-3" author="c">
+        <addForeignKeyConstraint baseColumnNames="bookmark_list_id" baseTableName="bookmarks"
+                                 constraintName="FK_BOOKMARKS_ON_BOOKMARK_LIST" referencedColumnNames="id"
+                                 referencedTableName="bookmark_list"/>
+    </changeSet>
+    <changeSet id="1752383828650-4" author="c">
+        <addForeignKeyConstraint baseColumnNames="store_id" baseTableName="bookmarks"
+                                 constraintName="FK_BOOKMARKS_ON_STORE" referencedColumnNames="id"
+                                 referencedTableName="store"/>
+    </changeSet>
+    <changeSet id="1752383828650-5" author="c">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="bookmark_list"
+                                 constraintName="FK_BOOKMARK_LIST_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1752383828650-9" author="c">
+        <dropTable cascadeConstraints="true" tableName="bookmark"/>
+    </changeSet>
+    <changeSet id="1752383828650-10" author="c">
+        <dropTable cascadeConstraints="true" tableName="bookmarks_list"/>
+    </changeSet>
+
+</databaseChangeLog>

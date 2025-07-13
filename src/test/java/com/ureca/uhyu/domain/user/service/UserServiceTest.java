@@ -13,14 +13,14 @@ import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
-import com.ureca.uhyu.domain.user.entity.BookmarksList;
+import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.enums.Status;
+import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
-import com.ureca.uhyu.domain.user.repository.BookmarksListRepository;
 import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.enums.Grade;
@@ -58,10 +58,10 @@ class UserServiceTest {
     private RecommendationBaseDataRepository recommendationRepository;
 
     @Mock
-    private BookmarkRepository bookmarkRepository;
+    private BookmarkListRepository bookmarkListRepository;
 
     @Mock
-    private BookmarksListRepository bookmarksListRepository;
+    private BookmarkRepository bookmarkRepository;
 
     @InjectMocks
     private UserService userService;
@@ -194,8 +194,8 @@ class UserServiceTest {
         User user = createUser();
         setId(user, 1L);
 
-        Bookmark bookmark = createBookmark(user);
-        setId(bookmark, 10L);
+        BookmarkList bookmarkList = createBookmarkList(user);
+        setId(bookmarkList, 10L);
 
         Brand brand = createBrand();
         setId(brand, 20L);
@@ -203,14 +203,14 @@ class UserServiceTest {
         Store store = createStore(brand);
         setId(store, 30L);
 
-        BookmarksList bookmarksList = createBookmarksList(bookmark, store);
-        setId(bookmarksList, 100L);
+        Bookmark bookmark = createBookmark(bookmarkList, store);
+        setId(bookmark, 100L);
 
-        List<BookmarksList> bookmarks = List.of(bookmarksList);
+        List<Bookmark> bookmarks = List.of(bookmark);
 
         // mock
-        when(bookmarkRepository.findByUser(user)).thenReturn(bookmark);
-        when(bookmarksListRepository.findByBookmark(bookmark)).thenReturn(bookmarks);
+        when(bookmarkListRepository.findByUser(user)).thenReturn(bookmarkList);
+        when(bookmarkRepository.findByBookmarkList(bookmarkList)).thenReturn(bookmarks);
 
         // when
         List<BookmarkRes> result = userService.findBookmarkList(user);
@@ -219,7 +219,7 @@ class UserServiceTest {
         assertEquals(1, result.size());
 
         BookmarkRes res = result.get(0);
-        assertEquals(100L, res.bookmarksListId());
+        assertEquals(100L, res.bookmarkId());
         assertEquals(30L, res.storeId());
         assertEquals("logo.png", res.logoImage());
         assertEquals("스토어A", res.storeName());
@@ -330,11 +330,10 @@ class UserServiceTest {
         return user;
     }
 
-    private Bookmark createBookmark(User user) {
-        Bookmark bookmark = Bookmark.builder()
+    private BookmarkList createBookmarkList(User user) {
+        return BookmarkList.builder()
                 .user(user)
                 .build();
-        return bookmark;
     }
 
     private Brand createBrand() {
@@ -370,12 +369,12 @@ class UserServiceTest {
         return store;
     }
 
-    private BookmarksList createBookmarksList(Bookmark bookmark, Store store) {
-        BookmarksList bookmarksList = BookmarksList.builder()
-                .bookmark(bookmark)
+    private Bookmark createBookmark(BookmarkList bookmarkList, Store store) {
+        Bookmark bookmark = Bookmark.builder()
+                .bookmarkList(bookmarkList)
                 .store(store)
                 .build();
-        return bookmarksList;
+        return bookmark;
     }
 
     private void setId(Object target, Long idValue) {

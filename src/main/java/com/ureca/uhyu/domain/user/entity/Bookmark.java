@@ -1,11 +1,9 @@
 package com.ureca.uhyu.domain.user.entity;
 
+import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "bookmark")
@@ -15,6 +13,10 @@ import java.util.List;
 @Builder
 public class Bookmark extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "bookmark_list_id", nullable = false)
+    private BookmarkList bookmarkList;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 }
