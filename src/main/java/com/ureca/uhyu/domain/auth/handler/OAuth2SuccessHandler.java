@@ -50,19 +50,20 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         log.info("토큰 발급");
 
         Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), userRole);
+
         tokenService.createRefreshToken(user);
 
         response.addCookie(accessCookie);
 
-        // 신규/기존 유저에 따라 redirect
-        String redirectUrl = resolveRedirectUrl(request, isNewUser);
+        // ~~신규/기존 유저에 따라 redirect~~ -> 유저 role에 따라 Redirect
+        String redirectUrl = resolveRedirectUrl(userRole);
 
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", redirectUrl);
     }
 
-    private String resolveRedirectUrl(HttpServletRequest request, boolean isNewUser) {
-        if (isNewUser) {
+    private String resolveRedirectUrl(UserRole userRole) {
+        if (userRole == UserRole.TMP_USER) {
             return "http://localhost:5173/user/extra-info";
         } else {
             return "http://localhost:5173";
