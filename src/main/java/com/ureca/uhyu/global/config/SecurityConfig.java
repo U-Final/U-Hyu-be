@@ -18,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
@@ -26,8 +28,15 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Slf4j
 @Configuration
@@ -96,7 +105,29 @@ public class SecurityConfig {
 
                 // jwt 관련 설정
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository, customUserDetailsService),
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling ->
+                    exceptionHandling
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/extra-info");
+                        })
+                )
+                .addFilterAfter(new OncePerRequestFilter() {
+                    @Override
+                    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+                            throws ServletException, IOException {
+                        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                        if (authentication != null && authentication.isAuthenticated() && authentication.getAuthorities().stream()
+                                .anyMatch(a -> a.getAuthority().equals("ROLE_TMP_USER"))) {
+                            String uri = request.getRequestURI();
+                            if (!uri.equals("/extra-info") && !uri.startsWith("/static/")) {
+                                response.sendRedirect("/extra-info");
+                                return;
+                            }
+                        }
+                        filterChain.doFilter(request, response);
+                    }
+                }, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -110,7 +141,7 @@ public class SecurityConfig {
                         .allowedOrigins("http://localhost:3000")
 //                                "https://ixiu.site",
 //                                "https://www.ixiu.site")
-                        .allowedMethods("*")
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowCredentials(true);
             }
         };

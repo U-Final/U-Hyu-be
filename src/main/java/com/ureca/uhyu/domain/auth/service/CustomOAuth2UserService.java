@@ -81,13 +81,5 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .role(UserRole.TMP_USER)
                 .build());
     }
-
-    public void expireCookie(String name, HttpServletResponse response) {
-        Cookie cookie = new Cookie(name, null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // 즉시 만료
-        response.addCookie(cookie);
-    }
 }
+
