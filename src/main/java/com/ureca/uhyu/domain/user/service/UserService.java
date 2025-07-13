@@ -11,13 +11,13 @@ import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
-import com.ureca.uhyu.domain.user.entity.BookmarksList;
+import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
-import com.ureca.uhyu.domain.user.repository.BookmarksListRepository;
 import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -36,8 +36,8 @@ public class UserService {
     private final BrandRepository brandRepository;
     private final RecommendationBaseDataRepository recommendationRepository;
     private final MarkerRepository markerRepository;
+    private final BookmarkListRepository bookmarkListRepository;
     private final BookmarkRepository bookmarkRepository;
-    private final BookmarksListRepository bookmarksListRepository;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
@@ -122,8 +122,8 @@ public class UserService {
     }
 
     public List<BookmarkRes> findBookmarkList(User user) {
-        Bookmark bookmark = bookmarkRepository.findByUser(user);
-        List<BookmarksList> bookmarks = bookmarksListRepository.findByBookmark(bookmark);
+        BookmarkList bookmarkList = bookmarkListRepository.findByUser(user);
+        List<Bookmark> bookmarks = bookmarkRepository.findByBookmarkList(bookmarkList);
 
         return bookmarks.stream()
                 .map(BookmarkRes::from)

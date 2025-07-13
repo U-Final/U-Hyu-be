@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1752384183132-4" author="c">
+        <dropForeignKeyConstraint baseTableName="bookmarks" constraintName="fk_bookmarks_on_bookmark_list"/>
+    </changeSet>
+    <changeSet id="1752384183132-5" author="c">
+        <dropForeignKeyConstraint baseTableName="bookmarks" constraintName="fk_bookmarks_on_store"/>
+    </changeSet>
+    <changeSet id="1752384183132-1" author="c">
+        <createTable tableName="bookmark">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_bookmark"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="bookmark_list_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="store_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1752384183132-2" author="c">
+        <addForeignKeyConstraint baseColumnNames="bookmark_list_id" baseTableName="bookmark"
+                                 constraintName="FK_BOOKMARK_ON_BOOKMARK_LIST" referencedColumnNames="id"
+                                 referencedTableName="bookmark_list"/>
+    </changeSet>
+    <changeSet id="1752384183132-3" author="c">
+        <addForeignKeyConstraint baseColumnNames="store_id" baseTableName="bookmark"
+                                 constraintName="FK_BOOKMARK_ON_STORE" referencedColumnNames="id"
+                                 referencedTableName="store"/>
+    </changeSet>
+    <changeSet id="1752384183132-6" author="c">
+        <dropTable cascadeConstraints="true" tableName="bookmarks"/>
+    </changeSet>
+
+</databaseChangeLog>
