@@ -85,13 +85,19 @@ public class SecurityConfig {
                                 .requestMatchers( // 인증 없이 접근 허용 : 로그인을 하지 않아도 접근 가능
                                         new AntPathRequestMatcher("/"),
                                         new AntPathRequestMatcher("/map/**"),
-                                        new AntPathRequestMatcher("/brand-list/**")
+                                        new AntPathRequestMatcher("/brand-list/**"),
+                                        new AntPathRequestMatcher("/swagger-ui/**"),
+                                        new AntPathRequestMatcher("/v3/api-docs/**")
                                 ).permitAll()
                                 // ADMIN 권한 필요 : user role이 admin인 사용자만 접근 가능
                                 .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
                                 // 그 외는 인증 필요 : 로그인한 사용자만 접근 가능
                                 .anyRequest().authenticated()
                 )
+
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll()
+//                )
 
                 // oauth2 설정
                 .oauth2Login(oauth2 -> oauth2
