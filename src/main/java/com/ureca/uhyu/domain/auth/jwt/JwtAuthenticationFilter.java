@@ -46,15 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
             String accessToken = extractAccessTokenFromCookie(request);
-            if (accessToken == null) {
-                log.warn("🚫 access_token 쿠키가 요청에 포함되어 있지 않습니다.");
-            } else {
-                log.info("📦 들어온 access_token: {}", accessToken);
-            }
 
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-
-                log.info("✅ access_token 유효함");
 
                 String userId = jwtTokenProvider.getUserIdFromToken(accessToken);
                 String role = jwtTokenProvider.getRoleFromToken(accessToken);
@@ -69,15 +62,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             String expiredAccessToken = extractAccessTokenFromCookie(request);
-            log.warn("📛 access_token이 유효하지 않거나 만료됨. expiredAccessToken 재시도: {}", expiredAccessToken);
 
             String userId = jwtTokenProvider.getUserIdFromExpiredToken(expiredAccessToken);
 
             String refreshToken = tokenRepository.findTokenByUserId(Long.parseLong(userId))
                 .map(token -> token.getRefreshToken())
                 .orElse(null);
-
-            log.info("📦 추출된 refresh 토큰: {}", refreshToken);
 
             if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
                 String roleString = jwtTokenProvider.getRoleFromToken(refreshToken);
@@ -87,7 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 UserRole userRole = UserRole.valueOf(roleString);
                 String newAccessToken = jwtTokenProvider.generateToken(userId, userRole);
-                log.info("🔁 새 access_token 발급 완료: {}", newAccessToken);
+
                 Cookie newAccessTokenCookie = new Cookie("access_token", newAccessToken);
                 newAccessTokenCookie.setHttpOnly(true);
                 newAccessTokenCookie.setPath("/");
