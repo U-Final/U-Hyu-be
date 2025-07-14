@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Repository
@@ -22,7 +23,7 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 
     Optional<Token> findByUserId(Long id);
 
-    Long findTokenByUserId(Long userId);
+    Optional<Token> findTokenByUserId(Long userId);
 
     @Transactional
     @Modifying

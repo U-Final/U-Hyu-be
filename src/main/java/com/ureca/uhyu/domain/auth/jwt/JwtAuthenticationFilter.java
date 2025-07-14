@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = extractAccessTokenFromCookie(request);
 
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+
                 String userId = jwtTokenProvider.getUserIdFromToken(accessToken);
                 String role = jwtTokenProvider.getRoleFromToken(accessToken);
 
@@ -61,10 +62,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             String expiredAccessToken = extractAccessTokenFromCookie(request);
+
             String userId = jwtTokenProvider.getUserIdFromExpiredToken(expiredAccessToken);
 
-            String refreshToken = tokenRepository.findTokenByUserId(Long.parseLong(userId)).toString();
-            //String refreshToken = tokenRepository.findRefreshTokenByUserId(userId);
+            String refreshToken = tokenRepository.findTokenByUserId(Long.parseLong(userId))
+                .map(token -> token.getRefreshToken())
+                .orElse(null);
 
             if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
                 String roleString = jwtTokenProvider.getRoleFromToken(refreshToken);
@@ -74,6 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 UserRole userRole = UserRole.valueOf(roleString);
                 String newAccessToken = jwtTokenProvider.generateToken(userId, userRole);
+
                 Cookie newAccessTokenCookie = new Cookie("access_token", newAccessToken);
                 newAccessTokenCookie.setHttpOnly(true);
                 newAccessTokenCookie.setPath("/");
