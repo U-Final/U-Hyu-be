@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -140,7 +139,7 @@ public class UserService {
         bookmarkRepository.delete(bookmark);
     }
 
-    public UserStatisticsRes findUserStatisticsRes(User user) {
+    public UserStatisticsRes findUserStatistics(User user) {
         Integer discountMoney = historyRepository.findDiscountMoneyThisMonth(user);;
         List<Brand> brands = actionLogsRepository.findTop3ClickedBrands(user);
         List<BestBrandListRes> bestBrandListRes = brands.stream()

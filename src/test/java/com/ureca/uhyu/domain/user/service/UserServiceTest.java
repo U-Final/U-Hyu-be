@@ -12,6 +12,7 @@ import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
+import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.Marker;
@@ -19,10 +20,7 @@ import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.enums.Status;
-import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
-import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
-import com.ureca.uhyu.domain.user.repository.MarkerRepository;
-import com.ureca.uhyu.domain.user.repository.UserRepository;
+import com.ureca.uhyu.domain.user.repository.*;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
@@ -62,6 +60,12 @@ class UserServiceTest {
 
     @Mock
     private BookmarkRepository bookmarkRepository;
+
+    @Mock
+    private HistoryRepository historyRepository;
+
+    @Mock
+    private ActionLogsRepository actionLogsRepository;
 
     @InjectMocks
     private UserService userService;
@@ -197,7 +201,7 @@ class UserServiceTest {
         BookmarkList bookmarkList = createBookmarkList(user);
         setId(bookmarkList, 10L);
 
-        Brand brand = createBrand();
+        Brand brand = createBrand("브랜드A", "logo.png");
         setId(brand, 20L);
 
         Store store = createStore(brand);
@@ -237,7 +241,7 @@ class UserServiceTest {
         BookmarkList bookmarkList = createBookmarkList(user);
         setId(bookmarkList, 10L);
 
-        Brand brand = createBrand();
+        Brand brand = createBrand("브랜드A", "logo.png");
         setId(brand, 20L);
 
         Store store = createStore(brand);
@@ -269,7 +273,7 @@ class UserServiceTest {
         BookmarkList bookmarkList = createBookmarkList(owner);
         setId(bookmarkList, 10L);
 
-        Brand brand = createBrand();
+        Brand brand = createBrand("브랜드A", "logo.png");
         setId(brand, 20L);
 
         Store store = createStore(brand);
@@ -309,6 +313,51 @@ class UserServiceTest {
         verify(bookmarkRepository, never()).delete(any());
     }
 
+    @DisplayName("사용자 활동 내역 조회")
+    @Test
+    void findUserStatistics() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        Integer discountMoney = 12345;
+
+        Brand brand1 = createBrand("브랜드A", "logo1.png");
+        Brand brand2 = createBrand("브랜드B", "logo2.png");
+        Brand brand3 = createBrand("브랜드C", "logo3.png");
+        Brand brand4 = createBrand("브랜드D", "logo4.png");
+        setId(brand1, 1L);
+        setId(brand2, 2L);
+        setId(brand3, 3L);
+        setId(brand4, 4L);
+
+        List<Brand> topBrands = List.of(brand2, brand4, brand1);
+
+        // mock
+        when(historyRepository.findDiscountMoneyThisMonth(user)).thenReturn(discountMoney);
+        when(actionLogsRepository.findTop3ClickedBrands(user)).thenReturn(topBrands);
+
+        // when
+        UserStatisticsRes result = userService.findUserStatistics(user);
+
+        // then
+        assertEquals(discountMoney, result.discountMoney());
+
+        assertEquals(3, result.bestBrandList().size());
+
+        assertEquals(2, result.bestBrandList().get(0).bestBrandId());
+        assertEquals("브랜드B", result.bestBrandList().get(0).bestBrandName());
+        assertEquals("logo2.png", result.bestBrandList().get(0).bestBrandImage());
+
+        assertEquals(4, result.bestBrandList().get(1).bestBrandId());
+        assertEquals("브랜드D", result.bestBrandList().get(1).bestBrandName());
+        assertEquals("logo4.png", result.bestBrandList().get(1).bestBrandImage());
+
+        assertEquals(1, result.bestBrandList().get(2).bestBrandId());
+        assertEquals("브랜드A", result.bestBrandList().get(2).bestBrandName());
+        assertEquals("logo1.png", result.bestBrandList().get(2).bestBrandImage());
+    }
+
     private User createUser() {
         Marker marker = Marker.builder().markerImage("marker.jpg").build();
         setId(marker, 1L);
@@ -336,7 +385,7 @@ class UserServiceTest {
                 .build();
     }
 
-    private Brand createBrand() {
+    private Brand createBrand(String name, String image) {
         Category category = Category.builder()
                 .categoryName("카테고리A")
                 .build();
@@ -349,8 +398,8 @@ class UserServiceTest {
 
         Brand brand = Brand.builder()
                 .category(category)
-                .brandName("브랜드A")
-                .logoImage("logo.png")
+                .brandName(name)
+                .logoImage(image)
                 .usageMethod("모바일 바코드 제시")
                 .usageLimit("1일 1회")
                 .storeType(StoreType.OFFLINE)
