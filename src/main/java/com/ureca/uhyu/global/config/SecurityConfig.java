@@ -120,7 +120,7 @@ public class SecurityConfig {
                         if (authentication != null && authentication.isAuthenticated() && authentication.getAuthorities().stream()
                                 .anyMatch(a -> a.getAuthority().equals("ROLE_TMP_USER"))) {
                             String uri = request.getRequestURI();
-                            if (!uri.equals("/user/extra-info") && !uri.startsWith("/static/")) {
+                            if (!uri.equals("/user/extra-info") && !uri.startsWith("/static/") && !uri.equals("/user/check-email")) {
                                 response.sendRedirect("/user/extra-info");
                                 return;
                             }

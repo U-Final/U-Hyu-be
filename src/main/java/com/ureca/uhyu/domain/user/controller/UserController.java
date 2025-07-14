@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.user.controller;
 
+import com.ureca.uhyu.domain.auth.dto.UserEmailCheckRequest;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
@@ -46,7 +47,7 @@ public class UserController {
 
         response.addCookie(accessCookie);
 
-        return CommonResponse.success(ResultCode.USER_ONBOARDING_SUCCESS);
+        return CommonResponse.success(ResultCode.USER_ONBOARDING_SUCCESS, null);
     }
 
     @Operation(summary = "개인정보 조회", description = "개인정보 조회: 로그인 필요")
@@ -65,10 +66,10 @@ public class UserController {
     }
 
     @Operation(summary = "이메일 중복 확인", description = "신규 유저 이메일 입력 중복 확인")
-    @GetMapping("/check-email")
-    public CommonResponse<ResultCode> checkEmailDuplicate(@RequestParam String email) {
-        userService.validateEmailAvailability(email);
-        return CommonResponse.success(ResultCode.EMAIL_CHECK_SUCCESS); // true : 중복됨
+    @PostMapping("/check-email")
+    public CommonResponse<ResultCode> checkEmailDuplicate(@RequestBody UserEmailCheckRequest request) {
+        userService.validateEmailAvailability(request.email());
+        return CommonResponse.success(ResultCode.EMAIL_CHECK_SUCCESS, null); // true : 중복됨
     }
 
     @Operation(summary = "즐겨찾기 조회", description = "즐겨찾기 목록 조회")

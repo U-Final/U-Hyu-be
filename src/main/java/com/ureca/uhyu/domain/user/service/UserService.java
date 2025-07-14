@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -43,8 +44,6 @@ public class UserService {
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
-
-        log.info("~~~ saveOnboardingInfo");
 
         user.setUserGrade(request.grade());
         user.setUserRole(UserRole.USER); // TMP_USER → USER 변경
