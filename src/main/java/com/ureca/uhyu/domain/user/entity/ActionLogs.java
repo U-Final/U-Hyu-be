@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.user.entity;
 
+import com.ureca.uhyu.domain.user.enums.ActionType;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,14 +13,15 @@ import lombok.*;
 @Builder
 public class ActionLogs extends BaseEntity {
 
-    // TODO : erd에 관해 질문 사항이 있어 회의 후 구현(행동 타입 왜 이넘 아닌지 / 카테고리 id는 어디갔는지)
+    // TODO : 일단 erd 다이어그램에 맞춰 구현 후 추천 기능 구현하며 수정 사항 있을 시 반영할 예정
+    @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    String actionType;
+    ActionType actionType;
 
     @Column(name = "store_id", nullable = true)
     Long storeId;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }

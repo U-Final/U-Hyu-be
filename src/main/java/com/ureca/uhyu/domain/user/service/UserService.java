@@ -7,21 +7,11 @@ import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
-import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
-import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
-import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
-import com.ureca.uhyu.domain.user.entity.Bookmark;
-import com.ureca.uhyu.domain.user.entity.BookmarkList;
-import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
-import com.ureca.uhyu.domain.user.entity.Marker;
-import com.ureca.uhyu.domain.user.entity.User;
+import com.ureca.uhyu.domain.user.dto.response.*;
+import com.ureca.uhyu.domain.user.entity.*;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
-import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
-import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
-import com.ureca.uhyu.domain.user.repository.ActionLogsRepository;
-import com.ureca.uhyu.domain.user.repository.MarkerRepository;
-import com.ureca.uhyu.domain.user.repository.UserRepository;
+import com.ureca.uhyu.domain.user.repository.*;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +30,7 @@ public class UserService {
     private final MarkerRepository markerRepository;
     private final BookmarkListRepository bookmarkListRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final HistoryRepository historyRepository;
     private final ActionLogsRepository actionLogsRepository;
 
     @Transactional
@@ -146,7 +137,11 @@ public class UserService {
     }
 
     public UserStatisticsRes findUserStatisticsRes(User user) {
-
-        return UserStatisticsRes.from();
+        Integer discountMoney = historyRepository.findDiscountMoneyThisMonth(user);;
+        List<Brand> brands = actionLogsRepository.findTop3ClickedBrands(user);
+        List<BestBrandListRes> bestBrandListRes = brands.stream()
+                .map(BestBrandListRes::from)
+                .toList();
+        return UserStatisticsRes.from(discountMoney, bestBrandListRes);
     }
 }
