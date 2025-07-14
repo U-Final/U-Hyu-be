@@ -47,7 +47,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         UserRole userRole = customOAuth2User.getUserRole();
         Boolean isNewUser = customOAuth2User.isNewUser();
 
-        log.info("토큰 발급");
+        log.info("~~ 토큰 발급 ~~");
 
         Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), userRole);
 
@@ -56,17 +56,29 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(accessCookie);
 
         // ~~신규/기존 유저에 따라 redirect~~ -> 유저 role에 따라 Redirect
-        String redirectUrl = resolveRedirectUrl(userRole);
+        String redirectUrl = resolveRedirectUrl(request, userRole);
 
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", redirectUrl);
     }
 
-    private String resolveRedirectUrl(UserRole userRole) {
+    private String resolveRedirectUrl(HttpServletRequest request, UserRole userRole) {
+
         if (userRole == UserRole.TMP_USER) {
             return "http://localhost:5173/user/extra-info";
         } else {
             return "http://localhost:5173";
         }
+
+//        String host = request.getHeader("host");
+//        String frontBaseUrl = (host != null && host.contains("localhost"))
+//                ? "http://localhost:3000"
+//                : "http://localhost:5173";
+//
+//        if (userRole == UserRole.TMP_USER) {
+//            return frontBaseUrl + "/user/extra-info";
+//        } else {
+//            return frontBaseUrl;
+//        }
     }
 }

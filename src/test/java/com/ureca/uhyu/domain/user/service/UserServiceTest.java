@@ -209,7 +209,7 @@ class UserServiceTest {
         List<Bookmark> bookmarks = List.of(bookmark);
 
         // mock
-        when(bookmarkListRepository.findByUser(user)).thenReturn(bookmarkList);
+        when(bookmarkListRepository.findByUser(user)).thenReturn(Optional.of(bookmarkList));
         when(bookmarkRepository.findByBookmarkList(bookmarkList)).thenReturn(bookmarks);
 
         // when

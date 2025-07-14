@@ -3,13 +3,18 @@ package com.ureca.uhyu.domain.map.service;
 import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
+import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.store.repository.StoreRepository;
 import com.ureca.uhyu.domain.store.repository.StoreRepositoryCustom;
+import com.ureca.uhyu.domain.user.entity.Bookmark;
+import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Grade;
+import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +43,12 @@ class MapServiceImplTest {
 
     @InjectMocks
     private MapServiceImpl mapService;
+
+    @Mock
+    private BookmarkRepository bookmarkRepository;
+
+    @Mock
+    private BookmarkListRepository bookmarkListRepository;
 
     private final GeometryFactory geometryFactory = new GeometryFactory();
     private final Point dummyPoint = geometryFactory.createPoint(new Coordinate(127.0, 37.5));
@@ -184,6 +195,63 @@ class MapServiceImplTest {
             StoreDetailRes res = mapService.getStoreDetail(1L, user);
 
             assertThat(res.benefits()).isNull();
+        }
+
+        @Test
+        void shouldIncludeFavoriteInfoInStoreDetail() {
+            User user = mock(User.class);
+            when(user.getGrade()).thenReturn(Grade.VIP);
+
+            Benefit vipBenefit = Benefit.builder()
+                    .grade(Grade.VIP)
+                    .description("VIP 혜택")
+                    .brand(brand)
+                    .build();
+
+            brand.setBenefits(List.of(vipBenefit));
+            when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
+            when(bookmarkRepository.existsByBookmarkListUserAndStore(user, store)).thenReturn(true);
+            when(bookmarkRepository.countByStore(store)).thenReturn(42);
+
+            StoreDetailRes res = mapService.getStoreDetail(1L, user);
+
+            assertThat(res.isFavorite()).isTrue();
+            assertThat(res.favoriteCount()).isEqualTo(42);
+        }
+    }
+
+    @Nested
+    class ToggleBookmarkTest {
+
+        @Test
+        void shouldToggleBookmark_addIfNotExists() {
+            User user = mock(User.class);
+            BookmarkList bookmarkList = BookmarkList.builder().user(user).build();
+
+            when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
+            when(bookmarkListRepository.findByUser(user)).thenReturn(Optional.of(bookmarkList));
+            when(bookmarkRepository.findByBookmarkListAndStore(bookmarkList, store)).thenReturn(Optional.empty());
+
+            MapBookmarkRes res = mapService.toggleBookmark(user, 1L);
+
+            assertThat(res.storeId()).isEqualTo(1L);
+            assertThat(res.isBookmarked()).isTrue(); // 추가된 상태
+        }
+
+        @Test
+        void shouldToggleBookmark_removeIfExists() {
+            User user = mock(User.class);
+            BookmarkList bookmarkList = BookmarkList.builder().user(user).build();
+            Bookmark bookmark = Bookmark.builder().bookmarkList(bookmarkList).store(store).build();
+
+            when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
+            when(bookmarkListRepository.findByUser(user)).thenReturn(Optional.of(bookmarkList));
+            when(bookmarkRepository.findByBookmarkListAndStore(bookmarkList, store)).thenReturn(Optional.of(bookmark));
+
+            MapBookmarkRes res = mapService.toggleBookmark(user, 1L);
+
+            assertThat(res.storeId()).isEqualTo(1L);
+            assertThat(res.isBookmarked()).isFalse(); // 삭제된 상태
         }
     }
 }

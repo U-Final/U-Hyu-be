@@ -8,13 +8,11 @@ public record StoreDetailRes(
         @Schema(description = "매장명")
         String storeName,
 
-        /** TODO 추후 즐겨찾기 관련 로직 구현 이후 추가
-         * @Schema(description = "즐겨찾기 여부")
-         * boolean isFavorite,
-         *
-         * @Schema(description = "즐겨찾기 수")
-         * int favoriteCount,
-        */
+        @Schema(description = "즐겨찾기 여부")
+        boolean isFavorite,
+
+        @Schema(description = "즐겨찾기 수")
+        int favoriteCount,
 
         @Schema(description = "선택된 혜택 (등급별 1개)")
         BenefitDetail benefits,

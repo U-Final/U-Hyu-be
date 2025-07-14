@@ -15,11 +15,14 @@ import com.ureca.uhyu.domain.user.repository.*;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -109,14 +112,15 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public void validateEmailAvailability(String email) {
-        if (isEmailDuplicate(email)) {
+    public void validateEmailAvailability(User currentUser, String email) {
+        if (!currentUser.getEmail().equals(email) && isEmailDuplicate(email)) {
             throw new GlobalException(ResultCode.EMAIL_DUPLICATED);
         }
     }
 
     public List<BookmarkRes> findBookmarkList(User user) {
-        BookmarkList bookmarkList = bookmarkListRepository.findByUser(user);
+        BookmarkList bookmarkList = bookmarkListRepository.findByUser(user)
+                .orElseThrow(() -> new GlobalException(ResultCode.BOOKMARK_LIST_NOT_FOUND));
         List<Bookmark> bookmarks = bookmarkRepository.findByBookmarkList(bookmarkList);
 
         return bookmarks.stream()

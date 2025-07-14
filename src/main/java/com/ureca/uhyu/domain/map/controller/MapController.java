@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.map.controller;
 
+import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
 import com.ureca.uhyu.domain.map.service.MapService;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
@@ -20,6 +21,7 @@ public class MapController {
 
     private final MapService mapService;
 
+    @Operation(summary = "지도 매장 겁색", description = "브랜드명 검색, 필터링, 기본 조회 API")
     @GetMapping("/stores")
     public CommonResponse<List<MapRes>> getFilteredStores(
             @RequestParam Double lat,
@@ -38,5 +40,14 @@ public class MapController {
             @CurrentUser User user
     ){
         return CommonResponse.success(ResultCode.SUCCESS, mapService.getStoreDetail(storeId,user));
+    }
+
+    @Operation(summary = "매장 즐겨찾기 토글", description = "매장 상세정보에서 즐겨찾기 토글 버튼 API")
+    @PostMapping("/{storeId}")
+    public CommonResponse<MapBookmarkRes> toggleBookmark(
+            @PathVariable Long storeId,
+            @CurrentUser User user
+    ) {
+        return CommonResponse.success(ResultCode.SUCCESS, mapService.toggleBookmark(user, storeId));
     }
 }
