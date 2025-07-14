@@ -118,8 +118,8 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public void validateEmailAvailability(String email) {
-        if (isEmailDuplicate(email)) {
+    public void validateEmailAvailability(User currentUser, String email) {
+        if (!currentUser.getEmail().equals(email) && isEmailDuplicate(email)) {
             throw new GlobalException(ResultCode.EMAIL_DUPLICATED);
         }
     }
