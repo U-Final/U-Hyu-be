@@ -76,4 +76,11 @@ public class UserController {
     public CommonResponse<List<BookmarkRes>> getBookmarkList(@CurrentUser User user) {
         return CommonResponse.success(userService.findBookmarkList(user));
     }
+
+    @Operation(summary = "즐겨찾기 삭제", description = "즐겨찾기 목록 중 1개 삭제")
+    @DeleteMapping("/bookmark/{bookmark_id}")
+    public CommonResponse<ResultCode> deleteBookmark(@CurrentUser User user, @PathVariable Long bookmark_id) {
+        userService.deleteBookmark(user, bookmark_id);
+        return CommonResponse.success(ResultCode.BOOKMARK_DELETE_SUCCESS);
+    }
 }

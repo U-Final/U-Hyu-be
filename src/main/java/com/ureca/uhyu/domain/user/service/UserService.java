@@ -129,4 +129,16 @@ public class UserService {
                 .map(BookmarkRes::from)
                 .toList();
     }
+
+    @Transactional
+    public void deleteBookmark(User user, Long bookmarkId) {
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+                .orElseThrow(() -> new GlobalException(ResultCode.BOOKMARK_NOT_FOUND));
+
+        if (!bookmark.getBookmarkList().getUser().getId().equals(user.getId())) {
+            throw new GlobalException(ResultCode.FORBIDDEN);
+        }
+
+        bookmarkRepository.delete(bookmark);
+    }
 }
