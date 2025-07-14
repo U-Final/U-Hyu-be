@@ -48,14 +48,11 @@ public class MapServiceImpl implements MapService {
         Brand brand = store.getBrand();
         Grade userGrade = user.getGrade();
 
-        List<Benefit> benefits = brand.getBenefits();
-
-        // 1. 유저 등급과 일치하는 혜택 먼저 찾기
+        // 등급별 혜택 조회
         Optional<Benefit> matchingBenefit = brand.getBenefits().stream()
                 .filter(b -> b.getGrade() == userGrade)
                 .findFirst();
 
-        // 2. 없으면 GOOD 혜택 fallback
         Benefit selected = matchingBenefit.orElseGet(() ->
                 brand.getBenefits().stream()
                         .filter(b -> b.getGrade() == Grade.GOOD)
@@ -71,8 +68,14 @@ public class MapServiceImpl implements MapService {
             );
         }
 
+        // 🔽 즐겨찾기 관련 정보 조회
+        boolean isFavorite = bookmarkRepository.existsByBookmarkListUserAndStore(user, store);
+        int favoriteCount = bookmarkRepository.countByStore(store);
+
         return new StoreDetailRes(
                 store.getName(),
+                isFavorite,
+                favoriteCount,
                 benefitDetail,
                 brand.getUsageLimit(),
                 brand.getUsageMethod()

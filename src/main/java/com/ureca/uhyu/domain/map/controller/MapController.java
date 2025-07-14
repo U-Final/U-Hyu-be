@@ -21,6 +21,7 @@ public class MapController {
 
     private final MapService mapService;
 
+    @Operation(summary = "지도 매장 겁색", description = "브랜드명 검색, 필터링, 기본 조회 API")
     @GetMapping("/stores")
     public CommonResponse<List<MapRes>> getFilteredStores(
             @RequestParam Double lat,
