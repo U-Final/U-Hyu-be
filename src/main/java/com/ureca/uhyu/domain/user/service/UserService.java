@@ -7,13 +7,18 @@ import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
+import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
+import com.ureca.uhyu.domain.user.entity.Bookmark;
+import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
 import com.ureca.uhyu.domain.user.repository.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
@@ -33,6 +38,8 @@ public class UserService {
     private final BrandRepository brandRepository;
     private final RecommendationBaseDataRepository recommendationRepository;
     private final MarkerRepository markerRepository;
+    private final BookmarkListRepository bookmarkListRepository;
+    private final BookmarkRepository bookmarkRepository;
     private final ActionLogsRepository actionLogsRepository;
 
     @Transactional
@@ -117,8 +124,29 @@ public class UserService {
         }
     }
 
+    public List<BookmarkRes> findBookmarkList(User user) {
+        BookmarkList bookmarkList = bookmarkListRepository.findByUser(user);
+        List<Bookmark> bookmarks = bookmarkRepository.findByBookmarkList(bookmarkList);
+
+        return bookmarks.stream()
+                .map(BookmarkRes::from)
+                .toList();
+    }
+
+    @Transactional
+    public void deleteBookmark(User user, Long bookmarkId) {
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+                .orElseThrow(() -> new GlobalException(ResultCode.BOOKMARK_NOT_FOUND));
+
+        if (!bookmark.getBookmarkList().getUser().getId().equals(user.getId())) {
+            throw new GlobalException(ResultCode.FORBIDDEN);
+        }
+
+        bookmarkRepository.delete(bookmark);
+    }
+
     public UserStatisticsRes findUserStatisticsRes(User user) {
-        
+
         return UserStatisticsRes.from();
     }
 }
