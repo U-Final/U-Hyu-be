@@ -3,13 +3,13 @@ package com.ureca.uhyu.domain.user.controller;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
+import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.service.UserService;
 import com.ureca.uhyu.global.annotation.CurrentUser;
-import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +18,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -67,5 +69,11 @@ public class UserController {
     public CommonResponse<ResultCode> checkEmailDuplicate(@RequestParam String email) {
         userService.validateEmailAvailability(email);
         return CommonResponse.success(ResultCode.EMAIL_CHECK_SUCCESS); // true : 중복됨
+    }
+
+    @Operation(summary = "즐겨찾기 조회", description = "즐겨찾기 목록 조회")
+    @GetMapping("/bookmark")
+    public CommonResponse<List<BookmarkRes>> getBookmarkList(@CurrentUser User user) {
+        return CommonResponse.success(userService.findBookmarkList(user));
     }
 }

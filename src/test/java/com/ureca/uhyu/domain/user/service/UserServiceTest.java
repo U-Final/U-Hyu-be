@@ -1,17 +1,26 @@
 package com.ureca.uhyu.domain.user.service;
 
+import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
+import com.ureca.uhyu.domain.brand.entity.Category;
+import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
+import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
+import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
+import com.ureca.uhyu.domain.user.entity.Bookmark;
+import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.enums.Status;
+import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
 import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.enums.Grade;
@@ -31,6 +40,7 @@ import java.util.Optional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -47,49 +57,14 @@ class UserServiceTest {
     @Mock
     private RecommendationBaseDataRepository recommendationRepository;
 
+    @Mock
+    private BookmarkListRepository bookmarkListRepository;
+
+    @Mock
+    private BookmarkRepository bookmarkRepository;
+
     @InjectMocks
     private UserService userService;
-
-    private User createUser() {
-        Marker marker = Marker.builder().markerImage("marker.jpg").build();
-        setId(marker, 1L);
-
-        User user = User.builder()
-                .userName("홍길동")
-                .kakaoId(456465L)
-                .email("asdad@kakao.com")
-                .age((byte) 32)
-                .gender(Gender.MALE)
-                .role(UserRole.TMP_USER)
-                .status(Status.ACTIVE)
-                .grade(Grade.GOOD)
-                .profileImage("asdsad.png")
-                .nickname("nick")
-                .marker(marker)
-                .build();
-        setId(user, 1L);
-        return user;
-    }
-
-    private void setId(Object target, Long idValue) {
-        try {
-            Field idField = target.getClass().getSuperclass().getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(target, idValue);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void setUpdatedAt(Object target, LocalDateTime timeValue) {
-        try {
-            Field idField = target.getClass().getSuperclass().getDeclaredField("updatedAt");
-            idField.setAccessible(true);
-            idField.set(target, timeValue);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @DisplayName("개인정보 조회")
     @Test
@@ -133,15 +108,15 @@ class UserServiceTest {
         );
 
         // mock
-        Mockito.when(markerRepository.findById(2L)).thenReturn(Optional.of(marker2));
+        when(markerRepository.findById(2L)).thenReturn(Optional.of(marker2));
 
         for (Long brandId : request.updatedBrandIdList()) {
             Brand brand = Brand.builder().brandName("브랜드" + brandId).build();
             setId(brand, brandId);
-            Mockito.when(brandRepository.findById(brandId)).thenReturn(Optional.of(brand));
+            when(brandRepository.findById(brandId)).thenReturn(Optional.of(brand));
         }
 
-        Mockito.when(userRepository.save(Mockito.any(User.class)))
+        when(userRepository.save(Mockito.any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
@@ -175,7 +150,7 @@ class UserServiceTest {
         );
 
         // mock
-        Mockito.when(markerRepository.findById(invalidMarkerId)).thenReturn(Optional.empty());
+        when(markerRepository.findById(invalidMarkerId)).thenReturn(Optional.empty());
 
         // when & then
         GlobalException exception = assertThrows(GlobalException.class, () -> {
@@ -202,7 +177,7 @@ class UserServiceTest {
         );
 
         // mock
-        Mockito.when(brandRepository.findById(invalidBrandId)).thenReturn(Optional.empty());
+        when(brandRepository.findById(invalidBrandId)).thenReturn(Optional.empty());
 
         // when & then
         GlobalException exception = assertThrows(GlobalException.class, () -> {
@@ -210,5 +185,133 @@ class UserServiceTest {
         });
 
         assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
+    }
+
+    @DisplayName("즐겨찾기 목록 조회 - 성공")
+    @Test
+    void findBookmarkList() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        BookmarkList bookmarkList = createBookmarkList(user);
+        setId(bookmarkList, 10L);
+
+        Brand brand = createBrand();
+        setId(brand, 20L);
+
+        Store store = createStore(brand);
+        setId(store, 30L);
+
+        Bookmark bookmark = createBookmark(bookmarkList, store);
+        setId(bookmark, 100L);
+
+        List<Bookmark> bookmarks = List.of(bookmark);
+
+        // mock
+        when(bookmarkListRepository.findByUser(user)).thenReturn(bookmarkList);
+        when(bookmarkRepository.findByBookmarkList(bookmarkList)).thenReturn(bookmarks);
+
+        // when
+        List<BookmarkRes> result = userService.findBookmarkList(user);
+
+        // then
+        assertEquals(1, result.size());
+
+        BookmarkRes res = result.get(0);
+        assertEquals(100L, res.bookmarkId());
+        assertEquals(30L, res.storeId());
+        assertEquals("logo.png", res.logoImage());
+        assertEquals("스토어A", res.storeName());
+        assertEquals("서울시 마포구", res.addressDetail());
+        assertNull(res.benefit());  // TODO 로직 결정 후 benefit 부분 테스트 코드 수정 예정
+    }
+
+    private User createUser() {
+        Marker marker = Marker.builder().markerImage("marker.jpg").build();
+        setId(marker, 1L);
+
+        User user = User.builder()
+                .userName("홍길동")
+                .kakaoId(456465L)
+                .email("asdad@kakao.com")
+                .age((byte) 32)
+                .gender(Gender.MALE)
+                .role(UserRole.TMP_USER)
+                .status(Status.ACTIVE)
+                .grade(Grade.GOOD)
+                .profileImage("asdsad.png")
+                .nickname("nick")
+                .marker(marker)
+                .build();
+
+        return user;
+    }
+
+    private BookmarkList createBookmarkList(User user) {
+        return BookmarkList.builder()
+                .user(user)
+                .build();
+    }
+
+    private Brand createBrand() {
+        Category category = Category.builder()
+                .categoryName("카테고리A")
+                .build();
+        setId(category, 1L);
+
+        Benefit benefit = Benefit.builder()
+                .description("혜택1")
+                .build();
+        setId(benefit, 2L);
+
+        Brand brand = Brand.builder()
+                .category(category)
+                .brandName("브랜드A")
+                .logoImage("logo.png")
+                .usageMethod("모바일 바코드 제시")
+                .usageLimit("1일 1회")
+                .storeType(StoreType.OFFLINE)
+                .benefits(List.of(benefit))
+                .build();
+        return brand;
+    }
+
+    private Store createStore(Brand brand) {
+        Store store = Store.builder()
+                .name("스토어A")
+                .addrDetail("서울시 마포구")
+                .geom(null)  // 필요시 값 넣어두기
+                .brand(brand)
+                .build();
+        return store;
+    }
+
+    private Bookmark createBookmark(BookmarkList bookmarkList, Store store) {
+        Bookmark bookmark = Bookmark.builder()
+                .bookmarkList(bookmarkList)
+                .store(store)
+                .build();
+        return bookmark;
+    }
+
+    private void setId(Object target, Long idValue) {
+        try {
+            Field idField = target.getClass().getSuperclass().getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(target, idValue);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setUpdatedAt(Object target, LocalDateTime timeValue) {
+        try {
+            Field idField = target.getClass().getSuperclass().getDeclaredField("updatedAt");
+            idField.setAccessible(true);
+            idField.set(target, timeValue);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

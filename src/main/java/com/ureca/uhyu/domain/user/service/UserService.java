@@ -7,12 +7,17 @@ import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
+import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
+import com.ureca.uhyu.domain.user.entity.Bookmark;
+import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
 import com.ureca.uhyu.domain.user.repository.MarkerRepository;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -31,6 +36,8 @@ public class UserService {
     private final BrandRepository brandRepository;
     private final RecommendationBaseDataRepository recommendationRepository;
     private final MarkerRepository markerRepository;
+    private final BookmarkListRepository bookmarkListRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
@@ -112,5 +119,14 @@ public class UserService {
         if (isEmailDuplicate(email)) {
             throw new GlobalException(ResultCode.EMAIL_DUPLICATED);
         }
+    }
+
+    public List<BookmarkRes> findBookmarkList(User user) {
+        BookmarkList bookmarkList = bookmarkListRepository.findByUser(user);
+        List<Bookmark> bookmarks = bookmarkRepository.findByBookmarkList(bookmarkList);
+
+        return bookmarks.stream()
+                .map(BookmarkRes::from)
+                .toList();
     }
 }
