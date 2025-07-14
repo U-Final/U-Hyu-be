@@ -23,11 +23,13 @@ import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -41,6 +43,8 @@ public class UserService {
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
+
+        log.info("~~~ saveOnboardingInfo");
 
         user.setUserGrade(request.grade());
         user.setUserRole(UserRole.USER); // TMP_USER → USER 변경

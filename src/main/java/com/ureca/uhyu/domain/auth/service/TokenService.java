@@ -8,6 +8,7 @@ import com.ureca.uhyu.domain.user.enums.UserRole;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenService {
@@ -48,6 +50,7 @@ public class TokenService {
 
     // Access 토큰 쿠키 생성
     public Cookie createAccessTokenCookie(String userId, UserRole role) {
+        log.info("access 토큰 쿠키 생성");
         String accessToken = jwtTokenProvider.generateToken(userId, role);
         return buildHttpOnlyCookie("access_token", accessToken, jwtTokenProvider.getAccessTokenExp());
     }
@@ -56,6 +59,7 @@ public class TokenService {
     public void createRefreshToken(User user) {
         String refreshToken = jwtTokenProvider.generateToken(
                 String.valueOf(user.getId()), user.getUserRole());
+        log.info("refresh 토큰 저장");
         saveOrUpdateRefreshToken(user, refreshToken);
     }
 

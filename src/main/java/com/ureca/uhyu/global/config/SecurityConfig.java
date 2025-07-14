@@ -109,7 +109,7 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling ->
                     exceptionHandling
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendRedirect("/extra-info");
+                            response.sendRedirect("/user/extra-info");
                         })
                 )
                 .addFilterAfter(new OncePerRequestFilter() {
@@ -120,8 +120,8 @@ public class SecurityConfig {
                         if (authentication != null && authentication.isAuthenticated() && authentication.getAuthorities().stream()
                                 .anyMatch(a -> a.getAuthority().equals("ROLE_TMP_USER"))) {
                             String uri = request.getRequestURI();
-                            if (!uri.equals("/extra-info") && !uri.startsWith("/static/")) {
-                                response.sendRedirect("/extra-info");
+                            if (!uri.equals("/user/extra-info") && !uri.startsWith("/static/")) {
+                                response.sendRedirect("/user/extra-info");
                                 return;
                             }
                         }
@@ -138,7 +138,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")
+                        .allowedOrigins("http://localhost:3000", "http://localhost:5173")
 //                                "https://ixiu.site",
 //                                "https://www.ixiu.site")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
