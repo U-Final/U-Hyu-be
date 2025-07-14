@@ -122,7 +122,8 @@ public class UserService {
     }
 
     public List<BookmarkRes> findBookmarkList(User user) {
-        BookmarkList bookmarkList = bookmarkListRepository.findByUser(user);
+        BookmarkList bookmarkList = bookmarkListRepository.findByUser(user)
+                .orElseThrow(() -> new GlobalException(ResultCode.BOOKMARK_LIST_NOT_FOUND));
         List<Bookmark> bookmarks = bookmarkRepository.findByBookmarkList(bookmarkList);
 
         return bookmarks.stream()
