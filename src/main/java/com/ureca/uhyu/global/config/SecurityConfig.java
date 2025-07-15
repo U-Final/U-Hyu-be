@@ -147,7 +147,6 @@ public class SecurityConfig {
                         .allowedOrigins("http://localhost:3000",
                                 "http://localhost:5173",
                                 "http://13.209.87.43:8080/")
-//                                "https://www.ixiu.site")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowCredentials(true);
             }
