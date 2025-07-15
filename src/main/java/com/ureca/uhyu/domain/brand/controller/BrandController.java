@@ -24,7 +24,7 @@ public class BrandController {
             @RequestParam(required = false) List<String> benefitType,
             @RequestParam(required = false, name = "brand_name") String brandName,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "3") int size
     ){
         return CommonResponse.success(
                 brandService.findBrands(category, storeType, benefitType, brandName, page, size)

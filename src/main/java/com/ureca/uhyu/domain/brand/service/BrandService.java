@@ -3,9 +3,7 @@ package com.ureca.uhyu.domain.brand.service;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandPageResult;
 import com.ureca.uhyu.domain.brand.dto.response.BrandRes;
-import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
-import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,7 @@ public class BrandService {
     public BrandListRes findBrands(String category, List<String> storeType, List<String> benefitType,
                                    String brandName, int page, int size) {
         BrandPageResult result = brandRepository.findByCategoryOrNameOrTypes(
-                category, brandName, storeType, benefitType, page, size
+                category, storeType, benefitType, brandName, page, size
         );
 
         List<BrandRes> brandList = result.brandList().stream()

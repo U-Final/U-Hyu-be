@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface BrandRepositoryCustom {
     public BrandPageResult findByCategoryOrNameOrTypes(String category,
-                                                       String brandName,
                                                        List<String> storeType,
                                                        List<String> benefitType,
+                                                       String brandName,
                                                        int page,
                                                        int size);
 }
