@@ -7,6 +7,7 @@ import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
+import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.service.UserService;
@@ -83,5 +84,11 @@ public class UserController {
     public CommonResponse<ResultCode> deleteBookmark(@CurrentUser User user, @PathVariable Long bookmark_id) {
         userService.deleteBookmark(user, bookmark_id);
         return CommonResponse.success(ResultCode.BOOKMARK_DELETE_SUCCESS);
+    }
+
+    @Operation(summary = "사용자 활동내역 조회", description = "사용자의 자주 조회한 브랜드, 이번 달 받은 혜택(=사용자 통계) 제공")
+    @GetMapping("/statistics")
+    public CommonResponse<UserStatisticsRes> getUserStatistics(@CurrentUser User user) {
+        return CommonResponse.success(userService.findUserStatistics(user));
     }
 }
