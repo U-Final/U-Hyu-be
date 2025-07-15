@@ -204,7 +204,7 @@ class UserServiceTest {
         Brand brand = createBrand("브랜드A", "logo.png");
         setId(brand, 20L);
 
-        Store store = createStore(brand);
+        Store store = createStore(brand, "스토어A", "서울시 마포구");
         setId(store, 30L);
 
         Bookmark bookmark = createBookmark(bookmarkList, store);
@@ -244,7 +244,7 @@ class UserServiceTest {
         Brand brand = createBrand("브랜드A", "logo.png");
         setId(brand, 20L);
 
-        Store store = createStore(brand);
+        Store store = createStore(brand, "매장 A", "경기도 고양시");
         setId(store, 30L);
 
         Bookmark bookmark = createBookmark(bookmarkList, store);
@@ -276,7 +276,7 @@ class UserServiceTest {
         Brand brand = createBrand("브랜드A", "logo.png");
         setId(brand, 20L);
 
-        Store store = createStore(brand);
+        Store store = createStore(brand, "매장A", "경기도 고양시");
         setId(store, 30L);
 
         Bookmark bookmark = createBookmark(bookmarkList, store);
@@ -322,6 +322,7 @@ class UserServiceTest {
 
         Integer discountMoney = 12345;
 
+        // 가장 많이 조회한 브랜드
         Brand brand1 = createBrand("브랜드A", "logo1.png");
         Brand brand2 = createBrand("브랜드B", "logo2.png");
         Brand brand3 = createBrand("브랜드C", "logo3.png");
@@ -333,9 +334,20 @@ class UserServiceTest {
 
         List<Brand> topBrands = List.of(brand2, brand4, brand1);
 
+        // 가장 최근 방문 매장
+        Store store1 = createStore(brand1, "스토어1", "서울시 강남구");
+        Store store2 = createStore(brand2, "스토어2", "서울시 마포구");
+        Store store3 = createStore(brand3, "스토어3", "서울시 종로구");
+        setId(store1, 11L);
+        setId(store2, 12L);
+        setId(store3, 13L);
+
+        List<Store> recentStores = List.of(store1, store2, store3);
+
         // mock
         when(historyRepository.findDiscountMoneyThisMonth(user)).thenReturn(discountMoney);
         when(actionLogsRepository.findTop3ClickedBrands(user)).thenReturn(topBrands);
+        when(historyRepository.findTop3RecentStore(user)).thenReturn(recentStores);
 
         // when
         UserStatisticsRes result = userService.findUserStatistics(user);
@@ -343,6 +355,7 @@ class UserServiceTest {
         // then
         assertEquals(discountMoney, result.discountMoney());
 
+        // 가장 많이 조회한 브랜드
         assertEquals(3, result.bestBrandList().size());
 
         assertEquals(2, result.bestBrandList().get(0).bestBrandId());
@@ -356,6 +369,21 @@ class UserServiceTest {
         assertEquals(1, result.bestBrandList().get(2).bestBrandId());
         assertEquals("브랜드A", result.bestBrandList().get(2).bestBrandName());
         assertEquals("logo1.png", result.bestBrandList().get(2).bestBrandImage());
+
+        // 가장 최근 방문 매장
+        assertEquals(3, result.recentStoreList().size());
+
+        assertEquals(11L, result.recentStoreList().get(0).recentStoreId());
+        assertEquals("스토어1", result.recentStoreList().get(0).recentStoreName());
+        assertEquals("logo1.png", result.recentStoreList().get(0).recentBrandImage());
+
+        assertEquals(12L, result.recentStoreList().get(1).recentStoreId());
+        assertEquals("스토어2", result.recentStoreList().get(1).recentStoreName());
+        assertEquals("logo2.png", result.recentStoreList().get(1).recentBrandImage());
+
+        assertEquals(13L, result.recentStoreList().get(2).recentStoreId());
+        assertEquals("스토어3", result.recentStoreList().get(2).recentStoreName());
+        assertEquals("logo3.png", result.recentStoreList().get(2).recentBrandImage());
     }
 
     private User createUser() {
@@ -408,10 +436,10 @@ class UserServiceTest {
         return brand;
     }
 
-    private Store createStore(Brand brand) {
+    private Store createStore(Brand brand, String name, String address) {
         Store store = Store.builder()
-                .name("스토어A")
-                .addrDetail("서울시 마포구")
+                .name(name)
+                .addrDetail(address)
                 .geom(null)  // 필요시 값 넣어두기
                 .brand(brand)
                 .build();

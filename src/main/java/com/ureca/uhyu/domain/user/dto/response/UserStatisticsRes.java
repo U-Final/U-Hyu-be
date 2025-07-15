@@ -1,7 +1,5 @@
 package com.ureca.uhyu.domain.user.dto.response;
 
-import com.ureca.uhyu.domain.user.entity.ActionLogs;
-import com.ureca.uhyu.domain.user.entity.History;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
