@@ -1,6 +1,8 @@
 package com.ureca.uhyu.domain.user.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.ureca.uhyu.domain.store.entity.QStore;
+import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.user.entity.QHistory;
 import com.ureca.uhyu.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,5 +33,19 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
                         history.visitedAt.between(start, end)
                 )
                 .fetchOne();
+    }
+
+    public List<Store> findTop3RecentStore(User user) {
+        QHistory history = QHistory.history;
+        QStore store = QStore.store;
+
+        return queryFactory
+                .select(store)
+                .from(history)
+                .join(store).on(history.store.eq(QStore.store))
+                .where(history.user.eq(user))
+                .orderBy(history.visitedAt.desc())
+                .limit(3)
+                .fetch();
     }
 }
