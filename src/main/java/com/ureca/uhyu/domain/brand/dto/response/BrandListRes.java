@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(description = "즐겨찾기 전체 조회 응답")
-public record BrandListRes (
+@Schema(description = "제휴처 목록 조회 응답")
+public record BrandListRes(
         List<BrandRes> brandList,
-        boolean hasNext
+        boolean hasNext,
+        int totalPages,
+        int currentPage
 ) {
-    public static BrandListRes from(List<BrandRes> brandList,  boolean hasNext) {
-        return new BrandListRes(brandList, hasNext);
+    public static BrandListRes from(List<BrandRes> list, boolean hasNext, int totalPages, int currentPage) {
+        return new BrandListRes(list, hasNext, totalPages, currentPage);
     }
 }

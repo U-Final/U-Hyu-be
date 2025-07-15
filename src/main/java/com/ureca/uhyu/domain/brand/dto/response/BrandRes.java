@@ -11,13 +11,16 @@ public record BrandRes (
 ){
     public static BrandRes from(Brand brand){
         // TODO : 혜택 어떻게 꺼내올지 아직 고민중 (전부 다 가져와야하나?)
-        Benefit benefit = brand.getBenefits().get(0);
+        String description = brand.getBenefits().stream()
+                .findFirst()
+                .map(Benefit::getDescription)
+                .orElse(null);
 
         return new BrandRes(
                 brand.getId(),
                 brand.getBrandName(),
                 brand.getLogoImage(),
-                benefit.getDescription()
+                description
         );
     }
 }
