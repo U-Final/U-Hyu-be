@@ -144,9 +144,9 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000", "http://localhost:5173")
-//                                "https://ixiu.site",
-//                                "https://www.ixiu.site")
+                        .allowedOrigins("http://localhost:3000",
+                                "http://localhost:5173",
+                                "http://13.209.87.43:8080/")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowCredentials(true);
             }

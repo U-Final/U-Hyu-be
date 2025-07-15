@@ -60,8 +60,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String name = kakaoAccount.getOrDefault("name", "익명").toString();
         String genderStr = kakaoAccount.get("gender") != null ? kakaoAccount.get("gender").toString() : null;
         Gender gender = parseGender(genderStr);
+        String age_range = kakaoAccount.get("age_range") != null ? kakaoAccount.get("age_range").toString() : null;
 
-        return new KakaoUserInfoResponse(kakaoId, nickname, email, name, profileImage, gender);
+        return new KakaoUserInfoResponse(kakaoId, nickname, email, name, profileImage, gender, age_range);
     }
 
     private Gender parseGender(String genderStr) {

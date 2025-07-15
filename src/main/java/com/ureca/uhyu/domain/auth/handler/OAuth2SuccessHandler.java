@@ -64,21 +64,21 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private String resolveRedirectUrl(HttpServletRequest request, UserRole userRole) {
 
-        if (userRole == UserRole.TMP_USER) {
-            return "http://localhost:5173/user/extra-info";
-        } else {
-            return "http://localhost:5173";
-        }
-
-//        String host = request.getHeader("host");
-//        String frontBaseUrl = (host != null && host.contains("localhost"))
-//                ? "http://localhost:3000"
-//                : "http://localhost:5173";
-//
 //        if (userRole == UserRole.TMP_USER) {
-//            return frontBaseUrl + "/user/extra-info";
+//            return "http://localhost:5173/user/extra-info";
 //        } else {
-//            return frontBaseUrl;
+//            return "http://localhost:5173";
 //        }
+
+        String host = request.getHeader("host");
+        String frontBaseUrl = (host != null && host.contains("localhost"))
+                ? "http://13.209.87.43:8080"
+                : "http://localhost:5173";
+
+        if (userRole == UserRole.TMP_USER) {
+            return frontBaseUrl + "/user/extra-info";
+        } else {
+            return frontBaseUrl;
+        }
     }
 }
