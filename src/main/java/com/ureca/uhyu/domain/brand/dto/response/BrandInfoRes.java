@@ -16,8 +16,7 @@ public record BrandInfoRes (
         List<BenefitRes> benefitRes
 ){
     public static BrandInfoRes from(Brand brand){
-        List<Benefit> benefits = brand.getBenefits();
-        List<BenefitRes> benefitRes = benefits.stream()
+        List<BenefitRes> benefitRes = brand.getBenefits().stream()
                 .map(BenefitRes::from)
                 .toList();
 
