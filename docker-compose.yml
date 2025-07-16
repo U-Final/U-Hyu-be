@@ -2,6 +2,7 @@ version: '3'
 
 services:
   uhyu-backend:
+    build: .   # 이 줄을 추가해야 docker build 수행
     image: your-image-name:latest  # GitHub Actions에서 빌드 후 사용할 이미지명
     container_name: uhyu-backend
     ports:
