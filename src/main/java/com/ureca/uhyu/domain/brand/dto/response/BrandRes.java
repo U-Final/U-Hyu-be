@@ -2,7 +2,9 @@ package com.ureca.uhyu.domain.brand.dto.response;
 
 import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "제휴처 목록 조회 - 제휴처 1개당 보여줄 정보들")
 public record BrandRes (
         Long brandId,
         String brandName,

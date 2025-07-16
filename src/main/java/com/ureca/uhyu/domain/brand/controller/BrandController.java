@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.brand.controller;
 
+import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
 import com.ureca.uhyu.domain.brand.service.BrandService;
 import com.ureca.uhyu.global.response.CommonResponse;
@@ -29,5 +30,11 @@ public class BrandController {
         return CommonResponse.success(
                 brandService.findBrands(category, storeType, benefitType, brandName, page, size)
         );
+    }
+
+    @Operation(summary = "제휴처 상세 조회", description = "제휴처의 상세 정보 조회 기능")
+    @GetMapping("/{brand_id}")
+    public CommonResponse<BrandInfoRes> getBrandInfo(@PathVariable(name = "brand_id") Long brandId){
+        return CommonResponse.success(brandService.findBrandInfo(brandId));
     }
 }
