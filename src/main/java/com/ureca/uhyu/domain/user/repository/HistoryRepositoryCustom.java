@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface HistoryRepositoryCustom {
     Integer findDiscountMoneyThisMonth(User user);
-    List<Store> findTop3RecentStore(User user);
+    List<Store> findRecentStoreInMonth(User user);
 }

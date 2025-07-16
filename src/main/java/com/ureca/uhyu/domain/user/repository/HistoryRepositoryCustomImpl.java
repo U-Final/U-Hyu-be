@@ -35,15 +35,20 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
                 .fetchOne();
     }
 
-    public List<Store> findTop3RecentStore(User user) {
+    public List<Store> findRecentStoreInMonth(User user) {
         QHistory history = QHistory.history;
         QStore store = QStore.store;
+
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
 
         return queryFactory
                 .select(store)
                 .from(history)
-                .join(store).on(history.store.eq(QStore.store))
-                .where(history.user.eq(user))
+                .join(store).on(history.store.eq(store))
+                .where(
+                        history.user.eq(user),
+                        history.visitedAt.after(oneMonthAgo)
+                )
                 .orderBy(history.visitedAt.desc())
                 .limit(3)
                 .fetch();

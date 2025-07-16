@@ -147,7 +147,7 @@ public class UserService {
         List<BestBrandListRes> bestBrandListRes = brands.stream()
                 .map(BestBrandListRes::from)
                 .toList();
-        List<Store> stores = historyRepository.findTop3RecentStore(user);
+        List<Store> stores = historyRepository.findRecentStoreInMonth(user);
         List<RecentStoreListRes> recentStoreListRes = stores.stream()
                 .map(RecentStoreListRes::from)
                 .toList();
