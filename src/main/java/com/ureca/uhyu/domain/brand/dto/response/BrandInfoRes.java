@@ -1,6 +1,5 @@
 package com.ureca.uhyu.domain.brand.dto.response;
 
-import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import io.swagger.v3.oas.annotations.media.Schema;
 
