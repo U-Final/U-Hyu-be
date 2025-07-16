@@ -9,6 +9,7 @@ import java.util.List;
 @Schema(description = "제휴처 상세 조회 응답")
 public record BrandInfoRes (
         Long brandId,
+        String brandName,
         String logoImage,
         String usageMethod,
         String usageLimit,
@@ -22,6 +23,7 @@ public record BrandInfoRes (
 
         return new BrandInfoRes(
                 brand.getId(),
+                brand.getBrandName(),
                 brand.getLogoImage(),
                 brand.getUsageMethod(),
                 brand.getUsageMethod(),
