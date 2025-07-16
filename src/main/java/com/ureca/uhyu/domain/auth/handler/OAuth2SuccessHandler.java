@@ -43,9 +43,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         User user = userRepository.findById(customOAuth2User.getUserId())
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
-        Long userId = customOAuth2User.getUserId();
-        UserRole userRole = customOAuth2User.getUserRole();
-        Boolean isNewUser = customOAuth2User.isNewUser();
+        Long userId = user.getId();
+        UserRole userRole = user.getUserRole();
 
         log.info("~~ 토큰 발급 ~~");
 
@@ -55,7 +54,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         response.addCookie(accessCookie);
 
-        // ~~신규/기존 유저에 따라 redirect~~ -> 유저 role에 따라 Redirect
+        // userRole에 따라서 Redirect(온보딩 or 메인화면)
         String redirectUrl = resolveRedirectUrl(request, userRole);
 
         response.setStatus(HttpServletResponse.SC_FOUND);
@@ -63,17 +62,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     }
 
     private String resolveRedirectUrl(HttpServletRequest request, UserRole userRole) {
-
-//        if (userRole == UserRole.TMP_USER) {
-//            return "http://localhost:5173/user/extra-info";
-//        } else {
-//            return "http://localhost:5173";
-//        }
-
         String host = request.getHeader("host");
         String frontBaseUrl = (host != null && host.contains("localhost"))
-                ? "http://13.209.87.43:8080"
-                : "http://localhost:5173";
+                ? "http://localhost:8080"
+                : "http://13.209.87.43:8080";
 
         if (userRole == UserRole.TMP_USER) {
             return frontBaseUrl + "/user/extra-info";
