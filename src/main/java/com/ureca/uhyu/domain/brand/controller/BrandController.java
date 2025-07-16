@@ -17,7 +17,7 @@ public class BrandController {
     public final BrandService brandService;
 
     @Operation(summary = "제휴처 목록 조회", description = "제휴처 목록 조회, 필터링 적용 가능")
-    @PostMapping
+    @GetMapping
     public CommonResponse<BrandListRes> getBrands(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) List<String> storeType,
