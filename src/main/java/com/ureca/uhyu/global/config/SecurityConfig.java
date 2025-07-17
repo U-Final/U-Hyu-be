@@ -143,7 +143,8 @@ public class SecurityConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:3000",
                                 "http://localhost:5173",
-                                "http://13.209.87.43:8080/")
+                                "https://u-hyu.site",
+                                "http://u-hyu-front.s3-website.ap-northeast-2.amazonaws.com/")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowCredentials(true);
             }
