@@ -144,8 +144,10 @@ public class SecurityConfig {
                         .allowedOrigins("http://localhost:3000",
                                 "http://localhost:5173",
                                 "https://u-hyu.site",
-                                "http://u-hyu-front.s3-website.ap-northeast-2.amazonaws.com/")
+                                "http://u-hyu-front.s3-website.ap-northeast-2.amazonaws.com/",
+                                "https://u-hyu-fe.vercel.app")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
                         .allowCredentials(true);
             }
         };
