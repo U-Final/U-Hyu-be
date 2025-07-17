@@ -1,7 +1,7 @@
 package com.ureca.uhyu.domain.mymap.entity;
 
-//import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
-//import com.ureca.uhyu.domain.mymap.enums.Visibility;
+import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
+import com.ureca.uhyu.domain.mymap.enums.Visibility;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
