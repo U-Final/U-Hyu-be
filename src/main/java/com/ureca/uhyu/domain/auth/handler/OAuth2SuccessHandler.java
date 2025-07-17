@@ -65,7 +65,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String host = request.getHeader("host");
         String frontBaseUrl = (host != null && host.contains("localhost"))
                 ? "http://localhost:8080"
-                : "https://u-hyu.site";
+                : "http://u-hyu-front.s3-website.ap-northeast-2.amazonaws.com";
 
         if (userRole == UserRole.TMP_USER) {
             return frontBaseUrl + "/user/extra-info";
