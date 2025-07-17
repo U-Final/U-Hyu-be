@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BrandController {
 
-    public final BrandService brandService;
+    private final BrandService brandService;
 
     @Operation(summary = "제휴처 목록 조회", description = "제휴처 목록 조회, 필터링 적용 가능")
     @GetMapping
