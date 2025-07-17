@@ -105,7 +105,7 @@
 
 ## ERD
 
-<img width="1504" height="845" alt="Image" src="https://github.com/user-attachments/assets/efa7c64e-f8eb-4a93-864b-3d5024005efd" />
+<img width="1589" height="902" alt="Image" src="https://github.com/user-attachments/assets/efecf232-45d3-4855-b4bf-779833d75a9d" />
 
 ### 💭 데이터 모델링 및 추천 시스템 설계 고민
 
