@@ -24,7 +24,7 @@ public record BrandInfoRes (
                 brand.getBrandName(),
                 brand.getLogoImage(),
                 brand.getUsageMethod(),
-                brand.getUsageMethod(),
+                brand.getUsageLimit(),
                 benefitRes
         );
     }
