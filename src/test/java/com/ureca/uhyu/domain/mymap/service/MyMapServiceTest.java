@@ -40,7 +40,9 @@ class MyMapServiceTest {
         setId(user, 1L);
 
         MyMapList map1 = createMyMapList(user, "map1", MarkerColor.GREEN);
+        setId(map1, 1L);
         MyMapList map2 = createMyMapList(user, "map2", MarkerColor.RED);
+        setId(map2, 2L);
 
         List<MyMapList> myMapLists = List.of(map1, map2);
 
@@ -53,11 +55,31 @@ class MyMapServiceTest {
         // then
         assertEquals(2, result.size());
 
+        assertEquals(map1.getId(), result.get(0).myMapListId());
         assertEquals(map1.getTitle(), result.get(0).title());
         assertEquals(map1.getMarkerColor(), result.get(0).markerColor());
 
+        assertEquals(map2.getId(), result.get(1).myMapListId());
         assertEquals(map2.getTitle(), result.get(1).title());
         assertEquals(map2.getMarkerColor(), result.get(1).markerColor());
+    }
+
+    @DisplayName("mymap 목록 조회 - 빈 리스트 반환")
+    @Test
+    void findMyMapList_EmptyList() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        // mock
+        when(myMapListRepository.findByUser(user)).thenReturn(List.of());
+
+        // when
+        List<MyMapRes> result = myMapService.findMyMapList(user);
+
+        // then
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
     private User createUser() {
