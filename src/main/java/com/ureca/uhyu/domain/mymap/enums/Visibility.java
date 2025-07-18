@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.user.enums;
+package com.ureca.uhyu.domain.mymap.enums;
 
 public enum Visibility {
     PUBLIC,
