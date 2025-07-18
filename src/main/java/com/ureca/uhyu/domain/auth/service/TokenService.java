@@ -66,8 +66,7 @@ public class TokenService {
     private Cookie buildHttpOnlyCookie(String name, String token, long maxAgeMillis) {
         Cookie cookie = new Cookie(name, token);
         cookie.setHttpOnly(true);
-        //cookie.setSecure(true);
-        cookie.setSecure(false); // TODO : 프론트 배포가 HTTP 밖에 안되서 임시, 추후 true로 수정예정
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge((int) (maxAgeMillis / 1000)); // Convert milliseconds to seconds
         return cookie;
