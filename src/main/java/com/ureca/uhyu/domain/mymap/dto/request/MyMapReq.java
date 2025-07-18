@@ -1,6 +1,5 @@
 package com.ureca.uhyu.domain.mymap.dto.request;
 
-import com.ureca.uhyu.domain.mymap.entity.MyMap;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import io.swagger.v3.oas.annotations.media.Schema;
