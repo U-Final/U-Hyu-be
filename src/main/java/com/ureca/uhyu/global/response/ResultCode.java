@@ -41,7 +41,8 @@ public enum ResultCode {
     EMAIL_DUPLICATED(HttpStatus.BAD_REQUEST, 4003, "이미 사용중인 이메일입니다."),
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, 4004, "즐겨찾기 정보를 찾을 수 없습니다."),
     BOOKMARK_DELETE_SUCCESS(HttpStatus.OK, 4005, "즐겨찾기 삭제가 완료되었습니다."),
-    BOOKMARK_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, 4006, "즐겨찾기 리스트가 없습니다.");
+    BOOKMARK_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, 4006, "즐겨찾기 리스트가 없습니다."),
+    NOT_FOUNT_RECOMMENDATION_FOR_USER(HttpStatus.NOT_FOUND, 4007, "추천 결과가 존재하지 않습니다");
 
     private final HttpStatus status;
     private final int code;
