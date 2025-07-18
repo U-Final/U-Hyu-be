@@ -17,9 +17,11 @@ public class Benefit extends BaseEntity {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Grade grade;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BenefitType benefitType;
 
     @ManyToOne(fetch = FetchType.LAZY)
