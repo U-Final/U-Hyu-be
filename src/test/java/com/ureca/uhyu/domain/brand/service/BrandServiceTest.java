@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.brand.service;
 
+import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandPageResult;
 import com.ureca.uhyu.domain.brand.entity.Benefit;
@@ -7,6 +8,8 @@ import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -123,6 +127,37 @@ class BrandServiceTest {
         assertEquals(0, result.totalPages());
         assertFalse(result.hasNext());
         assertEquals(page, result.currentPage());
+    }
+
+    @DisplayName("브랜드 상세 조회 - 성공")
+    @Test
+    void findBrandInfo_success() {
+        // given
+        Brand brand = createBrand("스타벅스", "starbucks.png");
+        setId(brand, 10L);
+
+        when(brandRepository.findById(10L)).thenReturn(Optional.of(brand));
+
+        // when
+        BrandInfoRes result = brandService.findBrandInfo(10L);
+
+        // then
+        assertEquals("스타벅스", result.brandName());
+        assertEquals("starbucks.png", result.logoImage());
+    }
+
+    @DisplayName("브랜드 상세 조회 - 실패 (존재하지 않는 브랜드 ID)")
+    @Test
+    void findBrandInfo_BrandNotFound() {
+        // given
+        when(brandRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            brandService.findBrandInfo(999L);
+        });
+
+        assertEquals(ResultCode.BRAND_NOT_FOUND, exception.getResultCode());
     }
 
     private Brand createBrand(String name, String image) {
