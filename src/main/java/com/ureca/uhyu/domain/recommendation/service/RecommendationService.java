@@ -18,7 +18,7 @@ public class RecommendationService {
 
     private final RecommendationRepository recommendationRepository;
 
-    public List<RecommendationResponse> getLatedstTop3Recommendations(User user) {
+    public List<RecommendationResponse> getLatestTop3Recommendations(User user) {
         Long userId = user.getId();
 
         // 가장 최근에 추천된 (최신화가 반영된?) 브랜드 가져오기

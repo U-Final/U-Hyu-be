@@ -25,7 +25,7 @@ public class RecommendationController {
     @GetMapping("/recommendation")
     public CommonResponse<List<RecommendationResponse>> recommendation(@CurrentUser User user) {
 
-        List<RecommendationResponse> result = recommendationService.getLatedstTop3Recommendations(user);
+        List<RecommendationResponse> result = recommendationService.getLatestTop3Recommendations(user);
 
         return CommonResponse.success(result);
     }
