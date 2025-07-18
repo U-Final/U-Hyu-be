@@ -5,6 +5,8 @@ import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
 import com.ureca.uhyu.domain.brand.service.BrandService;
 import com.ureca.uhyu.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +26,8 @@ public class BrandController {
             @RequestParam(required = false) List<String> storeType,
             @RequestParam(required = false) List<String> benefitType,
             @RequestParam(required = false, name = "brand_name") String brandName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size
     ){
         return CommonResponse.success(
                 brandService.findBrands(category, storeType, benefitType, brandName, page, size)
