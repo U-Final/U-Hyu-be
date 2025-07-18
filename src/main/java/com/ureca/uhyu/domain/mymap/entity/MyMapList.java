@@ -15,16 +15,18 @@ import lombok.*;
 @Builder
 public class MyMapList extends BaseEntity {
 
-    @Column(length = 30)
+    @Column(length = 30, nullable = false)
     private String title;
 
     @Column(name = "description", nullable = false)
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private MarkerColor markerColor;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Visibility visibility;
 
     @Column(name = "uuid", nullable = false)
