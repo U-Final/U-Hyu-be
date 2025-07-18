@@ -21,6 +21,9 @@ public class ActionLogs extends BaseEntity {
     @Column(name = "store_id", nullable = true)
     Long storeId;
 
+    @Column(name = "category_id", nullable = true)
+    Long categoryId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
