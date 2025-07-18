@@ -16,19 +16,19 @@ import lombok.*;
 public class MyMapList extends BaseEntity {
 
     @Column(length = 30)
-    String title;
+    private String title;
 
     @Column(name = "description", nullable = false)
-    String description;
+    private String description;
 
     @Enumerated(EnumType.STRING)
-    MarkerColor markerColor;
+    private MarkerColor markerColor;
 
     @Enumerated(EnumType.STRING)
-    Visibility visibility;
+    private Visibility visibility;
 
     @Column(name = "uuid", nullable = false)
-    Long uuid;
+    private Long uuid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
