@@ -143,7 +143,7 @@ public class SecurityConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:3000",
                                 "http://localhost:5173",
-                                "https://u-hyu.site",
+                                "https://www.u-hyu.site",
                                 "https://u-hyu-fe.vercel.app")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
