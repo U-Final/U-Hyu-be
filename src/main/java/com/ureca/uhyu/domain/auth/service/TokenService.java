@@ -71,4 +71,17 @@ public class TokenService {
         cookie.setMaxAge((int) (maxAgeMillis / 1000)); // Convert milliseconds to seconds
         return cookie;
     }
+
+    public String buildAccessTokenHeaderValue(String userId, UserRole role) {
+        log.info("HTTPS access 토큰 쿠키 생성");
+        String accessToken = jwtTokenProvider.generateToken(userId, role);
+        int maxAgeSec = (int) (jwtTokenProvider.getAccessTokenExp() / 1000);
+
+        return "access_token=" + accessToken + "; " +
+                "Path=/; " +
+                "HttpOnly; " +
+                "Secure; " +
+                "SameSite=None; " +
+                "Max-Age=" + maxAgeSec;
+    }
 }

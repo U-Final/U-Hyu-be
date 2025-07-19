@@ -2,8 +2,8 @@ package com.ureca.uhyu.domain.user.controller;
 
 import com.ureca.uhyu.domain.auth.dto.UserEmailCheckRequest;
 import com.ureca.uhyu.domain.auth.service.TokenService;
-import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
+import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
 import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
@@ -15,7 +15,6 @@ import com.ureca.uhyu.global.annotation.CurrentUser;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,10 +42,11 @@ public class UserController {
 
         Long userId = userService.saveOnboardingInfo(request, user);
 
-        Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), UserRole.USER);
-        tokenService.createRefreshToken(user);
+        // ✅ 수동으로 쿠키 헤더 추가
+        String cookieHeaderValue = tokenService.buildAccessTokenHeaderValue(String.valueOf(userId), UserRole.USER);
+        response.setHeader("Set-Cookie", cookieHeaderValue);
 
-        response.addCookie(accessCookie);
+        tokenService.createRefreshToken(user);
 
         return CommonResponse.success(ResultCode.USER_ONBOARDING_SUCCESS, null);
     }

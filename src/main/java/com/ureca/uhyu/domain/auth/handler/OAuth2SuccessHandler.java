@@ -8,7 +8,6 @@ import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -33,33 +32,26 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
-        // 세션 무효화
         HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate(); // JSESSIONID 제거
-        }
+        if (session != null) session.invalidate();
 
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = userRepository.findById(customOAuth2User.getUserId())
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
-        Long userId = user.getId();
-        UserRole userRole = user.getUserRole();
-
         log.info("~~ 토큰 발급 ~~");
+        String cookieHeaderValue = tokenService.buildAccessTokenHeaderValue(String.valueOf(user.getId()), user.getUserRole());
 
-        Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), userRole);
+        // 수동으로 Set-Cookie 헤더 설정
+        response.setHeader("Set-Cookie", cookieHeaderValue);
 
         tokenService.createRefreshToken(user);
 
-        response.addCookie(accessCookie);
-
-        // userRole에 따라서 Redirect(온보딩 or 메인화면)
-        String redirectUrl = resolveRedirectUrl(request, userRole);
-
+        String redirectUrl = resolveRedirectUrl(request, user.getUserRole());
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", redirectUrl);
     }
+
 
     private String resolveRedirectUrl(HttpServletRequest request, UserRole userRole) {
         String host = request.getHeader("host");
