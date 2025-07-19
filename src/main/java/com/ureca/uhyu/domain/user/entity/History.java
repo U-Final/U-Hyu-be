@@ -20,10 +20,10 @@ public class History {
 
     @CreationTimestamp
     @Column(name = "visited_at", updatable = false)
-    LocalDateTime visitedAt;
+    private LocalDateTime visitedAt;
 
     @Column(name = "benefit_price", nullable = false)
-    Integer benefitPrice;
+    private Integer benefitPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
