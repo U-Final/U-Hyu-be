@@ -49,7 +49,7 @@ public class MyMapService {
         MyMapList myMapList = myMapListRepository.findById(request.MyMapListId())
                 .orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
 
-        if (!myMapList.getUser().equals(user)) {
+        if (!myMapList.getUser().getId().equals(user.getId())) {
             throw new GlobalException(ResultCode.FORBIDDEN);
         }
 
