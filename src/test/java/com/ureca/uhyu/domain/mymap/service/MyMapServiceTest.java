@@ -1,6 +1,5 @@
 package com.ureca.uhyu.domain.mymap.service;
 
-import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
@@ -8,9 +7,6 @@ import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
-import com.ureca.uhyu.domain.store.entity.Store;
-import com.ureca.uhyu.domain.user.entity.Bookmark;
-import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
