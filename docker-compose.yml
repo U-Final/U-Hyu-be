@@ -6,7 +6,7 @@ services:
     image: your-image-name:latest  # GitHub Actions에서 빌드 후 사용할 이미지명
     container_name: uhyu-backend
     ports:
-      - "8080:8080"
+      - "80:8080"
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
