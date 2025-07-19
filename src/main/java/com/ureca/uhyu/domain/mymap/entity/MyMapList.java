@@ -1,7 +1,9 @@
 package com.ureca.uhyu.domain.mymap.entity;
 
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
+import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,4 +29,11 @@ public class MyMapList extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void updateMyMapList(
+            String title, MarkerColor markerColor
+    ){
+        this.title = title;
+        this.markerColor = markerColor;
+    }
 }

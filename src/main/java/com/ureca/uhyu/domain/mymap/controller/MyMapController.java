@@ -2,6 +2,7 @@ package com.ureca.uhyu.domain.mymap.controller;
 
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
+import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.service.MyMapService;
 import com.ureca.uhyu.domain.user.entity.User;
@@ -36,7 +37,7 @@ public class MyMapController {
     @PatchMapping
     public CommonResponse<UpdateMyMapListRes> updateMyMapList(
             @CurrentUser User user,
-            @RequestBody UpdateMyMapListRes updateMyMapListReq){
+            @RequestBody UpdateMyMapListReq updateMyMapListReq){
         return CommonResponse.success(myMapService.updateMyMapList(user, updateMyMapListReq));
     }
 }

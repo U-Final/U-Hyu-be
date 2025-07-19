@@ -1,7 +1,9 @@
 package com.ureca.uhyu.domain.mymap.service;
 
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
+import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
@@ -11,6 +13,8 @@ import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -116,6 +121,64 @@ class MyMapServiceTest {
         // then
         assertEquals(100L, result);
         verify(myMapListRepository, times(1)).save(any(MyMapList.class));
+    }
+
+    @DisplayName("mymap 수정 - 성공")
+    @Test
+    void updateMyMapList_success() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        MyMapList myMapList = createMyMapList(user, "기존 제목", MarkerColor.GREEN);
+        setId(myMapList, 100L);
+
+        UpdateMyMapListReq req = new UpdateMyMapListReq(
+                100L,
+                "변경된 제목",
+                MarkerColor.YELLOW
+        );
+
+        when(myMapListRepository.findById(100L)).thenReturn(Optional.of(myMapList));
+        when(myMapListRepository.save(any(MyMapList.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        UpdateMyMapListRes result = myMapService.updateMyMapList(user, req);
+
+        // then
+        assertEquals(100L, result.myMapListId());
+
+        verify(myMapListRepository).findById(100L);
+        verify(myMapListRepository).save(myMapList);
+    }
+
+    @DisplayName("MyMap 수정 - 다른 사용자의 마이맵이면 FORBIDDEN 예외 발생")
+    @Test
+    void updateMyMapList_forbidden() {
+        // given
+        User owner = createUser(); // 진짜 소유자
+        setId(owner, 1L);
+
+        User attacker = createUser(); // 공격자
+        setId(attacker, 2L);
+
+        MyMapList myMapList = createMyMapList(owner, "원래 제목", MarkerColor.RED);
+        setId(myMapList, 100L);
+
+        UpdateMyMapListReq req = new UpdateMyMapListReq(
+                100L,
+                "변경 시도",
+                MarkerColor.YELLOW
+        );
+
+        when(myMapListRepository.findById(100L)).thenReturn(Optional.of(myMapList));
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () ->
+                myMapService.updateMyMapList(attacker, req)
+        );
+
+        assertEquals(ResultCode.FORBIDDEN, exception.getResultCode());
     }
 
     private User createUser() {
