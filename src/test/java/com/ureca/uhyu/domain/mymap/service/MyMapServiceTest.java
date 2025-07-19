@@ -1,7 +1,7 @@
 package com.ureca.uhyu.domain.mymap.service;
 
-import com.ureca.uhyu.domain.mymap.dto.request.MyMapReq;
-import com.ureca.uhyu.domain.mymap.dto.response.MyMapRes;
+import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
@@ -52,7 +52,7 @@ class MyMapServiceTest {
         when(myMapListRepository.findByUser(user)).thenReturn(myMapLists);
 
         // when
-        List<MyMapRes> result = myMapService.findMyMapList(user);
+        List<MyMapListRes> result = myMapService.findMyMapList(user);
 
         // then
         assertEquals(2, result.size());
@@ -77,7 +77,7 @@ class MyMapServiceTest {
         when(myMapListRepository.findByUser(user)).thenReturn(List.of());
 
         // when
-        List<MyMapRes> result = myMapService.findMyMapList(user);
+        List<MyMapListRes> result = myMapService.findMyMapList(user);
 
         // then
         assertNotNull(result);
@@ -91,7 +91,7 @@ class MyMapServiceTest {
         User user = createUser();
         setId(user, 1L);
 
-        MyMapReq request = new MyMapReq("나만의 지도", MarkerColor.GREEN, "uuid-1234");
+        CreateMyMapListReq request = new CreateMyMapListReq("나만의 지도", MarkerColor.GREEN, "uuid-1234");
 
         MyMapList unsaved = MyMapList.builder()
                 .title(request.title())
