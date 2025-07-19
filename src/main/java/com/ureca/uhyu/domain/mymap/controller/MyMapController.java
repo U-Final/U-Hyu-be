@@ -8,6 +8,7 @@ import com.ureca.uhyu.domain.mymap.service.MyMapService;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.annotation.CurrentUser;
 import com.ureca.uhyu.global.response.CommonResponse;
+import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -39,5 +40,12 @@ public class MyMapController {
             @CurrentUser User user,
             @RequestBody UpdateMyMapListReq updateMyMapListReq){
         return CommonResponse.success(myMapService.updateMyMapList(user, updateMyMapListReq));
+    }
+
+    @Operation(summary = "My Map List 삭제", description = "지정한 My Map List 삭제")
+    @DeleteMapping("/{mymapId}")
+    public CommonResponse<ResultCode> deleteMyMapList(@CurrentUser User user, @PathVariable Long mymapId) {
+        myMapService.deleteMyMapList(user, mymapId);
+        return CommonResponse.success(ResultCode.MY_MAP_LIST_DELETE_SUCCESS);
     }
 }

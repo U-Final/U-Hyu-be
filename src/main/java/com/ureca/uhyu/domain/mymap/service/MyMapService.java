@@ -63,4 +63,16 @@ public class MyMapService {
         MyMapList savedMyMapList = myMapListRepository.save(myMapList);
         return UpdateMyMapListRes.from(savedMyMapList);
     }
+
+    @Transactional
+    public void deleteMyMapList(User user, Long mymapId) {
+        MyMapList myMapList = myMapListRepository.findById(mymapId)
+                .orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
+
+        if (!myMapList.getUser().getId().equals(user.getId())) {
+            throw new GlobalException(ResultCode.FORBIDDEN);
+        }
+
+        myMapListRepository.delete(myMapList);
+    }
 }
