@@ -82,19 +82,7 @@ public class TokenService {
                 "Path=/; " +
                 "HttpOnly; " +
                 "Secure; " +
-                "SameSite=None; " +public String buildAccessTokenHeaderValue(String userId, UserRole role) {
-            log.info("HTTPS access 토큰 쿠키 생성");
-            String accessToken = jwtTokenProvider.generateToken(userId, role);
-            int maxAgeSec = (int) (jwtTokenProvider.getAccessTokenExp() / 1000);
-
-            return "access_token=" + accessToken + "; " +
-                    "Domain=.u-hyu.site; " +
-                    "Path=/; " +
-                    "HttpOnly; " +
-                    "Secure; " +
-                    "SameSite=None; " +
-                    "Max-Age=" + maxAgeSec;
-        }
+                "SameSite=None; " +
                 "Max-Age=" + maxAgeSec;
     }
 }
