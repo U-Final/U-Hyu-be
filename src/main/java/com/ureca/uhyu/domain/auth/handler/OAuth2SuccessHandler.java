@@ -39,19 +39,26 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         User user = userRepository.findById(customOAuth2User.getUserId())
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
-        log.info("~~ 토큰 발급 ~~");
-        String cookieHeaderValue = tokenService.buildAccessTokenHeaderValue(String.valueOf(user.getId()), user.getUserRole());
+        log.info("✅ 로그인 성공: userId={}, role={}", user.getId(), user.getUserRole());
 
-        // 수동으로 Set-Cookie 헤더 설정
-        response.setHeader("Set-Cookie", cookieHeaderValue);
+        // 쿠키 수동 생성
+        String cookieHeaderValue = tokenService.buildAccessTokenHeaderValue(
+                String.valueOf(user.getId()), user.getUserRole()
+        );
+        log.info("✅ access_token Set-Cookie 헤더 설정: {}", cookieHeaderValue);
+        response.addHeader("Set-Cookie", cookieHeaderValue);  // ✅ addHeader 로 수정
 
         tokenService.createRefreshToken(user);
 
+        // 프론트 리다이렉트 주소 설정
         String redirectUrl = resolveRedirectUrl(request, user.getUserRole());
-        response.setStatus(HttpServletResponse.SC_FOUND);
-        response.setHeader("Location", redirectUrl);
-    }
+        log.info("✅ 리다이렉트 대상: {}", redirectUrl);
 
+        // 리다이렉트 대신 JS로 리디렉션 처리
+        response.setContentType("text/html;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write("<script>window.location.href='" + redirectUrl + "'</script>");
+    }
 
     private String resolveRedirectUrl(HttpServletRequest request, UserRole userRole) {
         String host = request.getHeader("host");
