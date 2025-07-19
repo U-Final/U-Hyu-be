@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.mymap.service;
 
+import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
@@ -7,6 +8,9 @@ import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
+import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.user.entity.Bookmark;
+import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
@@ -179,6 +183,70 @@ class MyMapServiceTest {
         );
 
         assertEquals(ResultCode.FORBIDDEN, exception.getResultCode());
+    }
+
+    @DisplayName("My Map List 삭제 - 성공")
+    @Test
+    void deleteMyMapList_success() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        MyMapList myMapList = createMyMapList(user, "기존 제목", MarkerColor.GREEN);
+        setId(myMapList, 100L);
+
+        // mock
+        when(myMapListRepository.findById(100L)).thenReturn(Optional.of(myMapList));
+
+        // when
+        myMapService.deleteMyMapList(user, 100L);
+
+        // then
+        verify(myMapListRepository).delete(myMapList);
+    }
+
+    @DisplayName("My Map List 삭제 - 유저 인증 실패")
+    @Test
+    void deleteBookmarkFail_User() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        User attacker = createUser();
+        setId(attacker, 2L); // 다른 유저
+
+        MyMapList myMapList = createMyMapList(user, "기존 제목", MarkerColor.GREEN);
+        setId(myMapList, 100L);
+
+        // mock
+        when(myMapListRepository.findById(100L)).thenReturn(Optional.of(myMapList));
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            myMapService.deleteMyMapList(attacker, 100L);
+        });
+
+        assertEquals(ResultCode.FORBIDDEN, exception.getResultCode());
+        verify(myMapListRepository, never()).delete(any());
+    }
+
+    @DisplayName("My Map List 삭제 - 잘못된 My Map List 접근으로 인한 실패")
+    @Test
+    void deleteBookmarkFail_NotFound() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        // mock
+        when(myMapListRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            myMapService.deleteMyMapList(user, 999L);
+        });
+
+        assertEquals(ResultCode.MY_MAP_LIST_NOT_FOUND, exception.getResultCode());
+        verify(myMapListRepository, never()).delete(any());
     }
 
     private User createUser() {
