@@ -31,7 +31,9 @@ public class MyMapController {
 
     @Operation(summary = "My Map List 추가", description = "사용자가 새로운 My Map을 생성")
     @PostMapping
-    public CommonResponse<Long> createMyMapList(@CurrentUser User user, @Valid @RequestBody CreateMyMapListReq createMyMapListReq){
+    public CommonResponse<Long> createMyMapList(
+            @CurrentUser User user,
+            @Valid @RequestBody CreateMyMapListReq createMyMapListReq){
         return CommonResponse.success(myMapService.createMyMapList(user, createMyMapListReq));
     }
 
@@ -39,7 +41,7 @@ public class MyMapController {
     @PatchMapping
     public CommonResponse<UpdateMyMapListRes> updateMyMapList(
             @CurrentUser User user,
-            @RequestBody UpdateMyMapListReq updateMyMapListReq){
+            @Valid @RequestBody UpdateMyMapListReq updateMyMapListReq){
         return CommonResponse.success(myMapService.updateMyMapList(user, updateMyMapListReq));
     }
 
