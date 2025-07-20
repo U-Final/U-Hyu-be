@@ -24,6 +24,6 @@ public enum PermitAllURI {
     public static boolean isPermit(String requestUri) {
         return Arrays.stream(values())
                 .map(PermitAllURI::getUri)
-                .anyMatch(requestUri::equals); // equals로 변경함.(세분화되게 위에 추가될 예정)
+                .anyMatch(requestUri::startsWith); // equals로 변경함.(세분화되게 위에 추가될 예정)
     }
 }
