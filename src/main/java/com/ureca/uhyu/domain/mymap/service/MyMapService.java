@@ -66,8 +66,8 @@ public class MyMapService {
     }
 
     @Transactional
-    public void deleteMyMapList(User user, Long mymapId) {
-        MyMapList myMapList = myMapListRepository.findById(mymapId)
+    public void deleteMyMapList(User user, Long myMapListId) {
+        MyMapList myMapList = myMapListRepository.findById(myMapListId)
                 .orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
 
         if (!myMapList.getUser().getId().equals(user.getId())) {

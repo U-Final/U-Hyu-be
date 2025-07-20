@@ -47,9 +47,9 @@ public class MyMapController {
     }
 
     @Operation(summary = "My Map List 삭제", description = "지정한 My Map List 삭제")
-    @DeleteMapping("/{mymapId}")
-    public CommonResponse<ResultCode> deleteMyMapList(@CurrentUser User user, @PathVariable Long mymapId) {
-        myMapService.deleteMyMapList(user, mymapId);
+    @DeleteMapping("/{myMapListId}")
+    public CommonResponse<ResultCode> deleteMyMapList(@CurrentUser User user, @PathVariable Long myMapListId) {
+        myMapService.deleteMyMapList(user, myMapListId);
         return CommonResponse.success(ResultCode.MY_MAP_LIST_DELETE_SUCCESS);
     }
 }
