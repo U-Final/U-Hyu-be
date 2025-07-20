@@ -1,6 +1,7 @@
 package com.ureca.uhyu.domain.mymap.controller;
 
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
@@ -31,7 +32,7 @@ public class MyMapController {
 
     @Operation(summary = "My Map List 추가", description = "사용자가 새로운 My Map을 생성")
     @PostMapping
-    public CommonResponse<Long> createMyMapList(
+    public CommonResponse<CreateMyMapListRes> createMyMapList(
             @CurrentUser User user,
             @Valid @RequestBody CreateMyMapListReq createMyMapListReq){
         return CommonResponse.success(myMapService.createMyMapList(user, createMyMapListReq));

@@ -2,6 +2,7 @@ package com.ureca.uhyu.domain.mymap.service;
 
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
@@ -116,10 +117,10 @@ class MyMapServiceTest {
         when(myMapListRepository.save(any(MyMapList.class))).thenReturn(saved);
 
         // when
-        Long result = myMapService.createMyMapList(user, request);
+        CreateMyMapListRes result = myMapService.createMyMapList(user, request);
 
         // then
-        assertEquals(100L, result);
+        assertEquals(100L, result.myMapListId());
         verify(myMapListRepository, times(1)).save(any(MyMapList.class));
     }
 

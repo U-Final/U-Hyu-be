@@ -1,6 +1,7 @@
 package com.ureca.uhyu.domain.mymap.service;
 
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
@@ -32,7 +33,7 @@ public class MyMapService {
     }
 
     @Transactional
-    public Long createMyMapList(User user,  CreateMyMapListReq createMyMapListReq) {
+    public CreateMyMapListRes createMyMapList(User user, CreateMyMapListReq createMyMapListReq) {
         MyMapList myMapList = MyMapList.builder()
                 .title(createMyMapListReq.title())
                 .markerColor(createMyMapListReq.markerColor())
@@ -41,7 +42,7 @@ public class MyMapService {
                 .build();
         MyMapList savedMyMapList = myMapListRepository.save(myMapList);
 
-        return savedMyMapList.getId();
+        return new CreateMyMapListRes(savedMyMapList.getId());
     }
 
     @Transactional
