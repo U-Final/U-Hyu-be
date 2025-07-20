@@ -46,7 +46,7 @@ public class MyMapService {
 
     @Transactional
     public UpdateMyMapListRes updateMyMapList(User user, UpdateMyMapListReq request) {
-        MyMapList myMapList = myMapListRepository.findById(request.MyMapListId())
+        MyMapList myMapList = myMapListRepository.findById(request.myMapListId())
                 .orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
 
         if (!myMapList.getUser().getId().equals(user.getId())) {
