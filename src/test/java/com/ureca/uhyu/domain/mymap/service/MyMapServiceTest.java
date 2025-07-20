@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.mymap.service;
 
+import com.ureca.uhyu.domain.mymap.dto.request.MyMapReq;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapRes;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
@@ -21,7 +22,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MyMapServiceTest {
@@ -80,6 +82,40 @@ class MyMapServiceTest {
         // then
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+    @DisplayName("mymap 생성 - 성공")
+    @Test
+    void testCreateMyMapList_success() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        MyMapReq request = new MyMapReq("나만의 지도", MarkerColor.GREEN, "uuid-1234");
+
+        MyMapList unsaved = MyMapList.builder()
+                .title(request.title())
+                .markerColor(request.markerColor())
+                .uuid(request.uuid())
+                .user(user)
+                .build();
+
+        MyMapList saved = MyMapList.builder()
+                .title(request.title())
+                .markerColor(request.markerColor())
+                .uuid(request.uuid())
+                .user(user)
+                .build();
+        setId(saved, 100L);
+
+        when(myMapListRepository.save(any(MyMapList.class))).thenReturn(saved);
+
+        // when
+        Long result = myMapService.createMyMapList(user, request);
+
+        // then
+        assertEquals(100L, result);
+        verify(myMapListRepository, times(1)).save(any(MyMapList.class));
     }
 
     private User createUser() {
