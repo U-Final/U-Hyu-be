@@ -8,10 +8,15 @@ import com.ureca.uhyu.domain.auth.repository.TokenRepository;
 import com.ureca.uhyu.domain.auth.service.CustomUserDetailsService;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -28,15 +33,13 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -69,49 +72,43 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
-                .csrf(AbstractHttpConfigurer::disable) // csrf 비활성화 -> cookie를 사용하지 않으면 꺼도 된다. (cookie를 사용할 경우 httpOnly(XSS 방어), sameSite(CSRF 방어)로 방어해야 한다.)
-                .cors(AbstractHttpConfigurer::disable) // cors 비활성화 -> 프론트와 연결 시 따로 설정 필요
-                .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 로그인 비활성화
-                .formLogin(AbstractHttpConfigurer::disable) // 기본 login form 비활성화
-                .logout(AbstractHttpConfigurer::disable) // 기본 logout 비활성화
-                .headers(c -> c.frameOptions(
-                        FrameOptionsConfig::disable).disable()) // X-Frame-Options 비활성화
-                .sessionManagement(c ->
-                        c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음
-                .authorizeHttpRequests(request ->
-                        request
-                                .requestMatchers( // 인증 없이 접근 허용 : 로그인을 하지 않아도 접근 가능
-                                        new AntPathRequestMatcher("/"),
-                                        new AntPathRequestMatcher("/login"),
-                                        new AntPathRequestMatcher("/oauth2/**"),
-                                        new AntPathRequestMatcher("/map/stores"),
-                                        new AntPathRequestMatcher("/brand-list/**"),
-                                        new AntPathRequestMatcher("/swagger-ui/**"),
-                                        new AntPathRequestMatcher("/v3/api-docs/**"),
-                                        new AntPathRequestMatcher("/actuator/health")
-                                ).permitAll()
-                                // ADMIN 권한 필요 : user role이 admin인 사용자만 접근 가능
-                                .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
-                                // 그 외는 인증 필요 : 로그인한 사용자만 접근 가능
-                                .anyRequest().authenticated()
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 활성화
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .headers(c -> c.frameOptions(FrameOptionsConfig::disable))
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/"),
+                                new AntPathRequestMatcher("/login"),
+                                new AntPathRequestMatcher("/oauth2/**"),
+                                new AntPathRequestMatcher("/map/stores"),
+                                new AntPathRequestMatcher("/brand-list/**"),
+                                new AntPathRequestMatcher("/swagger-ui/**"),
+                                new AntPathRequestMatcher("/v3/api-docs/**"),
+                                new AntPathRequestMatcher("/actuator/health")
+                        ).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                // oauth2 설정
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization
                                 .authorizationRequestRepository(authorizationRequestRepository())
                         )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))
-                                .successHandler(oAuth2SuccessHandler())
+                        .successHandler(oAuth2SuccessHandler())
                 )
-                // jwt 관련 설정
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository, customUserDetailsService),
-                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository, customUserDetailsService),
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .exceptionHandling(exceptionHandling ->
-                    exceptionHandling
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                        exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.sendRedirect("/user/extra-info");
                         })
                 )
@@ -120,10 +117,13 @@ public class SecurityConfig {
                     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
                             throws ServletException, IOException {
                         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                        if (authentication != null && authentication.isAuthenticated() && authentication.getAuthorities().stream()
-                                .anyMatch(a -> a.getAuthority().equals("ROLE_TMP_USER"))) {
+                        if (authentication != null && authentication.isAuthenticated() &&
+                                authentication.getAuthorities().stream()
+                                        .anyMatch(a -> a.getAuthority().equals("ROLE_TMP_USER"))) {
                             String uri = request.getRequestURI();
-                            if (!uri.equals("/user/extra-info") && !uri.startsWith("/static/") && !uri.equals("/user/check-email")) {
+                            if (!uri.equals("/user/extra-info")
+                                    && !uri.startsWith("/static/")
+                                    && !uri.equals("/user/check-email")) {
                                 response.sendRedirect("/user/extra-info");
                                 return;
                             }
@@ -136,19 +136,22 @@ public class SecurityConfig {
     }
 
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000",
-                                "http://localhost:5173",
-                                "https://www.u-hyu.site",
-                                "https://u-hyu-fe.vercel.app")
-                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-            }
-        };
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "https://*.u-hyu.site"
+        ));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L); // 캐시 시간 (1시간)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 }

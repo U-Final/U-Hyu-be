@@ -32,29 +32,28 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
+        // ✅ 기존 세션 무효화
         HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
 
+        // ✅ 인증된 사용자 조회
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = userRepository.findById(customOAuth2User.getUserId())
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
         log.info("✅ 로그인 성공: userId={}, role={}", user.getId(), user.getUserRole());
 
-        // 쿠키 수동 생성
-        String cookieHeaderValue = tokenService.buildAccessTokenHeaderValue(
-                String.valueOf(user.getId()), user.getUserRole()
-        );
-        log.info("✅ access_token Set-Cookie 헤더 설정: {}", cookieHeaderValue);
-        response.addHeader("Set-Cookie", cookieHeaderValue);  // ✅ addHeader 로 수정
+        // ✅ AccessToken 쿠키 생성 및 추가
+        tokenService.addAccessTokenCookie(response, String.valueOf(user.getId()), user.getUserRole());
 
-        tokenService.createRefreshToken(user);
+        // ✅ RefreshToken DB 저장
+        tokenService.addRefreshTokenCookie(user);
 
-        // 프론트 리다이렉트 주소 설정
+        // ✅ 리다이렉트 경로 결정
         String redirectUrl = resolveRedirectUrl(request, user.getUserRole());
         log.info("✅ 리다이렉트 대상: {}", redirectUrl);
 
-        // 리다이렉트 대신 JS로 리디렉션 처리
+        // ✅ JS 리다이렉션 방식
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().write("<script>window.location.href='" + redirectUrl + "'</script>");

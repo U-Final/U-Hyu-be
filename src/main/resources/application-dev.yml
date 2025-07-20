@@ -45,9 +45,14 @@ jwt:
   secret: ${JWT_SECRET_KEY}
   access-token-expiration-time: ${ACCESS_TOKEN_EXP}
   refresh-token-expiration-days: ${REFRESH_TOKEN_EXP}
+  cookie:
+    domain: localhost
+    secure: false
+    same-site: Lax
 
-redirect:
-  front-base-url: http://localhost:5173
+domain:
+  base-url: https://localhost:5173
+
 
 logging:
   level:

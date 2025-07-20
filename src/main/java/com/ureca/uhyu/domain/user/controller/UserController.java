@@ -36,20 +36,21 @@ public class UserController {
     @Operation(summary = "신규 유저 추가 입력 정보 저장", description = "신규 유저 추가 입력 정보 저장, user_role 변경, 토큰 재발급")
     @PostMapping("/extra-info")
     public CommonResponse<ResultCode> onboarding(
-            @Valid @RequestBody UserOnboardingRequest request, HttpServletResponse response,
+            @Valid @RequestBody UserOnboardingRequest request,
+            HttpServletResponse response,
             @CurrentUser User user
     ) {
-
         Long userId = userService.saveOnboardingInfo(request, user);
 
-        // ✅ 수동으로 쿠키 헤더 추가
-        String cookieHeaderValue = tokenService.buildAccessTokenHeaderValue(String.valueOf(userId), UserRole.USER);
-        response.setHeader("Set-Cookie", cookieHeaderValue);
+        // ✅ access token 쿠키 추가
+        tokenService.addAccessTokenCookie(response, String.valueOf(userId), UserRole.USER);
 
-        tokenService.createRefreshToken(user);
+        // ✅ refresh token DB 저장
+        tokenService.addRefreshTokenCookie(user);
 
         return CommonResponse.success(ResultCode.USER_ONBOARDING_SUCCESS, null);
     }
+
 
     @Operation(summary = "개인정보 조회", description = "개인정보 조회: 로그인 필요")
     @GetMapping
