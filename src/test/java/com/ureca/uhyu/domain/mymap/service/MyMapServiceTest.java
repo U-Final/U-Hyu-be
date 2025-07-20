@@ -206,7 +206,7 @@ class MyMapServiceTest {
 
     @DisplayName("My Map List 삭제 - 유저 인증 실패")
     @Test
-    void deleteBookmarkFail_User() {
+    void deleteMyMapList_User() {
         // given
         User user = createUser();
         setId(user, 1L);
@@ -231,7 +231,7 @@ class MyMapServiceTest {
 
     @DisplayName("My Map List 삭제 - 잘못된 My Map List 접근으로 인한 실패")
     @Test
-    void deleteBookmarkFail_NotFound() {
+    void deleteMyMapList_NotFound() {
         // given
         User user = createUser();
         setId(user, 1L);
