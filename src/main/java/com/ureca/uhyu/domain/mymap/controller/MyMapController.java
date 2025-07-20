@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.MyMapRes;
 import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.service.MyMapService;
 import com.ureca.uhyu.domain.user.entity.User;
@@ -51,5 +52,11 @@ public class MyMapController {
     public CommonResponse<ResultCode> deleteMyMapList(@CurrentUser User user, @PathVariable Long myMapListId) {
         myMapService.deleteMyMapList(user, myMapListId);
         return CommonResponse.success(ResultCode.MY_MAP_LIST_DELETE_SUCCESS);
+    }
+
+    @Operation(summary = "uuid 기반 My Map 지도 조회", description = "my map uuid 기반으로 지도 조회")
+    @GetMapping("/public/{uuid}")
+    public CommonResponse<MyMapRes> getMyMapByUuid(@CurrentUser User user, @PathVariable String uuid) {
+        return CommonResponse.success(myMapService.findMyMap(user, uuid));
     }
 }

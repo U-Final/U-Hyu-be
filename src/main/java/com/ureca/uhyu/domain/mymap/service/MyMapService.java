@@ -4,10 +4,13 @@ import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.MyMapRes;
 import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
+import com.ureca.uhyu.domain.mymap.entity.MyMap;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
+import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
@@ -24,6 +27,7 @@ import java.util.List;
 public class MyMapService {
 
     private final MyMapListRepository myMapListRepository;
+    private final MyMapRepository myMapRepository;
 
     public List<MyMapListRes> findMyMapList(User user) {
         List<MyMapList> myMapLists =  myMapListRepository.findByUser(user);
@@ -75,5 +79,12 @@ public class MyMapService {
         }
 
         myMapListRepository.delete(myMapList);
+    }
+
+    public MyMapRes findMyMap(User user, String uuid) {
+        MyMapList myMapList = myMapListRepository.findByUuid(uuid);
+        List<MyMap> myMaps = myMapRepository.findByMyMapList(myMapList);
+
+        return MyMapRes.from(user, myMapList, myMaps);
     }
 }

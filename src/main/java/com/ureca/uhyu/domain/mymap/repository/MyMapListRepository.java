@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface MyMapListRepository extends JpaRepository<MyMapList, Long> {
    List<MyMapList> findByUser(User user);
+
+   MyMapList findByUuid(String uuid);
 }
