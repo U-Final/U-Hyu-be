@@ -46,9 +46,9 @@ jwt:
   access-token-expiration-time: ${ACCESS_TOKEN_EXP}
   refresh-token-expiration-days: ${REFRESH_TOKEN_EXP}
   cookie:
-    domain: .u-hyu.site
+    domain: u-hyu.site
     secure: true
-    same-site: None
+    same-site: Lax
 
 domain:
   base-url: https://www.u-hyu.site

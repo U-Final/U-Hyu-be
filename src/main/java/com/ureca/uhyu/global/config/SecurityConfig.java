@@ -142,7 +142,8 @@ public class SecurityConfig {
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "https://*.u-hyu.site"
+                "https://www.u-hyu.site",
+                "https://api.u-hyu.site"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

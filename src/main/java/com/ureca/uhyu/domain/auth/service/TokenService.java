@@ -60,16 +60,38 @@ public class TokenService {
     // Access 토큰 쿠키 생성 및 응답에 추가
     public void addAccessTokenCookie(HttpServletResponse response, String userId, UserRole role) {
         String token = jwtTokenProvider.generateToken(userId, role);
+
+        // 쿠키 도메인 처리 - 빈 값이면 null로 설정
+        String finalDomain = (cookieDomain == null || cookieDomain.isBlank()) ? null : cookieDomain;
+
         ResponseCookie cookie = ResponseCookie.from("access_token", token)
                 .httpOnly(true)
                 .secure(isSecure)
                 .path("/")
                 .maxAge(jwtTokenProvider.getAccessTokenExp() / 1000)
                 .sameSite(sameSite)
-                .domain(cookieDomain.isBlank() ? null : cookieDomain)
+                .domain(finalDomain)
                 .build();
+
+        // 상세한 디버깅 로그
+        log.info("=== 쿠키 설정 상세 정보 ===");
+        log.info("Domain: '{}' (null={}) ", finalDomain, finalDomain == null);
+        log.info("Secure: {}", isSecure);
+        log.info("SameSite: '{}'", sameSite);
+        log.info("HttpOnly: true");
+        log.info("Path: '/'");
+        log.info("MaxAge: {} seconds", jwtTokenProvider.getAccessTokenExp() / 1000);
+        log.info("Token length: {}", token.length());
+        log.info("Full cookie string: '{}'", cookie.toString());
+
+        // Set-Cookie 헤더 설정
         response.addHeader("Set-Cookie", cookie.toString());
-        log.info("AccessToken 쿠키 설정 완료");
+
+        // 실제로 설정된 헤더 확인
+        String setCookieHeader = response.getHeader("Set-Cookie");
+        log.info("Actual Set-Cookie header: '{}'", setCookieHeader);
+
+        log.info("✅ AccessToken 쿠키 설정 완료");
     }
 
     // Refresh 토큰 생성 + 저장 + 쿠키 설정
