@@ -1,14 +1,15 @@
 package com.ureca.uhyu.domain.recommendation.dto;
 
 import com.ureca.uhyu.domain.recommendation.entity.Recommendation;
-import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 
 public record RecommendationResponse(
+        Long brandId,
         String brandName,
         Integer rank
 ){
     public static RecommendationResponse from(Recommendation recommendation) {
         return new RecommendationResponse(
+                recommendation.getBrandId().getId(),
                 recommendation.getBrandId().getBrandName(),
                 recommendation.getRank()
         );

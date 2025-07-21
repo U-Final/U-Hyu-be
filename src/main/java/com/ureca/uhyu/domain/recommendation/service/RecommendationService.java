@@ -30,6 +30,7 @@ public class RecommendationService {
         return recommendationRepository.findTop3ByUserIdAndCreatedAtOrderByRankAsc(userId, latestCreatedAt)
                 .stream()
                 .map(r -> new RecommendationResponse(
+                        r.getUserId(),
                         r.getBrandId().getBrandName(),
                         r.getRank()
                 ))

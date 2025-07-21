@@ -56,11 +56,11 @@ class RecommendationControllerTest {
     void it_returns_top3_recommendations() throws Exception {
         // given
         List<RecommendationResponse> mockResponse = List.of(
-                new RecommendationResponse("스타벅스", 1),
-                new RecommendationResponse("이디야", 2),
-                new RecommendationResponse("투썸플레이스", 3),
-                new RecommendationResponse("굽네치킨", 4),
-                new RecommendationResponse("롯데월드", 5)
+                new RecommendationResponse(1L, "스타벅스", 1),
+                new RecommendationResponse(2L, "이디야", 2),
+                new RecommendationResponse(3L, "투썸플레이스", 3),
+                new RecommendationResponse(4L, "굽네치킨", 4),
+                new RecommendationResponse(5L, "롯데월드", 5)
         );
 
         given(recommendationService.getLatestTop3Recommendations(any(User.class)))
