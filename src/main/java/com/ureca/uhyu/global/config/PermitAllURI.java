@@ -12,6 +12,7 @@ public enum PermitAllURI {
     SWAGGER("/swagger-ui"),
     DOCS("/v3/api-docs"),
     ROOT("/"),
+    MAP("/map"),
     BRAND_LIST("/brand-list"),
     HEALTH("/actuator/health");
 
