@@ -1,9 +1,10 @@
 package com.ureca.uhyu.domain.brand.controller;
 
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
+import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
-import com.ureca.uhyu.domain.brand.dto.response.CreateBrandRes;
+import com.ureca.uhyu.domain.brand.dto.response.CreateUpdateBrandRes;
 import com.ureca.uhyu.domain.brand.service.BrandService;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/brand-list")
 @RequiredArgsConstructor
 public class BrandController {
 
@@ -47,19 +47,20 @@ public class BrandController {
 
     @Operation(summary = "관리자 제휴 브랜드 추가", description = "관리자 유저 제휴 브랜드 추가 기능")
     @PostMapping("/admin/brand")
-    public CommonResponse<CreateBrandRes> createBrand(@RequestBody CreateBrandReq createBrandReq) {
+    public CommonResponse<CreateUpdateBrandRes> createBrand(@RequestBody CreateBrandReq createBrandReq) {
         return CommonResponse.success(brandService.createBrand(createBrandReq));
     }
 
     @Operation(summary = "관리자 제휴 브랜드 수정", description = "관리자 유저 제휴 브랜드 수정 기능")
     @PutMapping("/admin/brands/{brand_id}")
-    public CommonResponse<UpdateBrandRes> updateBrand(@Valid @RequestBody UpdateBrandReq updateBrandReq) {
+    public CommonResponse<CreateUpdateBrandRes> updateBrand(@Valid @RequestBody UpdateBrandReq updateBrandReq) {
         return CommonResponse.success(brandService.updateBrand(updateBrandReq));
     }
 
     @Operation(summary = "관리자 제휴 브랜드 삭제", description = "관리자 유저 제휴 브랜드 삭제 기능")
     @DeleteMapping("/admin/brands/{brand_id}")
-    public CommonResponse<ResultCode> deleteBrand(@PathVariable(name = "brand_id") Long brandId) {
-
+    public CommonResponse<ResultCode> deleteBrand(@Valid @PathVariable(name = "brand_id") Long brandId) {
+        brandService.deleteBrand(brandId);
+        return CommonResponse.success(ResultCode.DELETE_BRAND_SUCCESS);
     }
 }

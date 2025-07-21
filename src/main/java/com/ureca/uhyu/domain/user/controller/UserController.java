@@ -48,7 +48,7 @@ public class UserController {
 
         response.addCookie(accessCookie);
 
-        return CommonResponse.success(ResultCode.USER_ONBOARDING_SUCCESS, null);
+        return CommonResponse.success(ResultCode.USER_ONBOARDING_SUCCESS, null); // todo
     }
 
     @Operation(summary = "개인정보 조회", description = "개인정보 조회: 로그인 필요")
