@@ -22,9 +22,9 @@ public class RecommendationService {
         Long userId = user.getId();
 
         // 가장 최근에 추천된 (최신화가 반영된?) 브랜드 가져오기
-        LocalTime latestCreatedAt = LocalTime.from(recommendationRepository
+        LocalDateTime latestCreatedAt = recommendationRepository
                 .findTop1CreatedAtByUserIdOrderByCreatedAtDesc(userId)
-                .orElseThrow(() -> new GlobalException((ResultCode.NOT_FOUND_RECOMMENDATION_FOR_USER))));
+                .orElseThrow(() -> new GlobalException((ResultCode.NOT_FOUND_RECOMMENDATION_FOR_USER)));
 
         // 해당 시간의 top3 추천 브랜드 가져오기
         return recommendationRepository.findTop3ByUserIdAndCreatedAtOrderByRankAsc(userId, LocalDateTime.from(latestCreatedAt))
