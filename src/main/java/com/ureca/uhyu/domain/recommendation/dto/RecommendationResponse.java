@@ -9,8 +9,8 @@ public record RecommendationResponse(
 ){
     public static RecommendationResponse from(Recommendation recommendation) {
         return new RecommendationResponse(
-                recommendation.getBrandId().getId(),
-                recommendation.getBrandId().getBrandName(),
+                recommendation.getBrand().getId(),
+                recommendation.getBrand().getBrandName(),
                 recommendation.getRank()
         );
     }
