@@ -1,6 +1,7 @@
 package com.ureca.uhyu.domain.mymap.service;
 
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
@@ -32,7 +33,7 @@ public class MyMapService {
     }
 
     @Transactional
-    public Long createMyMapList(User user,  CreateMyMapListReq createMyMapListReq) {
+    public CreateMyMapListRes createMyMapList(User user, CreateMyMapListReq createMyMapListReq) {
         MyMapList myMapList = MyMapList.builder()
                 .title(createMyMapListReq.title())
                 .markerColor(createMyMapListReq.markerColor())
@@ -41,7 +42,7 @@ public class MyMapService {
                 .build();
         MyMapList savedMyMapList = myMapListRepository.save(myMapList);
 
-        return savedMyMapList.getId();
+        return new CreateMyMapListRes(savedMyMapList.getId());
     }
 
     @Transactional
@@ -62,5 +63,17 @@ public class MyMapService {
         myMapList.updateMyMapList(title, markerColor);
         MyMapList savedMyMapList = myMapListRepository.save(myMapList);
         return UpdateMyMapListRes.from(savedMyMapList);
+    }
+
+    @Transactional
+    public void deleteMyMapList(User user, Long myMapListId) {
+        MyMapList myMapList = myMapListRepository.findById(myMapListId)
+                .orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
+
+        if (!myMapList.getUser().getId().equals(user.getId())) {
+            throw new GlobalException(ResultCode.FORBIDDEN);
+        }
+
+        myMapListRepository.delete(myMapList);
     }
 }

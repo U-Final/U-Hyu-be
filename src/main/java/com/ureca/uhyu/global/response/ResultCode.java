@@ -43,6 +43,7 @@ public enum ResultCode {
     BOOKMARK_DELETE_SUCCESS(HttpStatus.OK, 4005, "즐겨찾기 삭제가 완료되었습니다."),
     BOOKMARK_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, 4006, "즐겨찾기 리스트가 없습니다."),
     MY_MAP_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, 4007, "My Map 리스트가 없습니다."),
+    MY_MAP_LIST_DELETE_SUCCESS(HttpStatus.OK, 4008, "My Map 리스트 삭제가 완료되었습니다."),
 
     /**
      * 5000번대 (제휴처 관련)
