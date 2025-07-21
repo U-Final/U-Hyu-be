@@ -46,6 +46,12 @@ public class UserService {
         saveUserBrandData(user, request.recentBrands(), DataType.RECENT);
         saveUserBrandData(user, request.interestedBrands(), DataType.INTEREST);
 
+        //온보딩 시 해당 user에 대한 즐겨찾기 List도 생성
+        BookmarkList bookmarkList = BookmarkList.builder()
+                .user(user)
+                .build();
+        bookmarkListRepository.save(bookmarkList);
+
         return user.getId();
     }
 

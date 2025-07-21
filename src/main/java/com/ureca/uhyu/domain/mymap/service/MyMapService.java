@@ -1,17 +1,21 @@
 package com.ureca.uhyu.domain.mymap.service;
 
+import com.ureca.uhyu.domain.map.dto.response.MapRes;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
-import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
-import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
+import com.ureca.uhyu.domain.mymap.dto.response.*;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
-import com.ureca.uhyu.domain.mymap.dto.response.MyMapRes;
-import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.entity.MyMap;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
 import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
+import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.store.repository.StoreRepository;
+import com.ureca.uhyu.domain.user.entity.Bookmark;
+import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.User;
+import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.transaction.Transactional;
@@ -28,6 +32,9 @@ public class MyMapService {
 
     private final MyMapListRepository myMapListRepository;
     private final MyMapRepository myMapRepository;
+    private final StoreRepository storeRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final BookmarkListRepository bookmarkListRepository;
 
     public List<MyMapListRes> findMyMapList(User user) {
         List<MyMapList> myMapLists =  myMapListRepository.findByUser(user);
@@ -85,6 +92,40 @@ public class MyMapService {
         MyMapList myMapList = myMapListRepository.findByUuid(uuid).orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
         List<MyMap> myMaps = myMapRepository.findByMyMapList(myMapList);
 
-        return MyMapRes.from(user, myMapList, myMaps);
+        List<MapRes> storeList = myMaps.stream()
+                .map(myMap -> MapRes.from(myMap.getStore()))
+                .toList();
+
+        boolean isMine = myMapList.getUser().getId().equals(user.getId());
+
+        return MyMapRes.from(myMapList, storeList, isMine);
+    }
+
+    public BookmarkedMyMapRes findMyMapListWithIsBookmarked(User user, Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_STORE));
+
+        //MyMap 안에 store가 있는지 검증
+        List<MyMapList> myMapLists = myMapListRepository.findByUser(user);
+
+        List<BookmarkedMyMapListRes> myMapListResponses = myMapLists.stream()
+                .map(myMapList -> {
+                    List<MyMap> myMaps = myMapRepository.findByMyMapList(myMapList); // ← 핵심 수정 부분
+                    boolean isMapped = myMaps.stream()
+                            .anyMatch(myMap -> myMap.getStore().getId().equals(storeId));
+                    return BookmarkedMyMapListRes.from(myMapList, isMapped);
+                })
+                .toList();
+
+        //Bookmark 안에 store가 있는지 검증
+        BookmarkList bookmarkList = bookmarkListRepository.findByUser(user)
+                .orElseThrow(() -> new GlobalException(ResultCode.BOOKMARK_LIST_NOT_FOUND));
+
+        List<Bookmark> bookmarks = bookmarkRepository.findByBookmarkList(bookmarkList);
+
+        boolean isBookmarked = bookmarks.stream()
+                .anyMatch(bookmark -> bookmark.getStore().getId().equals(storeId));
+
+        return BookmarkedMyMapRes.from(store, myMapListResponses, isBookmarked);
     }
 }

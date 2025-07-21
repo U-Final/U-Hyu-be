@@ -347,7 +347,7 @@ class UserServiceTest {
         // mock
         when(historyRepository.findDiscountMoneyThisMonth(user)).thenReturn(discountMoney);
         when(actionLogsRepository.findTop3ClickedBrands(user)).thenReturn(topBrands);
-        when(historyRepository.findTop3RecentStore(user)).thenReturn(recentStores);
+        when(historyRepository.findRecentStoreInMonth(user)).thenReturn(recentStores);
 
         // when
         UserStatisticsRes result = userService.findUserStatistics(user);

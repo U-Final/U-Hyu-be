@@ -1,11 +1,8 @@
 package com.ureca.uhyu.domain.mymap.controller;
 
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
-import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
-import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
+import com.ureca.uhyu.domain.mymap.dto.response.*;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
-import com.ureca.uhyu.domain.mymap.dto.response.MyMapRes;
-import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.service.MyMapService;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.annotation.CurrentUser;
@@ -58,5 +55,11 @@ public class MyMapController {
     @GetMapping("/{uuid}")
     public CommonResponse<MyMapRes> getMyMapByUuid(@CurrentUser User user, @PathVariable String uuid) {
         return CommonResponse.success(myMapService.findMyMap(user, uuid));
+    }
+
+    @Operation(summary = "My Map 매장 등록 유무 조회", description = "My Map에 매장 추가 시 해당 My Map에 등록 유무를 조회")
+    @GetMapping("/list/{store_id}")
+    public CommonResponse<BookmarkedMyMapRes> getMyMapListWithIsBookmarked(@CurrentUser User user, @PathVariable(name = "store_id") Long storeId) {
+        return CommonResponse.success(myMapService.findMyMapListWithIsBookmarked(user, storeId));
     }
 }
