@@ -38,6 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
+        String serverName = request.getServerName();
+
+        // 외부 도메인 요청은 필터링하지 않음
+        if (!"api.u-hyu.site".equals(serverName) && !"localhost".equals(serverName)) {
+            return true;
+        }
+
         return PermitAllURI.isPermit(uri);
     }
 
