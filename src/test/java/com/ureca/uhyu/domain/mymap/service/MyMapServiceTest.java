@@ -320,89 +320,6 @@ class MyMapServiceTest {
         verify(myMapRepository).findByMyMapList(myMapList);
     }
 
-    private User createUser() {
-        Marker marker = Marker.builder().markerImage("marker.jpg").build();
-        setId(marker, 1L);
-
-        User user = User.builder()
-                .userName("홍길동")
-                .kakaoId(456465L)
-                .email("asdad@kakao.com")
-                .age((byte) 32)
-                .gender(Gender.MALE)
-                .role(UserRole.TMP_USER)
-                .status(Status.ACTIVE)
-                .grade(Grade.GOOD)
-                .profileImage("asdsad.png")
-                .nickname("nick")
-                .marker(marker)
-                .build();
-
-        return user;
-    }
-
-    private Brand createBrand(String name, String image) {
-        Category category = Category.builder()
-                .categoryName("카테고리A")
-                .build();
-        setId(category, 1L);
-
-        Benefit benefit = Benefit.builder()
-                .description("혜택1")
-                .build();
-        setId(benefit, 2L);
-
-        Brand brand = Brand.builder()
-                .category(category)
-                .brandName(name)
-                .logoImage(image)
-                .usageMethod("모바일 바코드 제시")
-                .usageLimit("1일 1회")
-                .storeType(StoreType.OFFLINE)
-                .benefits(List.of(benefit))
-                .build();
-        return brand;
-    }
-
-    private Point createPoint(double latitude, double longitude) {
-        return geometryFactory.createPoint(new Coordinate(longitude, latitude)); // 위도(Y), 경도(X)
-    }
-
-    private Store createStore(String name, String addrDetail, Brand brand) {
-        return Store.builder()
-                .name(name)
-                .addrDetail(addrDetail)
-                .geom(createPoint(123.23, 37.2312))
-                .brand(brand)
-                .build();
-    }
-
-    private MyMapList createMyMapList(User user, String mapName, MarkerColor markerColor, String uuid) {
-        return MyMapList.builder()
-                .user(user)
-                .title(mapName)
-                .markerColor(markerColor)
-                .uuid(uuid)
-                .build();
-    }
-
-    private MyMap createMyMap(MyMapList myMapList, Store store) {
-        return MyMap.builder()
-                .myMapList(myMapList)
-                .store(store)
-                .build();
-    }
-
-    private void setId(Object target, Long idValue) {
-        try {
-            Field idField = target.getClass().getSuperclass().getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(target, idValue);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @DisplayName("My Map 매장 등록 유무 조회 - 성공")
     @Test
     void findMyMapListWithIsBookmarked_success() {
@@ -511,5 +428,178 @@ class MyMapServiceTest {
 
         assertEquals(ResultCode.BOOKMARK_LIST_NOT_FOUND, exception.getResultCode());
         verify(bookmarkListRepository).findByUser(user);
+    }
+
+    @DisplayName("MyMap 토글 - 매장 등록 성공")
+    @Test
+    void toggleMyMap_addSuccess() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        Brand brand = createBrand("브랜드A", "logo.png");
+        Store store = createStore("스토어A", "서울시 강남구", brand);
+        setId(store, 10L);
+
+        MyMapList myMapList = createMyMapList(user, "Map1", MarkerColor.RED, "uuid1");
+        setId(myMapList, 100L);
+
+        // mock
+        when(storeRepository.findById(10L)).thenReturn(Optional.of(store));
+        when(myMapListRepository.findById(100L)).thenReturn(Optional.of(myMapList));
+        when(myMapRepository.findByMyMapListAndStore(myMapList, store)).thenReturn(Optional.empty());
+
+        // when
+        ToggleMyMapRes result = myMapService.toggleMyMap(user, 10L, 100L);
+
+        // then
+        assertTrue(result.isMyMapped());
+        assertEquals(store.getId(), result.storeId());
+        assertEquals(myMapList.getId(), result.myMapListId());
+
+        verify(myMapRepository).save(any(MyMap.class));
+        verify(myMapRepository, never()).delete(any(MyMap.class));
+    }
+
+    @DisplayName("MyMap 토글 - 매장 해제 성공")
+    @Test
+    void toggleMyMap_removeSuccess() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        Brand brand = createBrand("브랜드A", "logo.png");
+        Store store = createStore("스토어A", "서울시 강남구", brand);
+        setId(store, 10L);
+
+        MyMapList myMapList = createMyMapList(user, "Map1", MarkerColor.RED, "uuid1");
+        setId(myMapList, 100L);
+
+        MyMap existing = createMyMap(myMapList, store);
+        setId(existing, 200L);
+
+        // mock
+        when(storeRepository.findById(10L)).thenReturn(Optional.of(store));
+        when(myMapListRepository.findById(100L)).thenReturn(Optional.of(myMapList));
+        when(myMapRepository.findByMyMapListAndStore(myMapList, store)).thenReturn(Optional.of(existing));
+
+        // when
+        ToggleMyMapRes result = myMapService.toggleMyMap(user, 10L, 100L);
+
+        // then
+        assertFalse(result.isMyMapped());
+        verify(myMapRepository).delete(existing);
+        verify(myMapRepository, never()).save(any(MyMap.class));
+    }
+
+    @DisplayName("MyMap 토글 - 다른 유저의 마이맵에 접근 시 실패")
+    @Test
+    void toggleMyMap_forbidden() {
+        // given
+        User owner = createUser(); // 실제 마이맵 주인
+        setId(owner, 1L);
+        User attacker = createUser(); // 요청하는 사용자
+        setId(attacker, 2L);
+
+        Brand brand = createBrand("브랜드A", "logo.png");
+        Store store = createStore("스토어A", "서울시 강남구", brand);
+        setId(store, 10L);
+
+        MyMapList myMapList = createMyMapList(owner, "Map1", MarkerColor.GREEN, "uuid1");
+        setId(myMapList, 100L);
+
+        // mock
+        when(storeRepository.findById(10L)).thenReturn(Optional.of(store));
+        when(myMapListRepository.findById(100L)).thenReturn(Optional.of(myMapList));
+
+        // when & then
+        GlobalException ex = assertThrows(GlobalException.class, () -> {
+            myMapService.toggleMyMap(attacker, 10L, 100L);
+        });
+
+        assertEquals(ResultCode.FORBIDDEN, ex.getResultCode());
+    }
+
+    private User createUser() {
+        Marker marker = Marker.builder().markerImage("marker.jpg").build();
+        setId(marker, 1L);
+
+        User user = User.builder()
+                .userName("홍길동")
+                .kakaoId(456465L)
+                .email("asdad@kakao.com")
+                .age((byte) 32)
+                .gender(Gender.MALE)
+                .role(UserRole.TMP_USER)
+                .status(Status.ACTIVE)
+                .grade(Grade.GOOD)
+                .profileImage("asdsad.png")
+                .nickname("nick")
+                .marker(marker)
+                .build();
+
+        return user;
+    }
+
+    private Brand createBrand(String name, String image) {
+        Category category = Category.builder()
+                .categoryName("카테고리A")
+                .build();
+        setId(category, 1L);
+
+        Benefit benefit = Benefit.builder()
+                .description("혜택1")
+                .build();
+        setId(benefit, 2L);
+
+        Brand brand = Brand.builder()
+                .category(category)
+                .brandName(name)
+                .logoImage(image)
+                .usageMethod("모바일 바코드 제시")
+                .usageLimit("1일 1회")
+                .storeType(StoreType.OFFLINE)
+                .benefits(List.of(benefit))
+                .build();
+        return brand;
+    }
+
+    private Point createPoint(double latitude, double longitude) {
+        return geometryFactory.createPoint(new Coordinate(longitude, latitude)); // 위도(Y), 경도(X)
+    }
+
+    private Store createStore(String name, String addrDetail, Brand brand) {
+        return Store.builder()
+                .name(name)
+                .addrDetail(addrDetail)
+                .geom(createPoint(123.23, 37.2312))
+                .brand(brand)
+                .build();
+    }
+
+    private MyMapList createMyMapList(User user, String mapName, MarkerColor markerColor, String uuid) {
+        return MyMapList.builder()
+                .user(user)
+                .title(mapName)
+                .markerColor(markerColor)
+                .uuid(uuid)
+                .build();
+    }
+
+    private MyMap createMyMap(MyMapList myMapList, Store store) {
+        return MyMap.builder()
+                .myMapList(myMapList)
+                .store(store)
+                .build();
+    }
+
+    private void setId(Object target, Long idValue) {
+        try {
+            Field idField = target.getClass().getSuperclass().getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(target, idValue);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
