@@ -1,12 +1,21 @@
 package com.ureca.uhyu.domain.mymap.service;
 
+import com.ureca.uhyu.domain.brand.entity.Benefit;
+import com.ureca.uhyu.domain.brand.entity.Brand;
+import com.ureca.uhyu.domain.brand.entity.Category;
+import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
+import com.ureca.uhyu.domain.mymap.dto.response.MyMapRes;
 import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
+import com.ureca.uhyu.domain.mymap.entity.MyMap;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
+import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
+import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
@@ -18,6 +27,9 @@ import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,8 +45,13 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MyMapServiceTest {
 
+    private GeometryFactory geometryFactory = new GeometryFactory();
+
     @Mock
     private MyMapListRepository myMapListRepository;
+
+    @Mock
+    private MyMapRepository myMapRepository;
 
     @InjectMocks
     private MyMapService myMapService;
@@ -46,9 +63,9 @@ class MyMapServiceTest {
         User user = createUser();
         setId(user, 1L);
 
-        MyMapList map1 = createMyMapList(user, "map1", MarkerColor.GREEN);
+        MyMapList map1 = createMyMapList(user, "map1", MarkerColor.GREEN, "uuid1");
         setId(map1, 1L);
-        MyMapList map2 = createMyMapList(user, "map2", MarkerColor.RED);
+        MyMapList map2 = createMyMapList(user, "map2", MarkerColor.RED, "uuid2");
         setId(map2, 2L);
 
         List<MyMapList> myMapLists = List.of(map1, map2);
@@ -65,10 +82,12 @@ class MyMapServiceTest {
         assertEquals(map1.getId(), result.get(0).myMapListId());
         assertEquals(map1.getTitle(), result.get(0).title());
         assertEquals(map1.getMarkerColor(), result.get(0).markerColor());
+        assertEquals(map1.getUuid(), result.get(0).uuid());
 
         assertEquals(map2.getId(), result.get(1).myMapListId());
         assertEquals(map2.getTitle(), result.get(1).title());
         assertEquals(map2.getMarkerColor(), result.get(1).markerColor());
+        assertEquals(map2.getUuid(), result.get(1).uuid());
     }
 
     @DisplayName("mymap 목록 조회 - 빈 리스트 반환")
@@ -116,10 +135,10 @@ class MyMapServiceTest {
         when(myMapListRepository.save(any(MyMapList.class))).thenReturn(saved);
 
         // when
-        Long result = myMapService.createMyMapList(user, request);
+        CreateMyMapListRes result = myMapService.createMyMapList(user, request);
 
         // then
-        assertEquals(100L, result);
+        assertEquals(100L, result.myMapListId());
         verify(myMapListRepository, times(1)).save(any(MyMapList.class));
     }
 
@@ -130,7 +149,7 @@ class MyMapServiceTest {
         User user = createUser();
         setId(user, 1L);
 
-        MyMapList myMapList = createMyMapList(user, "기존 제목", MarkerColor.GREEN);
+        MyMapList myMapList = createMyMapList(user, "기존 제목", MarkerColor.GREEN, "uuid1");
         setId(myMapList, 100L);
 
         UpdateMyMapListReq req = new UpdateMyMapListReq(
@@ -162,7 +181,7 @@ class MyMapServiceTest {
         User attacker = createUser(); // 공격자
         setId(attacker, 2L);
 
-        MyMapList myMapList = createMyMapList(owner, "원래 제목", MarkerColor.RED);
+        MyMapList myMapList = createMyMapList(owner, "원래 제목", MarkerColor.RED, "uuid1");
         setId(myMapList, 100L);
 
         UpdateMyMapListReq req = new UpdateMyMapListReq(
@@ -179,6 +198,115 @@ class MyMapServiceTest {
         );
 
         assertEquals(ResultCode.FORBIDDEN, exception.getResultCode());
+    }
+
+    @DisplayName("My Map List 삭제 - 성공")
+    @Test
+    void deleteMyMapList_success() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        MyMapList myMapList = createMyMapList(user, "기존 제목", MarkerColor.GREEN, "uuid1");
+        setId(myMapList, 100L);
+
+        // mock
+        when(myMapListRepository.findById(100L)).thenReturn(Optional.of(myMapList));
+
+        // when
+        myMapService.deleteMyMapList(user, 100L);
+
+        // then
+        verify(myMapListRepository).delete(myMapList);
+    }
+
+    @DisplayName("My Map List 삭제 - 유저 인증 실패")
+    @Test
+    void deleteMyMapList_User() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        User attacker = createUser();
+        setId(attacker, 2L); // 다른 유저
+
+        MyMapList myMapList = createMyMapList(user, "기존 제목", MarkerColor.GREEN, "uuid1");
+        setId(myMapList, 100L);
+
+        // mock
+        when(myMapListRepository.findById(100L)).thenReturn(Optional.of(myMapList));
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            myMapService.deleteMyMapList(attacker, 100L);
+        });
+
+        assertEquals(ResultCode.FORBIDDEN, exception.getResultCode());
+        verify(myMapListRepository, never()).delete(any());
+    }
+
+    @DisplayName("My Map List 삭제 - 잘못된 My Map List 접근으로 인한 실패")
+    @Test
+    void deleteMyMapList_NotFound() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        // mock
+        when(myMapListRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            myMapService.deleteMyMapList(user, 999L);
+        });
+
+        assertEquals(ResultCode.MY_MAP_LIST_NOT_FOUND, exception.getResultCode());
+        verify(myMapListRepository, never()).delete(any());
+    }
+
+    @DisplayName("uuid 기반 My Map 지도 조회 - 성공")
+    @Test
+    void findMyMap() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        String uuid = "test-uuid";
+
+        Brand brand = createBrand("test_brand", "brand.img");
+        setId(brand, 50L);
+
+        Store store1 = createStore("test_store1", "test_addr", brand);
+        setId(store1, 70L);
+        Store store2 = createStore("test_store2", "test_addr2", brand);
+        setId(store2, 90L);
+
+        MyMapList myMapList = createMyMapList(user, "MyMap 1", MarkerColor.GREEN, "uuid1");
+        setId(myMapList, 100L);
+
+        MyMap myMap1 = createMyMap(myMapList, store1);
+        setId(myMap1, 400L);
+        MyMap myMap2 = createMyMap(myMapList, store2);
+        setId(myMap2, 401L);
+
+        List<MyMap> myMaps = List.of(myMap1, myMap2);
+
+        // mock
+        when(myMapListRepository.findByUuid(uuid)).thenReturn(Optional.of(myMapList));
+        when(myMapRepository.findByMyMapList(myMapList)).thenReturn(myMaps);
+
+        // when
+        MyMapRes result = myMapService.findMyMap(user, uuid);
+
+        // then
+        assertNotNull(result);
+        assertEquals(myMapList.getMarkerColor(), result.markerColor());
+        assertEquals(myMapList.getTitle(), result.title());
+        assertEquals(myMapList.getId(), result.myMapListId());
+        assertEquals(myMapList.getUuid(), result.uuid());
+        assertTrue(result.isMine());
+        verify(myMapListRepository).findByUuid(uuid);
+        verify(myMapRepository).findByMyMapList(myMapList);
     }
 
     private User createUser() {
@@ -202,11 +330,55 @@ class MyMapServiceTest {
         return user;
     }
 
-    private MyMapList createMyMapList(User user, String mapName, MarkerColor markerColor) {
+    private Brand createBrand(String name, String image) {
+        Category category = Category.builder()
+                .categoryName("카테고리A")
+                .build();
+        setId(category, 1L);
+
+        Benefit benefit = Benefit.builder()
+                .description("혜택1")
+                .build();
+        setId(benefit, 2L);
+
+        Brand brand = Brand.builder()
+                .category(category)
+                .brandName(name)
+                .logoImage(image)
+                .usageMethod("모바일 바코드 제시")
+                .usageLimit("1일 1회")
+                .storeType(StoreType.OFFLINE)
+                .benefits(List.of(benefit))
+                .build();
+        return brand;
+    }
+
+    private Point createPoint(double latitude, double longitude) {
+        return geometryFactory.createPoint(new Coordinate(longitude, latitude)); // 위도(Y), 경도(X)
+    }
+
+    private Store createStore(String name, String addrDetail, Brand brand) {
+        return Store.builder()
+                .name(name)
+                .addrDetail(addrDetail)
+                .geom(createPoint(123.23, 37.2312))
+                .brand(brand)
+                .build();
+    }
+
+    private MyMapList createMyMapList(User user, String mapName, MarkerColor markerColor, String uuid) {
         return MyMapList.builder()
                 .user(user)
                 .title(mapName)
                 .markerColor(markerColor)
+                .uuid(uuid)
+                .build();
+    }
+
+    private MyMap createMyMap(MyMapList myMapList, Store store) {
+        return MyMap.builder()
+                .myMapList(myMapList)
+                .store(store)
                 .build();
     }
 

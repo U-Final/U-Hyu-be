@@ -8,13 +8,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record MyMapListRes(
         Long myMapListId,
         String title,
-        MarkerColor markerColor
+        MarkerColor markerColor,
+        String uuid
 ) {
     public static MyMapListRes from(MyMapList myMapList){
         return new MyMapListRes(
                 myMapList.getId(),
                 myMapList.getTitle(),
-                myMapList.getMarkerColor()
+                myMapList.getMarkerColor(),
+                myMapList.getUuid()
         );
     }
 }

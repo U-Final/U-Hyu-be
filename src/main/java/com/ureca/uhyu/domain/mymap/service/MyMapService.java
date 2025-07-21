@@ -1,12 +1,16 @@
 package com.ureca.uhyu.domain.mymap.service;
 
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
+import com.ureca.uhyu.domain.mymap.dto.response.MyMapRes;
 import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
+import com.ureca.uhyu.domain.mymap.entity.MyMap;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
+import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
@@ -23,6 +27,7 @@ import java.util.List;
 public class MyMapService {
 
     private final MyMapListRepository myMapListRepository;
+    private final MyMapRepository myMapRepository;
 
     public List<MyMapListRes> findMyMapList(User user) {
         List<MyMapList> myMapLists =  myMapListRepository.findByUser(user);
@@ -32,7 +37,7 @@ public class MyMapService {
     }
 
     @Transactional
-    public Long createMyMapList(User user,  CreateMyMapListReq createMyMapListReq) {
+    public CreateMyMapListRes createMyMapList(User user, CreateMyMapListReq createMyMapListReq) {
         MyMapList myMapList = MyMapList.builder()
                 .title(createMyMapListReq.title())
                 .markerColor(createMyMapListReq.markerColor())
@@ -41,7 +46,7 @@ public class MyMapService {
                 .build();
         MyMapList savedMyMapList = myMapListRepository.save(myMapList);
 
-        return savedMyMapList.getId();
+        return new CreateMyMapListRes(savedMyMapList.getId());
     }
 
     @Transactional
@@ -62,5 +67,24 @@ public class MyMapService {
         myMapList.updateMyMapList(title, markerColor);
         MyMapList savedMyMapList = myMapListRepository.save(myMapList);
         return UpdateMyMapListRes.from(savedMyMapList);
+    }
+
+    @Transactional
+    public void deleteMyMapList(User user, Long myMapListId) {
+        MyMapList myMapList = myMapListRepository.findById(myMapListId)
+                .orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
+
+        if (!myMapList.getUser().getId().equals(user.getId())) {
+            throw new GlobalException(ResultCode.FORBIDDEN);
+        }
+
+        myMapListRepository.delete(myMapList);
+    }
+
+    public MyMapRes findMyMap(User user, String uuid) {
+        MyMapList myMapList = myMapListRepository.findByUuid(uuid).orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
+        List<MyMap> myMaps = myMapRepository.findByMyMapList(myMapList);
+
+        return MyMapRes.from(user, myMapList, myMaps);
     }
 }
