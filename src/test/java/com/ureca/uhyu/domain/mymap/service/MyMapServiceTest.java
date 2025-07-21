@@ -403,7 +403,7 @@ class MyMapServiceTest {
         }
     }
 
-    @DisplayName("스토어가 포함된 마이맵 목록 및 즐겨찾기 여부 조회 - 성공")
+    @DisplayName("My Map 매장 등록 유무 조회 - 성공")
     @Test
     void findMyMapListWithIsBookmarked_success() {
         // given
@@ -466,5 +466,49 @@ class MyMapServiceTest {
         verify(myMapRepository, times(2)).findByMyMapList(any());
         verify(bookmarkListRepository).findByUser(user);
         verify(bookmarkRepository).findByBookmarkList(bookmarkList);
+    }
+
+    @DisplayName("My Map 매장 등록 유무 조회 - 스토어 ID가 존재하지 않아 실패")
+    @Test
+    void findMyMapListWithIsBookmarked_fail_storeNotFound() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+        Long invalidStoreId = 999L;
+
+        when(storeRepository.findById(invalidStoreId)).thenReturn(Optional.empty());
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            myMapService.findMyMapListWithIsBookmarked(user, invalidStoreId);
+        });
+
+        assertEquals(ResultCode.NOT_FOUND_STORE, exception.getResultCode());
+        verify(storeRepository).findById(invalidStoreId);
+    }
+
+    @DisplayName("My Map 매장 등록 유무 조회 - 사용자의 북마크 리스트가 존재하지 않아 실패")
+    @Test
+    void findMyMapListWithIsBookmarked_fail_bookmarkListNotFound() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        Brand brand = createBrand("브랜드", "logo.png");
+        setId(brand, 10L);
+        Store store = createStore("매장", "서울시", brand);
+        setId(store, 100L);
+
+        when(storeRepository.findById(100L)).thenReturn(Optional.of(store));
+        when(myMapListRepository.findByUser(user)).thenReturn(List.of());
+        when(bookmarkListRepository.findByUser(user)).thenReturn(Optional.empty());
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            myMapService.findMyMapListWithIsBookmarked(user, 100L);
+        });
+
+        assertEquals(ResultCode.BOOKMARK_LIST_NOT_FOUND, exception.getResultCode());
+        verify(bookmarkListRepository).findByUser(user);
     }
 }
