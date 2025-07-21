@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1752740846334-1" author="student">
+        <createTable tableName="my_map">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_my_map"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="mymap_list_id" type="BIGINT"/>
+            <column name="store_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1752740846334-2" author="student">
+        <createTable tableName="my_map_list">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_my_map_list"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="title" type="VARCHAR(30)"/>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="marker_color" type="VARCHAR(255)"/>
+            <column name="visibility" type="VARCHAR(255)"/>
+            <column name="uuid" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1752740846334-3" author="student">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="my_map_list"
+                                 constraintName="FK_MY_MAP_LIST_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1752740846334-4" author="student">
+        <addForeignKeyConstraint baseColumnNames="mymap_list_id" baseTableName="my_map"
+                                 constraintName="FK_MY_MAP_ON_MYMAP_LIST" referencedColumnNames="id"
+                                 referencedTableName="my_map_list"/>
+    </changeSet>
+    <changeSet id="1752740846334-5" author="student">
+        <addForeignKeyConstraint baseColumnNames="store_id" baseTableName="my_map" constraintName="FK_MY_MAP_ON_STORE"
+                                 referencedColumnNames="id" referencedTableName="store"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,9 +1,13 @@
 package com.ureca.uhyu.domain.brand.service;
 
+import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandPageResult;
 import com.ureca.uhyu.domain.brand.dto.response.BrandRes;
+import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,5 +36,10 @@ public class BrandService {
         boolean hasNext = page + 1 < totalPages;
 
         return BrandListRes.from(brandList, hasNext, totalPages, page);
+    }
+
+    public BrandInfoRes findBrandInfo(Long brandId) {
+        Brand brand = brandRepository.findById(brandId).orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
+        return BrandInfoRes.from(brand);
     }
 }
