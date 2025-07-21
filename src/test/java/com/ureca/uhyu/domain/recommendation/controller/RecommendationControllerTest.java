@@ -73,7 +73,6 @@ class RecommendationControllerTest {
                 .andDo(print());
 
         // then
-        // then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].brandName").value("스타벅스"))
                 .andExpect(jsonPath("$.data[0].rank").value(1))
