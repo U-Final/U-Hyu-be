@@ -32,15 +32,4 @@ public class Recommendation extends BaseEntity {
 
     @Column(name = "rank")
     private Integer rank;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
 }
