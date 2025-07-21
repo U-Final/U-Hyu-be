@@ -43,8 +43,8 @@ public enum ResultCode {
     BOOKMARK_DELETE_SUCCESS(HttpStatus.OK, 4005, "즐겨찾기 삭제가 완료되었습니다."),
     BOOKMARK_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, 4006, "즐겨찾기 리스트가 없습니다."),
     MY_MAP_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, 4007, "My Map 리스트가 없습니다."),
-    NOT_FOUNT_RECOMMENDATION_FOR_USER(HttpStatus.NOT_FOUND, 4008, "추천 결과가 존재하지 않습니다"),
-    BRAND_ID_IS_NULL(HttpStatus.NOT_FOUND, 4009, "brand id가 존재하지 않습니다.");
+    NOT_FOUND_RECOMMENDATION_FOR_USER(HttpStatus.NOT_FOUND, 4008, "추천 결과가 존재하지 않습니다"),
+    BRAND_ID_IS_NULL(HttpStatus.NOT_FOUND, 4009, "brand id가 존재하지 않습니다."),
 
 
     /**

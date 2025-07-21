@@ -21,11 +21,11 @@ public class Recommendation extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
-    private Brand brandId;
+    private Brand brand;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category categoryId;
+    private Category category;
 
     @Column(name = "score")
     private Long score;
