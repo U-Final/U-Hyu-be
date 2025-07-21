@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface BookmarkListRepository extends JpaRepository<BookmarkList, Long> {
     Optional<BookmarkList> findByUser(User user);
+
+    boolean existsByUser(User user);
 }

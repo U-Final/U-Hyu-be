@@ -422,9 +422,11 @@ class MyMapServiceTest {
         MyMapList list2 = createMyMapList(user, "마이맵 2", MarkerColor.YELLOW, "uuid-2");
         setId(list1, 200L);
         setId(list2, 201L);
+        List<MyMapList> lists = List.of(list1, list2);
 
         MyMap map1 = createMyMap(list1, store); // list1에 포함
         MyMap map2 = createMyMap(list2, store2); // list2에는 포함 안 됨
+        List<MyMap> myMaps = List.of(map1, map2);
 
         BookmarkList bookmarkList = BookmarkList.builder().user(user).build();
         setId(bookmarkList, 300L);
@@ -435,8 +437,7 @@ class MyMapServiceTest {
         // mock
         when(storeRepository.findById(100L)).thenReturn(Optional.of(store));
         when(myMapListRepository.findByUser(user)).thenReturn(List.of(list1, list2));
-        when(myMapRepository.findByMyMapList(list1)).thenReturn(List.of(map1));
-        when(myMapRepository.findByMyMapList(list2)).thenReturn(List.of(map2));
+        when(myMapRepository.findByMyMapListIn(lists)).thenReturn(List.of(map1, map2));
         when(bookmarkListRepository.findByUser(user)).thenReturn(Optional.of(bookmarkList));
         when(bookmarkRepository.findByBookmarkList(bookmarkList)).thenReturn(List.of(bookmark));
 
@@ -450,20 +451,20 @@ class MyMapServiceTest {
         assertEquals(2, result.bookmarkedMyMapLists().size());
 
         BookmarkedMyMapListRes res1 = result.bookmarkedMyMapLists().get(0);
-        assertEquals(200L, res1.MyMapListId());
+        assertEquals(200L, res1.myMapListId());
         assertEquals("마이맵 1", res1.title());
         assertEquals(MarkerColor.GREEN, res1.markerColor());
         assertTrue(res1.isMyMapped());
 
         BookmarkedMyMapListRes res2 = result.bookmarkedMyMapLists().get(1);
-        assertEquals(201L, res2.MyMapListId());
+        assertEquals(201L, res2.myMapListId());
         assertEquals("마이맵 2", res2.title());
         assertEquals(MarkerColor.YELLOW, res2.markerColor());
         assertFalse(res2.isMyMapped());
 
         verify(storeRepository).findById(100L);
         verify(myMapListRepository).findByUser(user);
-        verify(myMapRepository, times(2)).findByMyMapList(any());
+        verify(myMapRepository, times(1)).findByMyMapListIn(any());
         verify(bookmarkListRepository).findByUser(user);
         verify(bookmarkRepository).findByBookmarkList(bookmarkList);
     }

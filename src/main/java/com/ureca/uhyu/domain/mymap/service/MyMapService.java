@@ -23,7 +23,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -108,9 +111,16 @@ public class MyMapService {
         //MyMap 안에 store가 있는지 검증
         List<MyMapList> myMapLists = myMapListRepository.findByUser(user);
 
+        // 모든 MyMapList에 대한 MyMap을 한 번에 조회
+        List<MyMap> allMyMaps = myMapRepository.findByMyMapListIn(myMapLists);
+
+        // MyMapList별로 그룹화
+        Map<Long, List<MyMap>> myMapsByListId = allMyMaps.stream()
+                .collect(Collectors.groupingBy(myMap -> myMap.getMyMapList().getId()));
+
         List<BookmarkedMyMapListRes> myMapListResponses = myMapLists.stream()
                 .map(myMapList -> {
-                    List<MyMap> myMaps = myMapRepository.findByMyMapList(myMapList); // ← 핵심 수정 부분
+                    List<MyMap> myMaps = myMapsByListId.getOrDefault(myMapList.getId(), Collections.emptyList());
                     boolean isMapped = myMaps.stream()
                             .anyMatch(myMap -> myMap.getStore().getId().equals(storeId));
                     return BookmarkedMyMapListRes.from(myMapList, isMapped);

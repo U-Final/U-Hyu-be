@@ -5,7 +5,7 @@ import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 
 public record BookmarkedMyMapListRes(
-        Long MyMapListId,
+        Long myMapListId,
         MarkerColor markerColor,
         String title,
         Boolean isMyMapped
