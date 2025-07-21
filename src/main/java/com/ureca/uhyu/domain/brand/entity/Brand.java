@@ -5,6 +5,7 @@ import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Where(clause = "deleted = false")
 public class Brand extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,6 +29,9 @@ public class Brand extends BaseEntity {
     private String usageMethod;
 
     private String usageLimit;
+
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted = false;
 
     @Enumerated(EnumType.STRING)
     private StoreType storeType;
@@ -48,5 +53,9 @@ public class Brand extends BaseEntity {
         this.usageMethod = usageMethod;
         this.usageLimit = usageLimit;
         this.storeType = storeType;
+    }
+
+    public void markDeleted() {
+        this.deleted = true;
     }
 }

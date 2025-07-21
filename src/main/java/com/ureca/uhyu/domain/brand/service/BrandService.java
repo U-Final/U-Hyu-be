@@ -139,6 +139,8 @@ public class BrandService {
 
     @Transactional
     public void deleteBrand(Long brandId) {
-        brandRepository.deleteById(brandId);
+        Brand brand = brandRepository.findByIdAndDeletedFalse(brandId)
+                .orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
+        brand.markDeleted();
     }
 }
