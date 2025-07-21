@@ -55,7 +55,7 @@ public class MyMapController {
     }
 
     @Operation(summary = "uuid 기반 My Map 지도 조회", description = "my map uuid 기반으로 지도 조회")
-    @GetMapping("/public/{uuid}")
+    @GetMapping("/{uuid}")
     public CommonResponse<MyMapRes> getMyMapByUuid(@CurrentUser User user, @PathVariable String uuid) {
         return CommonResponse.success(myMapService.findMyMap(user, uuid));
     }

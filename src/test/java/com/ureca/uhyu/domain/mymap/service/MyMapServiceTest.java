@@ -292,7 +292,7 @@ class MyMapServiceTest {
         List<MyMap> myMaps = List.of(myMap1, myMap2);
 
         // mock
-        when(myMapListRepository.findByUuid(uuid)).thenReturn(myMapList);
+        when(myMapListRepository.findByUuid(uuid)).thenReturn(Optional.of(myMapList));
         when(myMapRepository.findByMyMapList(myMapList)).thenReturn(myMaps);
 
         // when

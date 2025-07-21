@@ -82,7 +82,7 @@ public class MyMapService {
     }
 
     public MyMapRes findMyMap(User user, String uuid) {
-        MyMapList myMapList = myMapListRepository.findByUuid(uuid);
+        MyMapList myMapList = myMapListRepository.findByUuid(uuid).orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
         List<MyMap> myMaps = myMapRepository.findByMyMapList(myMapList);
 
         return MyMapRes.from(user, myMapList, myMaps);
