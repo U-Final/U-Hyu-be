@@ -6,22 +6,24 @@ import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
-import com.ureca.uhyu.domain.mymap.dto.response.CreateMyMapListRes;
-import com.ureca.uhyu.domain.mymap.dto.response.MyMapListRes;
-import com.ureca.uhyu.domain.mymap.dto.response.MyMapRes;
-import com.ureca.uhyu.domain.mymap.dto.response.UpdateMyMapListRes;
+import com.ureca.uhyu.domain.mymap.dto.response.*;
 import com.ureca.uhyu.domain.mymap.entity.MyMap;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
 import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.store.repository.StoreRepository;
+import com.ureca.uhyu.domain.user.entity.Bookmark;
+import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.DisplayName;
@@ -52,6 +54,15 @@ class MyMapServiceTest {
 
     @Mock
     private MyMapRepository myMapRepository;
+
+    @Mock
+    private BookmarkRepository bookmarkRepository;
+
+    @Mock
+    private BookmarkListRepository bookmarkListRepository;
+
+    @Mock
+    private StoreRepository storeRepository;
 
     @InjectMocks
     private MyMapService myMapService;
@@ -390,5 +401,70 @@ class MyMapServiceTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @DisplayName("스토어가 포함된 마이맵 목록 및 즐겨찾기 여부 조회 - 성공")
+    @Test
+    void findMyMapListWithIsBookmarked_success() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        Brand brand = createBrand("테스트 브랜드", "logo.png");
+        setId(brand, 10L);
+
+        Store store = createStore("테스트 매장", "서울시 강남구", brand);
+        setId(store, 100L);
+        Store store2 = createStore("다른 매장", "주소", brand);
+        setId(store2, 101L);
+
+        MyMapList list1 = createMyMapList(user, "마이맵 1", MarkerColor.GREEN, "uuid-1");
+        MyMapList list2 = createMyMapList(user, "마이맵 2", MarkerColor.YELLOW, "uuid-2");
+        setId(list1, 200L);
+        setId(list2, 201L);
+
+        MyMap map1 = createMyMap(list1, store); // list1에 포함
+        MyMap map2 = createMyMap(list2, store2); // list2에는 포함 안 됨
+
+        BookmarkList bookmarkList = BookmarkList.builder().user(user).build();
+        setId(bookmarkList, 300L);
+
+        Bookmark bookmark = Bookmark.builder().bookmarkList(bookmarkList).store(store).build();
+        setId(bookmark, 301L);
+
+        // mock
+        when(storeRepository.findById(100L)).thenReturn(Optional.of(store));
+        when(myMapListRepository.findByUser(user)).thenReturn(List.of(list1, list2));
+        when(myMapRepository.findByMyMapList(list1)).thenReturn(List.of(map1));
+        when(myMapRepository.findByMyMapList(list2)).thenReturn(List.of(map2));
+        when(bookmarkListRepository.findByUser(user)).thenReturn(Optional.of(bookmarkList));
+        when(bookmarkRepository.findByBookmarkList(bookmarkList)).thenReturn(List.of(bookmark));
+
+        // when
+        BookmarkedMyMapRes result = myMapService.findMyMapListWithIsBookmarked(user, 100L);
+
+        // then
+        assertNotNull(result);
+        assertEquals("테스트 매장", result.storeName());
+        assertTrue(result.isBookmarked());
+        assertEquals(2, result.bookmarkedMyMapLists().size());
+
+        BookmarkedMyMapListRes res1 = result.bookmarkedMyMapLists().get(0);
+        assertEquals(200L, res1.MyMapListId());
+        assertEquals("마이맵 1", res1.title());
+        assertEquals(MarkerColor.GREEN, res1.markerColor());
+        assertTrue(res1.isMyMapped());
+
+        BookmarkedMyMapListRes res2 = result.bookmarkedMyMapLists().get(1);
+        assertEquals(201L, res2.MyMapListId());
+        assertEquals("마이맵 2", res2.title());
+        assertEquals(MarkerColor.YELLOW, res2.markerColor());
+        assertFalse(res2.isMyMapped());
+
+        verify(storeRepository).findById(100L);
+        verify(myMapListRepository).findByUser(user);
+        verify(myMapRepository, times(2)).findByMyMapList(any());
+        verify(bookmarkListRepository).findByUser(user);
+        verify(bookmarkRepository).findByBookmarkList(bookmarkList);
     }
 }
