@@ -23,7 +23,7 @@ public class MyMapList extends BaseEntity {
     @Column(nullable = false)
     private MarkerColor markerColor;
 
-    @Column(name = "uuid", nullable = false)
+    @Column(name = "uuid", nullable = false, unique = true)
     private String uuid;
 
     @ManyToOne(fetch = FetchType.LAZY)

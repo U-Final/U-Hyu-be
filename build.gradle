@@ -61,6 +61,10 @@ dependencies {
 
     // Oauth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// validation
+	implementation("jakarta.validation:jakarta.validation-api")
+	implementation("org.hibernate.validator:hibernate-validator")
 }
 
 tasks.named('test') {
