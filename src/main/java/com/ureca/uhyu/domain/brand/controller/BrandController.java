@@ -9,15 +9,16 @@ import com.ureca.uhyu.domain.brand.service.BrandService;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class BrandController {
@@ -48,6 +49,7 @@ public class BrandController {
     @Operation(summary = "관리자 제휴 브랜드 추가", description = "관리자 유저 제휴 브랜드 추가 기능")
     @PostMapping("/admin/brand")
     public CommonResponse<CreateUpdateBrandRes> createBrand(@RequestBody CreateBrandReq createBrandReq) {
+        log.error("=== raw json : {} ===", createBrandReq);
         return CommonResponse.success(brandService.createBrand(createBrandReq));
     }
 
