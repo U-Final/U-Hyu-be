@@ -4,11 +4,9 @@ import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.response.*;
 import com.ureca.uhyu.domain.brand.entity.Benefit;
-import com.ureca.uhyu.domain.brand.dto.response.*;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
-import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
 import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -19,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -59,7 +56,6 @@ public class BrandService {
                 .map(BrandNameRes::from)
                 .toList();
     }
-}
 
     @Transactional
     public CreateUpdateBrandRes createBrand(CreateBrandReq request) {
@@ -153,4 +149,3 @@ public class BrandService {
         brand.markDeleted();
     }
 }
-

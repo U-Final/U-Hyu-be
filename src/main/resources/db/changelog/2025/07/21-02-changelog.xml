@@ -20,6 +20,7 @@
             <column name="score" type="BIGINT"/>
             <column name="rank" type="INT"/>
         </createTable>
+    </changeSet>
     <changeSet id="1753064912205-2" author="sowon">
         <addColumn tableName="action_logs">
             <column name="category_id" type="BIGINT"/>

@@ -10,7 +10,6 @@ import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
 import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
-import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
@@ -266,7 +265,11 @@ class BrandServiceTest {
     @Test
     void deleteBrand_success() {
         // given
-        Brand brand = createBrand("이디야", "img.png");
+        Long categoryId = 1L;
+        Category category = createCategory("패션");
+        setId(category, categoryId);
+
+        Brand brand = createBrand("이디야", "img.png", category);
         setId(brand, 5L);
         when(brandRepository.findByIdAndDeletedFalse(5L)).thenReturn(Optional.of(brand));
 

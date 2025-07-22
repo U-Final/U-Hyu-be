@@ -35,8 +35,7 @@ public class BrandController {
 
     private final BrandService brandService;
 
-    @Operation(summary = "제휴처 목록 조회", description = "제휴처 목록 조회, 필터링 적용 가능")
-    @GetMapping("/brand-list")
+
     @Operation(
             summary = "제휴처 목록 조회",
             description = """
@@ -98,7 +97,7 @@ public class BrandController {
                     )
             )
     })
-    @GetMapping
+    @GetMapping("/brand-list")
     public CommonResponse<BrandListRes> getBrands(
             @Parameter(
                     description = "카테고리 필터",
