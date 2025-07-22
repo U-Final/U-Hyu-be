@@ -63,4 +63,21 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
                 .where(builder)
                 .fetch();
     }
+
+    @Override
+    public List<Store> findStoresByBrandAndRadius(Double lat, Double lon, Double radius, List<Long> brandIds) {
+        if (brandIds == null || brandIds.isEmpty()) return List.of();
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // 위치 필터
+        builder.and(withinRadius(lat, lon, radius));
+
+        // 추천 브랜드 필터
+        builder.and(brand.id.in(brandIds));
+
+        return baseStoreQuery()
+                .where(builder)
+                .fetch();
+    }
 }

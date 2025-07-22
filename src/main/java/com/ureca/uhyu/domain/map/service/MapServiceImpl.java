@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
+import com.ureca.uhyu.domain.recommendation.entity.Recommendation;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
 import com.ureca.uhyu.domain.store.entity.Store;
@@ -109,7 +110,19 @@ public class MapServiceImpl implements MapService {
 
     @Override
     public List<MapRes> findRecommendedStores(Double lat, Double lon, Double radius, User user) {
+        List<Long> brandIds = recommendationRepository.findByUserId(user.getId())
+                .stream()
+                .map(recommendation -> recommendation.getBrand().getId())
+                .toList();
 
-        return List.of();
+        if (brandIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<Store> stores = storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, brandIds);
+
+        return stores.stream()
+                .map(MapRes::from)
+                .toList();
     }
 }

@@ -59,6 +59,6 @@ public class MapController {
             @RequestParam Double radius,
             @CurrentUser User user
     ) {
-        return CommonResponse.success(ResultCode.SUCCESS, mapService.findRecommendedStores(lat, lon, radius, user));
+        return CommonResponse.success(mapService.findRecommendedStores(lat, lon, radius, user));
     }
 }
