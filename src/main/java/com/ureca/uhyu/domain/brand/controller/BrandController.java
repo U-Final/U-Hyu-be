@@ -1,11 +1,16 @@
 package com.ureca.uhyu.domain.brand.controller;
 
+import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
+import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
+import com.ureca.uhyu.domain.brand.dto.response.CreateUpdateBrandRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandNameRes;
 import com.ureca.uhyu.domain.brand.service.BrandService;
 import com.ureca.uhyu.global.response.CommonResponse;
+import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -17,18 +22,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Tag(name = "브랜드/제휴점", description = "제휴점 목록 조회 및 상세 정보 관련 API")
 @RestController
-@RequestMapping("/brand-list")
 @RequiredArgsConstructor
 public class BrandController {
 
     private final BrandService brandService;
 
+    @Operation(summary = "제휴처 목록 조회", description = "제휴처 목록 조회, 필터링 적용 가능")
+    @GetMapping("/brand-list")
     @Operation(
             summary = "제휴처 목록 조회",
             description = """
@@ -191,6 +199,27 @@ public class BrandController {
                     example = "1"
             ) @PathVariable(name = "brand_id") Long brandId){
         return CommonResponse.success(brandService.findBrandInfo(brandId));
+    }
+
+    @Operation(summary = "관리자 제휴 브랜드 추가", description = "관리자 유저 제휴 브랜드 추가 기능")
+    @PostMapping("/admin/brand")
+    public CommonResponse<CreateUpdateBrandRes> createBrand(@Valid @RequestBody CreateBrandReq createBrandReq) {
+        return CommonResponse.success(brandService.createBrand(createBrandReq));
+    }
+
+    @Operation(summary = "관리자 제휴 브랜드 수정", description = "관리자 유저 제휴 브랜드 수정 기능")
+    @PutMapping("/admin/brands/{brand_id}")
+    public CommonResponse<CreateUpdateBrandRes> updateBrand(
+            @PathVariable(name = "brand_id") Long brandId,
+            @Valid @RequestBody UpdateBrandReq updateBrandReq) {
+        return CommonResponse.success(brandService.updateBrand(brandId, updateBrandReq));
+    }
+
+    @Operation(summary = "관리자 제휴 브랜드 삭제", description = "관리자 유저 제휴 브랜드 삭제 기능")
+    @DeleteMapping("/admin/brands/{brand_id}")
+    public CommonResponse<ResultCode> deleteBrand(@Valid @PathVariable(name = "brand_id") Long brandId) {
+        brandService.deleteBrand(brandId);
+        return CommonResponse.success(ResultCode.DELETE_BRAND_SUCCESS);
     }
 
     @Operation(summary = "카테고리별 제휴처 목록 조회", description = "카테고리를 요청값으로 받으면 해당 카테고리의 브랜드들 조회하는 기능")

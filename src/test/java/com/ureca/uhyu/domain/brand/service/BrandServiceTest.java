@@ -10,6 +10,7 @@ import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
 import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
+import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
@@ -39,6 +40,9 @@ class BrandServiceTest {
     @InjectMocks
     private BrandService brandService;
 
+    @Mock
+    private CategoryRepository categoryRepository;
+
     @DisplayName("제휴처 목록 조회 - 다음 페이지 존재(페이지네이션 검증)")
     @Test
     void findBrands_hasNextTrue() {
@@ -59,7 +63,7 @@ class BrandServiceTest {
         setId(brand2, 2L);
 
         List<Brand> brandList = List.of(brand1, brand2);
-        long totalCount = 5L; 
+        long totalCount = 5L;
 
         BrandPageResult mockResult = new BrandPageResult(brandList, totalCount);
 
@@ -256,5 +260,20 @@ class BrandServiceTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @DisplayName("브랜드 삭제 성공")
+    @Test
+    void deleteBrand_success() {
+        // given
+        Brand brand = createBrand("이디야", "img.png");
+        setId(brand, 5L);
+        when(brandRepository.findByIdAndDeletedFalse(5L)).thenReturn(Optional.of(brand));
+
+        // when
+        brandService.deleteBrand(5L);
+
+        // then
+        assertTrue(brand.getDeleted()); // soft delete 확인
     }
 }
