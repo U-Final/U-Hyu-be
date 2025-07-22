@@ -48,15 +48,16 @@ public class BrandController {
 
     @Operation(summary = "관리자 제휴 브랜드 추가", description = "관리자 유저 제휴 브랜드 추가 기능")
     @PostMapping("/admin/brand")
-    public CommonResponse<CreateUpdateBrandRes> createBrand(@RequestBody CreateBrandReq createBrandReq) {
-        log.error("=== raw json : {} ===", createBrandReq);
+    public CommonResponse<CreateUpdateBrandRes> createBrand(@Valid @RequestBody CreateBrandReq createBrandReq) {
         return CommonResponse.success(brandService.createBrand(createBrandReq));
     }
 
     @Operation(summary = "관리자 제휴 브랜드 수정", description = "관리자 유저 제휴 브랜드 수정 기능")
     @PutMapping("/admin/brands/{brand_id}")
-    public CommonResponse<CreateUpdateBrandRes> updateBrand(@Valid @RequestBody UpdateBrandReq updateBrandReq) {
-        return CommonResponse.success(brandService.updateBrand(updateBrandReq));
+    public CommonResponse<CreateUpdateBrandRes> updateBrand(
+            @PathVariable(name = "brand_id") Long brandId,
+            @Valid @RequestBody UpdateBrandReq updateBrandReq) {
+        return CommonResponse.success(brandService.updateBrand(brandId, updateBrandReq));
     }
 
     @Operation(summary = "관리자 제휴 브랜드 삭제", description = "관리자 유저 제휴 브랜드 삭제 기능")

@@ -55,8 +55,6 @@ public class BrandService {
             throw new GlobalException(ResultCode.BRAND_NAME_DUPLICATED);
         }
 
-        log.info("=== store_type : {} ===", request.storeType());
-
         try {
             StoreType.valueOf(request.storeType().name());
         } catch (IllegalArgumentException e) {
@@ -94,35 +92,31 @@ public class BrandService {
     }
 
     @Transactional
-    public CreateUpdateBrandRes updateBrand(UpdateBrandReq request) {
-        // 1. 브랜드 조회
-        Brand brand = brandRepository.findById(request.brandId())
+    public CreateUpdateBrandRes updateBrand(Long brandId, UpdateBrandReq request) {
+
+        Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
 
-        // 브랜드명 중복 검사
         if (brandRepository.existsByBrandName(request.brandName())) {
             throw new GlobalException(ResultCode.BRAND_NAME_DUPLICATED);
         }
 
-        // storeType enum 검사
         try {
-            StoreType.valueOf(request.store_type().name());
+            StoreType.valueOf(request.storeType().name());
         } catch (IllegalArgumentException e) {
             throw new GlobalException(ResultCode.INVALID_STORE_TYPE);
         }
 
-        // 2. 카테고리 조회
-        Category category = categoryRepository.findById(request.category_id())
+        Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new GlobalException(ResultCode.CATEGORY_NOT_FOUND));
         brand.changeCategory(category);
 
-        // 3. 필드 업데이트
         brand.updateBrandInfo(
                 request.brandName(),
                 request.brandImg(),
-                request.usage_method(),
-                request.usage_limit(),
-                request.store_type()
+                request.usageMethod(),
+                request.usageLimit(),
+                request.storeType()
         );
 
         List<Benefit> updateBenefits = request.data().stream()

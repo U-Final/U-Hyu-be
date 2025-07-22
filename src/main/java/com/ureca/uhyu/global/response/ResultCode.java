@@ -57,7 +57,7 @@ public enum ResultCode {
      */
     CREATE_BRAND_SUCCESS(HttpStatus.CREATED, 6001, "제휴처 브랜드 정보가 성공적으로 저장되었습니다."),
     UPDATE_BRAND_SUCCESS(HttpStatus.OK, 6002, "제휴처 브랜드 정보가 성공적으로 수정되었습니다."),
-    DELETE_BRAND_SUCCESS(HttpStatus.OK, 6003, "제휴처 브랜드 정보가 성공적으로 수정되었습니다."),
+    DELETE_BRAND_SUCCESS(HttpStatus.OK, 6003, "제휴처 브랜드 정보가 성공적으로 삭제되었습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 6005, "관련된 카테고리가 없습니다."),
     BRAND_NAME_DUPLICATED(HttpStatus.BAD_REQUEST, 6006, "브랜드 이름이 중복됩니다."),
     INVALID_STORE_TYPE(HttpStatus.BAD_REQUEST, 6007, "매장 타입은 OFFLINE, ONLINE만 가능합니다.");

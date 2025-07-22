@@ -11,10 +11,10 @@ public record UpdateBrandReq(
         String brandName,
         String brandImg,
         List<BenefitDto> data, // grade, benefit 리스트
-        Long category_id,
-        String usage_limit,
-        String usage_method,
-        StoreType store_type
+        Long categoryId,
+        String usageLimit,
+        String usageMethod,
+        StoreType storeType
 ) {
     public record BenefitDto(
             Grade grade,
