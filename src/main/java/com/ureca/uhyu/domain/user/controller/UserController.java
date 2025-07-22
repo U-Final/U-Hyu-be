@@ -102,7 +102,6 @@ public class UserController {
                     hidden = true
             ) @CurrentUser User user
     ) {
-
         Long userId = userService.saveOnboardingInfo(request, user);
 
         Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), UserRole.USER);
