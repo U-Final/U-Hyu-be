@@ -6,9 +6,9 @@ import java.util.Arrays;
 
 @Getter
 public enum PermitAllURI {
-    OAUTH2("/oauth2"),
-    LOGIN("/login"),
-    // MAP_STORES("/map/stores"),
+    OAUTH2("/oauth2/authorization/kakao"),
+    LOGIN("/login/oauth2/code/kakao"),
+    MAP_STORES("/map/stores"),
     SWAGGER("/swagger-ui"),
     DOCS("/v3/api-docs"),
     ROOT("/"),
@@ -23,6 +23,6 @@ public enum PermitAllURI {
     public static boolean isPermit(String requestUri) {
         return Arrays.stream(values())
                 .map(PermitAllURI::getUri)
-                .anyMatch(requestUri::startsWith);
+                .anyMatch(requestUri::equals);
     }
 }

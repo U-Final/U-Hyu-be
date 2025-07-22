@@ -34,7 +34,7 @@ public class MapController {
     }
 
     @Operation(summary = "매장 상세정보 조회", description = "지도 마커를 클릭하면 등급별 혜택/제공 횟수/이용방법을 반환")
-    @GetMapping("/{storeId}")
+    @GetMapping("/detail/{storeId}")
     public CommonResponse<StoreDetailRes> getStoreDetail(
             @PathVariable Long storeId,
             @CurrentUser User user
