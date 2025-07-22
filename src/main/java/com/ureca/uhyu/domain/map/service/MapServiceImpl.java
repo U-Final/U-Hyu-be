@@ -22,6 +22,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,7 +111,14 @@ public class MapServiceImpl implements MapService {
 
     @Override
     public List<MapRes> findRecommendedStores(Double lat, Double lon, Double radius, User user) {
-        List<Long> brandIds = recommendationRepository.findByUserId(user.getId())
+
+        // 가장 최근에 추천된 (최신화가 반영된?) 브랜드가 추천된 시간 가져오기
+        LocalDateTime latestCreatedAt = recommendationRepository
+                .findTop1CreatedAtByUserIdOrderByCreatedAtDesc(user.getId())
+                .orElseThrow(() -> new GlobalException((ResultCode.NOT_FOUND_RECOMMENDATION_FOR_USER)));
+
+        // 해당 시간의 top3 추천 브랜드 가져오기
+        List<Long> brandIds = recommendationRepository.findTop3ByUserIdAndCreatedAtOrderByRankAsc(user.getId(), LocalDateTime.from(latestCreatedAt))
                 .stream()
                 .map(recommendation -> recommendation.getBrand().getId())
                 .toList();
