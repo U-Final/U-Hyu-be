@@ -50,12 +50,11 @@ public class BrandService {
 
     @Transactional
     public CreateUpdateBrandRes createBrand(CreateBrandReq request) {
-        // 브랜드명 중복 검사
+
         if (brandRepository.existsByBrandName(request.brandName())) {
             throw new GlobalException(ResultCode.BRAND_NAME_DUPLICATED);
         }
 
-        // storeType enum 검사
         try {
             StoreType.valueOf(request.store_type().name());
         } catch (IllegalArgumentException e) {
