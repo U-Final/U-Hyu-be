@@ -3,18 +3,26 @@ package com.ureca.uhyu.domain.map.service;
 import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
+import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
+import com.ureca.uhyu.domain.recommendation.entity.Recommendation;
+import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.store.repository.StoreRepository;
 import com.ureca.uhyu.domain.store.repository.StoreRepositoryCustom;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
+import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
+import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
+import com.ureca.uhyu.domain.user.enums.Status;
+import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,12 +33,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MapServiceImplTest {
@@ -40,6 +49,9 @@ class MapServiceImplTest {
 
     @Mock
     private StoreRepositoryCustom storeRepositoryCustom;
+
+    @Mock
+    private RecommendationRepository recommendationRepository;
 
     @InjectMocks
     private MapServiceImpl mapService;
@@ -72,6 +84,122 @@ class MapServiceImplTest {
             .brand(brand)
             .geom(dummyPoint)
             .build();
+
+    private User createUser() {
+        Marker marker = Marker.builder().markerImage("marker.jpg").build();
+        setId(marker, 1L);
+
+        User user = User.builder()
+                .userName("홍길동")
+                .kakaoId(456465L)
+                .email("asdad@kakao.com")
+                .age((byte) 32)
+                .gender(Gender.MALE)
+                .role(UserRole.TMP_USER)
+                .status(Status.ACTIVE)
+                .grade(Grade.GOOD)
+                .profileImage("asdsad.png")
+                .nickname("nick")
+                .marker(marker)
+                .build();
+
+        return user;
+    }
+
+    private Brand createBrand(String name, String image) {
+        Category category = Category.builder()
+                .categoryName("카테고리A")
+                .build();
+        setId(category, 1L);
+
+        Benefit benefit = Benefit.builder()
+                .description("혜택1")
+                .build();
+        setId(benefit, 2L);
+
+        Brand brand = Brand.builder()
+                .category(category)
+                .brandName(name)
+                .logoImage(image)
+                .usageMethod("모바일 바코드 제시")
+                .usageLimit("1일 1회")
+                .storeType(StoreType.OFFLINE)
+                .benefits(List.of(benefit))
+                .build();
+        return brand;
+    }
+
+    private Point createPoint(double latitude, double longitude) {
+        return geometryFactory.createPoint(new Coordinate(longitude, latitude)); // 위도(Y), 경도(X)
+    }
+
+    private Store createStore(String name, String addrDetail, Brand brand) {
+        return Store.builder()
+                .name(name)
+                .addrDetail(addrDetail)
+                .geom(createPoint(123.23, 37.2312))
+                .brand(brand)
+                .build();
+    }
+
+    private Recommendation createRecommendation(User user, Brand brand) {
+        return Recommendation.builder()
+                .userId(user.getId())
+                .brand(brand)
+                .build();
+    }
+
+    private void setId(Object target, Long idValue) {
+        try {
+            Field idField = target.getClass().getSuperclass().getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(target, idValue);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DisplayName("")
+    @Test
+    void findRecommendedStores() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+        double lat = 37.5665;
+        double lon = 126.9780;
+        double radius = 5.0;
+
+        Brand brand1 = createBrand("브랜드1", "logo1.png");
+        Brand brand2 = createBrand("브랜드2", "logo2.png");
+        setId(brand1, 10L);
+        setId(brand2, 11L);
+
+        Recommendation rec1 = createRecommendation(user, brand1);
+        Recommendation rec2 = createRecommendation(user, brand2);
+
+        List<Recommendation> recommendations = List.of(rec1, rec2);
+
+        Store store1 = createStore("스토어A", "주소1", brand1);
+        Store store2 = createStore("스토어B", "주소2", brand2);
+        setId(store1, 100L);
+        setId(store2, 101L);
+
+        List<Store> stores = List.of(store1, store2);
+
+        // mock
+        when(recommendationRepository.findByUserId(user.getId())).thenReturn(recommendations);
+        when(storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, List.of(10L, 11L))).thenReturn(stores);
+
+        // when
+        List<MapRes> result = mapService.findRecommendedStores(lat, lon, radius, user);
+
+        // then
+        assertEquals(2, result.size());
+        assertEquals("스토어A", result.get(0).storeName());
+        assertEquals("스토어B", result.get(1).storeName());
+        verify(recommendationRepository).findByUserId(user.getId());
+        verify(storeRepositoryCustom).findStoresByBrandAndRadius(lat, lon, radius, List.of(10L, 11L));
+    }
 
     @Nested
     class GetFilteredStoresTest {
