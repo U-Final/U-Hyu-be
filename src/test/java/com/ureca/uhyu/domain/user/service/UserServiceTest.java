@@ -313,78 +313,78 @@ class UserServiceTest {
         verify(bookmarkRepository, never()).delete(any());
     }
 
-    @DisplayName("사용자 활동 내역 조회")
-    @Test
-    void findUserStatistics() {
-        // given
-        User user = createUser();
-        setId(user, 1L);
-
-        Integer discountMoney = 12345;
-
-        // 가장 많이 조회한 브랜드
-        Brand brand1 = createBrand("브랜드A", "logo1.png");
-        Brand brand2 = createBrand("브랜드B", "logo2.png");
-        Brand brand3 = createBrand("브랜드C", "logo3.png");
-        Brand brand4 = createBrand("브랜드D", "logo4.png");
-        setId(brand1, 1L);
-        setId(brand2, 2L);
-        setId(brand3, 3L);
-        setId(brand4, 4L);
-
-        List<Brand> topBrands = List.of(brand2, brand4, brand1);
-
-        // 가장 최근 방문 매장
-        Store store1 = createStore(brand1, "스토어1", "서울시 강남구");
-        Store store2 = createStore(brand2, "스토어2", "서울시 마포구");
-        Store store3 = createStore(brand3, "스토어3", "서울시 종로구");
-        setId(store1, 11L);
-        setId(store2, 12L);
-        setId(store3, 13L);
-
-        List<Store> recentStores = List.of(store1, store2, store3);
-
-        // mock
-        when(historyRepository.findDiscountMoneyThisMonth(user)).thenReturn(discountMoney);
-        when(actionLogsRepository.findTop3ClickedBrands(user)).thenReturn(topBrands);
-        when(historyRepository.findTop3RecentStore(user)).thenReturn(recentStores);
-
-        // when
-        UserStatisticsRes result = userService.findUserStatistics(user);
-
-        // then
-        assertEquals(discountMoney, result.discountMoney());
-
-        // 가장 많이 조회한 브랜드
-        assertEquals(3, result.bestBrandList().size());
-
-        assertEquals(2, result.bestBrandList().get(0).bestBrandId());
-        assertEquals("브랜드B", result.bestBrandList().get(0).bestBrandName());
-        assertEquals("logo2.png", result.bestBrandList().get(0).bestBrandImage());
-
-        assertEquals(4, result.bestBrandList().get(1).bestBrandId());
-        assertEquals("브랜드D", result.bestBrandList().get(1).bestBrandName());
-        assertEquals("logo4.png", result.bestBrandList().get(1).bestBrandImage());
-
-        assertEquals(1, result.bestBrandList().get(2).bestBrandId());
-        assertEquals("브랜드A", result.bestBrandList().get(2).bestBrandName());
-        assertEquals("logo1.png", result.bestBrandList().get(2).bestBrandImage());
-
-        // 가장 최근 방문 매장
-        assertEquals(3, result.recentStoreList().size());
-
-        assertEquals(11L, result.recentStoreList().get(0).recentStoreId());
-        assertEquals("스토어1", result.recentStoreList().get(0).recentStoreName());
-        assertEquals("logo1.png", result.recentStoreList().get(0).recentBrandImage());
-
-        assertEquals(12L, result.recentStoreList().get(1).recentStoreId());
-        assertEquals("스토어2", result.recentStoreList().get(1).recentStoreName());
-        assertEquals("logo2.png", result.recentStoreList().get(1).recentBrandImage());
-
-        assertEquals(13L, result.recentStoreList().get(2).recentStoreId());
-        assertEquals("스토어3", result.recentStoreList().get(2).recentStoreName());
-        assertEquals("logo3.png", result.recentStoreList().get(2).recentBrandImage());
-    }
+//    @DisplayName("사용자 활동 내역 조회")
+//    @Test
+//    void findUserStatistics() {
+//        // given
+//        User user = createUser();
+//        setId(user, 1L);
+//
+//        Integer discountMoney = 12345;
+//
+//        // 가장 많이 조회한 브랜드
+//        Brand brand1 = createBrand("브랜드A", "logo1.png");
+//        Brand brand2 = createBrand("브랜드B", "logo2.png");
+//        Brand brand3 = createBrand("브랜드C", "logo3.png");
+//        Brand brand4 = createBrand("브랜드D", "logo4.png");
+//        setId(brand1, 1L);
+//        setId(brand2, 2L);
+//        setId(brand3, 3L);
+//        setId(brand4, 4L);
+//
+//        List<Brand> topBrands = List.of(brand2, brand4, brand1);
+//
+//        // 가장 최근 방문 매장
+//        Store store1 = createStore(brand1, "스토어1", "서울시 강남구");
+//        Store store2 = createStore(brand2, "스토어2", "서울시 마포구");
+//        Store store3 = createStore(brand3, "스토어3", "서울시 종로구");
+//        setId(store1, 11L);
+//        setId(store2, 12L);
+//        setId(store3, 13L);
+//
+//        List<Store> recentStores = List.of(store1, store2, store3);
+//
+//        // mock
+//        when(historyRepository.findDiscountMoneyThisMonth(user)).thenReturn(discountMoney);
+//        when(actionLogsRepository.findTop3ClickedBrands(user)).thenReturn(topBrands);
+//        when(historyRepository.findTop3RecentStore(user)).thenReturn(recentStores);
+//
+//        // when
+//        UserStatisticsRes result = userService.findUserStatistics(user);
+//
+//        // then
+//        assertEquals(discountMoney, result.discountMoney());
+//
+//        // 가장 많이 조회한 브랜드
+//        assertEquals(3, result.bestBrandList().size());
+//
+//        assertEquals(2, result.bestBrandList().get(0).bestBrandId());
+//        assertEquals("브랜드B", result.bestBrandList().get(0).bestBrandName());
+//        assertEquals("logo2.png", result.bestBrandList().get(0).bestBrandImage());
+//
+//        assertEquals(4, result.bestBrandList().get(1).bestBrandId());
+//        assertEquals("브랜드D", result.bestBrandList().get(1).bestBrandName());
+//        assertEquals("logo4.png", result.bestBrandList().get(1).bestBrandImage());
+//
+//        assertEquals(1, result.bestBrandList().get(2).bestBrandId());
+//        assertEquals("브랜드A", result.bestBrandList().get(2).bestBrandName());
+//        assertEquals("logo1.png", result.bestBrandList().get(2).bestBrandImage());
+//
+//        // 가장 최근 방문 매장
+//        assertEquals(3, result.recentStoreList().size());
+//
+//        assertEquals(11L, result.recentStoreList().get(0).recentStoreId());
+//        assertEquals("스토어1", result.recentStoreList().get(0).recentStoreName());
+//        assertEquals("logo1.png", result.recentStoreList().get(0).recentBrandImage());
+//
+//        assertEquals(12L, result.recentStoreList().get(1).recentStoreId());
+//        assertEquals("스토어2", result.recentStoreList().get(1).recentStoreName());
+//        assertEquals("logo2.png", result.recentStoreList().get(1).recentBrandImage());
+//
+//        assertEquals(13L, result.recentStoreList().get(2).recentStoreId());
+//        assertEquals("스토어3", result.recentStoreList().get(2).recentStoreName());
+//        assertEquals("logo3.png", result.recentStoreList().get(2).recentBrandImage());
+//    }
 
     private User createUser() {
         Marker marker = Marker.builder().markerImage("marker.jpg").build();

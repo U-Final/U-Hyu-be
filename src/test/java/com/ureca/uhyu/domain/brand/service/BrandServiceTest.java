@@ -2,12 +2,15 @@ package com.ureca.uhyu.domain.brand.service;
 
 import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
+import com.ureca.uhyu.domain.brand.dto.response.BrandNameRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandPageResult;
 import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.DisplayName;
@@ -22,13 +25,16 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BrandServiceTest {
 
     @Mock
     private BrandRepository brandRepository;
+
+    @Mock
+    private CategoryRepository categoryRepository;
 
     @InjectMocks
     private BrandService brandService;
@@ -37,15 +43,18 @@ class BrandServiceTest {
     @Test
     void findBrands_hasNextTrue() {
         // given
-        String category = "카페";
+        String categoryName = "카페";
         List<String> storeTypes = List.of("ONLINE", "OFFLINE");
         List<String> benefitTypes = List.of("DISCOUNT", "GIFT");
         String brandName = "이디야";
         int page = 0;
         int size = 2;                   // 1 페이지당 2개씩
 
-        Brand brand1 = createBrand("이디야", "logo_A.png");
-        Brand brand2 = createBrand("브랜드 B", "logo_B.png");
+        Category category = createCategory(categoryName);
+        setId(category, 1L);
+
+        Brand brand1 = createBrand("이디야", "logo_A.png", category);
+        Brand brand2 = createBrand("브랜드 B", "logo_B.png",  category);
         setId(brand1, 1L);
         setId(brand2, 2L);
 
@@ -55,11 +64,11 @@ class BrandServiceTest {
         BrandPageResult mockResult = new BrandPageResult(brandList, totalCount);
 
         // mock
-        when(brandRepository.findByCategoryOrNameOrTypes(category, storeTypes, benefitTypes, brandName, page, size))
+        when(brandRepository.findByCategoryOrNameOrTypes(categoryName, storeTypes, benefitTypes, brandName, page, size))
                 .thenReturn(mockResult);
 
         // when
-        BrandListRes result = brandService.findBrands(category, storeTypes, benefitTypes, brandName, page, size);
+        BrandListRes result = brandService.findBrands(categoryName, storeTypes, benefitTypes, brandName, page, size);
 
         // then
         assertEquals(2, result.brandList().size());
@@ -73,14 +82,17 @@ class BrandServiceTest {
     @Test
     void findBrands_hasNextFalse() {
         // given
-        String category = "카페";
+        String categoryName = "카페";
         List<String> storeTypes = List.of("ONLINE");
         List<String> benefitTypes = List.of("DISCOUNT");
         String brandName = null;
         int page = 1;
         int size = 2;
 
-        Brand brand1 = createBrand("이디야", "logo_A.png");
+        Category category = createCategory(categoryName);
+        setId(category, 1L);
+
+        Brand brand1 = createBrand("이디야", "logo_A.png", category);
         setId(brand1, 3L);
         List<Brand> brandList = List.of(brand1); // 마지막 페이지에 1건만
 
@@ -89,11 +101,11 @@ class BrandServiceTest {
         BrandPageResult mockResult = new BrandPageResult(brandList, totalCount);
 
         // mock
-        when(brandRepository.findByCategoryOrNameOrTypes(category, storeTypes, benefitTypes, brandName, page, size))
+        when(brandRepository.findByCategoryOrNameOrTypes(categoryName, storeTypes, benefitTypes, brandName, page, size))
                 .thenReturn(mockResult);
 
         // when
-        BrandListRes result = brandService.findBrands(category, storeTypes, benefitTypes, brandName, page, size);
+        BrandListRes result = brandService.findBrands(categoryName, storeTypes, benefitTypes, brandName, page, size);
 
         // then
         assertEquals(1, result.brandList().size());
@@ -133,7 +145,10 @@ class BrandServiceTest {
     @Test
     void findBrandInfo_success() {
         // given
-        Brand brand = createBrand("스타벅스", "starbucks.png");
+        Category category = createCategory("카페");
+        setId(category, 1L);
+
+        Brand brand = createBrand("스타벅스", "starbucks.png", category);
         setId(brand, 10L);
 
         when(brandRepository.findById(10L)).thenReturn(Optional.of(brand));
@@ -160,14 +175,64 @@ class BrandServiceTest {
         assertEquals(ResultCode.BRAND_NOT_FOUND, exception.getResultCode());
     }
 
-    private Brand createBrand(String name, String image) {
-        Category category = Category.builder()
-                .categoryName("카페")
-                .build();
-        setId(category, 1L);
+    @DisplayName("카테고리 ID로 브랜드 목록 조회 - 성공")
+    @Test
+    void findBrandByCategoryId_success() {
+        // given
+        Long categoryId = 1L;
+        Category category = createCategory("패션");
+        setId(category, categoryId);
 
+        Brand brand1 = createBrand("브랜드A", "a.png", category);
+        setId(brand1, 10L);
+        Brand brand2 = createBrand("브랜드B", "b.png", category);
+        setId(brand2, 11L);
+        List<Brand> brands = List.of(brand1, brand2);
+
+        // mock
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        when(brandRepository.findByCategory(category)).thenReturn(brands);
+
+        // when
+        List<BrandNameRes> result = brandService.findBrandByCategoryId(categoryId);
+
+        // then
+        assertEquals(2, result.size());
+        assertEquals("브랜드A", result.get(0).brandName());
+        assertEquals("브랜드B", result.get(1).brandName());
+        verify(categoryRepository).findById(categoryId);
+        verify(brandRepository).findByCategory(category);
+    }
+
+    @DisplayName("카테고리 ID로 브랜드 목록 조회 - 존재하지 않는 카테고리")
+    @Test
+    void findBrandByCategoryId_notFoundCategory() {
+        // given
+        Long categoryId = 999L;
+
+        // mock
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            brandService.findBrandByCategoryId(categoryId);
+        });
+
+        assertEquals(ResultCode.NOT_FOUND_CATEGORY, exception.getResultCode());
+        verify(categoryRepository).findById(categoryId);
+        verify(brandRepository, never()).findByCategory(any());
+    }
+
+    private Category createCategory(String name) {
+        return Category.builder()
+                .categoryName(name)
+                .build();
+    }
+
+    private Brand createBrand(String name, String image,  Category category) {
         Benefit benefit = Benefit.builder()
                 .description("혜택1")
+                .grade(Grade.GOOD)
                 .build();
         setId(benefit, 2L);
 
