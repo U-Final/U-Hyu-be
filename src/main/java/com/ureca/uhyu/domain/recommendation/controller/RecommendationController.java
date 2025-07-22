@@ -1,7 +1,6 @@
 package com.ureca.uhyu.domain.recommendation.controller;
 
 import com.ureca.uhyu.domain.recommendation.dto.RecommendationResponse;
-import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.recommendation.service.RecommendationService;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.annotation.CurrentUser;

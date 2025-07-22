@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
+import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.store.repository.StoreRepository;
@@ -31,6 +32,7 @@ public class MapServiceImpl implements MapService {
     private final StoreRepository storeRepository;
     private final BookmarkRepository bookmarkRepository;
     private final BookmarkListRepository bookmarkListRepository;
+    private final RecommendationRepository recommendationRepository;
 
     @Override
     public List<MapRes> getFilteredStores(Double lat, Double lon, Double radius, String categoryName, String brandName) {
@@ -103,5 +105,11 @@ public class MapServiceImpl implements MapService {
         }
 
         return new MapBookmarkRes(storeId,isBookmarked);
+    }
+
+    @Override
+    public List<MapRes> findRecommendedStores(Double lat, Double lon, Double radius, User user) {
+
+        return List.of();
     }
 }
