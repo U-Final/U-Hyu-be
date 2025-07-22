@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -137,5 +138,37 @@ public class MyMapService {
                 .anyMatch(bookmark -> bookmark.getStore().getId().equals(storeId));
 
         return BookmarkedMyMapRes.from(store, myMapListResponses, isBookmarked);
+    }
+
+    @Transactional
+    public ToggleMyMapRes toggleMyMap(User user, Long storeId, Long myMapListId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_STORE));
+        MyMapList myMapList = myMapListRepository.findById(myMapListId)
+                .orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
+
+        if (!myMapList.getUser().getId().equals(user.getId())) {
+            throw new GlobalException(ResultCode.FORBIDDEN);
+        }
+
+        Optional<MyMap> existingMyMap = myMapRepository.findByMyMapListAndStore(myMapList, store);
+
+        boolean isMyMapped;
+
+        if (existingMyMap.isPresent()) {
+            // 존재하면 해제
+            myMapRepository.delete(existingMyMap.get());
+            isMyMapped = false;
+        } else {
+            // 없으면 추가
+            MyMap newMyMap = MyMap.builder()
+                    .myMapList(myMapList)
+                    .store(store)
+                    .build();
+            myMapRepository.save(newMyMap);
+            isMyMapped = true;
+        }
+
+        return ToggleMyMapRes.from(myMapList, store, isMyMapped);
     }
 }
