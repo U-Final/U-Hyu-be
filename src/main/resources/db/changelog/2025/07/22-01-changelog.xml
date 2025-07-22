@@ -3,15 +3,21 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
     <changeSet id="1753163104850-1" author="student">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="brands" columnName="deleted"/>
+            </not>
+        </preConditions>
+
         <addColumn tableName="brands">
-            <column name="deleted" type="BOOLEAN"/>
+            <column name="deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
-    </changeSet>
-    <changeSet id="1753163104850-2" author="student">
-        <addNotNullConstraint columnName="deleted" tableName="brands"/>
     </changeSet>
 
 </databaseChangeLog>
