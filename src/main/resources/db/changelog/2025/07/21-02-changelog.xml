@@ -20,21 +20,26 @@
             <column name="score" type="BIGINT"/>
             <column name="rank" type="INT"/>
         </createTable>
-    </changeSet>
     <changeSet id="1753064912205-2" author="sowon">
         <addColumn tableName="action_logs">
             <column name="category_id" type="BIGINT"/>
         </addColumn>
     </changeSet>
+
     <changeSet id="1753064912205-3" author="sowon">
         <addForeignKeyConstraint baseColumnNames="brand_id" baseTableName="recommendation"
                                  constraintName="FK_RECOMMENDATION_ON_BRAND" referencedColumnNames="id"
                                  referencedTableName="brands"/>
     </changeSet>
+
     <changeSet id="1753064912205-4" author="sowon">
         <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="recommendation"
                                  constraintName="FK_RECOMMENDATION_ON_CATEGORY" referencedColumnNames="id"
                                  referencedTableName="categories"/>
+    </changeSet>
+
+    <changeSet id="1753083017494-3" author="student">
+        <addUniqueConstraint columnNames="user_id" constraintName="uc_bookmark_list_user" tableName="bookmark_list"/>
     </changeSet>
 
 </databaseChangeLog>

@@ -18,13 +18,7 @@ public record MyMapRes (
     List<MapRes> storeList,
     Boolean isMine
 ) {
-    public static MyMapRes from(User user, MyMapList myMapList, List<MyMap> myMapStroes) {
-        List<MapRes> storeList = myMapStroes.stream()
-                .map(myMap -> MapRes.from(myMap.getStore()))
-                .toList();
-
-        boolean isMine = myMapList.getUser().getId().equals(user.getId());
-
+    public static MyMapRes from(MyMapList myMapList, List<MapRes> storeList, boolean isMine) {
         return new MyMapRes(
                 myMapList.getMarkerColor(),
                 myMapList.getTitle(),
