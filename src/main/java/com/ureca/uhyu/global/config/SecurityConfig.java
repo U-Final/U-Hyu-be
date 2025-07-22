@@ -85,11 +85,9 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/"),
                                 new AntPathRequestMatcher("/login"),
                                 new AntPathRequestMatcher("/oauth2/**"),
-                                new AntPathRequestMatcher("/map/stores"),
                                 new AntPathRequestMatcher("/brand-list/**"),
                                 new AntPathRequestMatcher("/swagger-ui/**"),
-                                new AntPathRequestMatcher("/v3/api-docs/**"),
-                                new AntPathRequestMatcher("/actuator/health")
+                                new AntPathRequestMatcher("/v3/api-docs/**")
                         ).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -103,15 +101,19 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler())
                 )
+                // JwtAuthenticationFilter의 위치를 SecurityContextHolderFilter 뒤로 이동
+                // 이렇게 하면 SecurityContextHolder가 이미 초기화된 상태에서 JWT를 검증하고 인증 정보를 설정할 수 있습니다.
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository, customUserDetailsService),
-                        UsernamePasswordAuthenticationFilter.class
+                        org.springframework.security.web.context.SecurityContextHolderFilter.class
                 )
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendRedirect("/user/extra-info");
+                            log.warn("Access Denied: {}", accessDeniedException.getMessage());
+                            response.sendRedirect("/user/extra-info"); // AccessDenied 발생 시 리다이렉트
                         })
                 )
+                // 이 필터는 ROLE_TMP_USER 처리를 위한 것이므로, 기존 위치 유지
                 .addFilterAfter(new OncePerRequestFilter() {
                     @Override
                     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -121,16 +123,18 @@ public class SecurityConfig {
                                 authentication.getAuthorities().stream()
                                         .anyMatch(a -> a.getAuthority().equals("ROLE_TMP_USER"))) {
                             String uri = request.getRequestURI();
+                            // 특정 URI는 허용하고, 그 외에는 /user/extra-info로 리다이렉트
                             if (!uri.equals("/user/extra-info")
-                                    && !uri.startsWith("/static/")
-                                    && !uri.equals("/user/check-email")) {
+                                    && !uri.startsWith("/static/") // static 리소스 허용
+                                    && !uri.equals("/user/check-email")) { // 추가 이메일 확인 페이지 허용 (필요시)
+                                log.info("TMP_USER가 추가 정보 페이지로 리다이렉트: {}", uri);
                                 response.sendRedirect("/user/extra-info");
                                 return;
                             }
                         }
                         filterChain.doFilter(request, response);
                     }
-                }, UsernamePasswordAuthenticationFilter.class);
+                }, UsernamePasswordAuthenticationFilter.class); // UsernamePasswordAuthenticationFilter 뒤에
 
         return http.build();
     }

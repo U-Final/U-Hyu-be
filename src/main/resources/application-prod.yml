@@ -59,4 +59,5 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: info
 
 server:
-  forward-headers-strategy: framework
+  tomcat:
+    use-relative-redirects: true

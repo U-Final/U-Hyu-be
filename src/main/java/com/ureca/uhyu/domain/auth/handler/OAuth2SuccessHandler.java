@@ -85,8 +85,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             frontBaseUrl = "https://www.u-hyu.site";  // 프로덕션 환경
         }
 
-        log.info("Frontend base URL: '{}'", frontBaseUrl);
-
         // 사용자 역할에 따른 리다이렉트 경로 결정
         String finalRedirectUrl;
         if (userRole == UserRole.TMP_USER) {
