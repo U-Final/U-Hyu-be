@@ -75,6 +75,7 @@ public class BrandService {
                 .storeType(request.storeType())
                 .category(category)
 //                .stores() // 매장 정보는 없음
+                .deleted(false)
                 .build();
 
         List<Benefit> benefits = request.data().stream()
@@ -105,13 +106,13 @@ public class BrandService {
 
         // storeType enum 검사
         try {
-            StoreType.valueOf(request.storeType().name());
+            StoreType.valueOf(request.store_type().name());
         } catch (IllegalArgumentException e) {
             throw new GlobalException(ResultCode.INVALID_STORE_TYPE);
         }
 
         // 2. 카테고리 조회
-        Category category = categoryRepository.findById(request.categoryId())
+        Category category = categoryRepository.findById(request.category_id())
                 .orElseThrow(() -> new GlobalException(ResultCode.CATEGORY_NOT_FOUND));
         brand.changeCategory(category);
 
@@ -119,9 +120,9 @@ public class BrandService {
         brand.updateBrandInfo(
                 request.brandName(),
                 request.brandImg(),
-                request.usageMethod(),
-                request.usageLimit(),
-                request.storeType()
+                request.usage_method(),
+                request.usage_limit(),
+                request.store_type()
         );
 
         List<Benefit> updateBenefits = request.data().stream()
