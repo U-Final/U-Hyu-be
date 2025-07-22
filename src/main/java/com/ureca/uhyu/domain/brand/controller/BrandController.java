@@ -39,4 +39,6 @@ public class BrandController {
     public CommonResponse<BrandInfoRes> getBrandInfo(@PathVariable(name = "brand_id") Long brandId){
         return CommonResponse.success(brandService.findBrandInfo(brandId));
     }
+
+
 }

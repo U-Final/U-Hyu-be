@@ -145,7 +145,7 @@ public class MyMapService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_STORE));
         MyMapList myMapList = myMapListRepository.findById(myMapListId)
-                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_STORE));
+                .orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
 
         if (!myMapList.getUser().getId().equals(user.getId())) {
             throw new GlobalException(ResultCode.FORBIDDEN);
