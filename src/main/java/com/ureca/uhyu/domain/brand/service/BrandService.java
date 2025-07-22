@@ -55,22 +55,24 @@ public class BrandService {
             throw new GlobalException(ResultCode.BRAND_NAME_DUPLICATED);
         }
 
+        log.info("=== store_type : {} ===", request.storeType());
+
         try {
-            StoreType.valueOf(request.store_type().name());
+            StoreType.valueOf(request.storeType().name());
         } catch (IllegalArgumentException e) {
             throw new GlobalException(ResultCode.INVALID_STORE_TYPE);
         }
 
         // 카테고리 조회
-        Category category = categoryRepository.findById(request.category_id())
+        Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new GlobalException(ResultCode.CATEGORY_NOT_FOUND));
 
         Brand brand = Brand.builder()
                 .brandName(request.brandName())
                 .logoImage(request.brandImg())
-                .usageMethod(request.usage_method())
-                .usageLimit(request.usage_limit())
-                .storeType(request.store_type())
+                .usageMethod(request.usageMethod())
+                .usageLimit(request.usageLimit())
+                .storeType(request.storeType())
                 .category(category)
 //                .stores() // 매장 정보는 없음
                 .build();
@@ -103,13 +105,13 @@ public class BrandService {
 
         // storeType enum 검사
         try {
-            StoreType.valueOf(request.store_type().name());
+            StoreType.valueOf(request.storeType().name());
         } catch (IllegalArgumentException e) {
             throw new GlobalException(ResultCode.INVALID_STORE_TYPE);
         }
 
         // 2. 카테고리 조회
-        Category category = categoryRepository.findById(request.category_id())
+        Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new GlobalException(ResultCode.CATEGORY_NOT_FOUND));
         brand.changeCategory(category);
 
@@ -117,9 +119,9 @@ public class BrandService {
         brand.updateBrandInfo(
                 request.brandName(),
                 request.brandImg(),
-                request.usage_method(),
-                request.usage_limit(),
-                request.store_type()
+                request.usageMethod(),
+                request.usageLimit(),
+                request.storeType()
         );
 
         List<Benefit> updateBenefits = request.data().stream()
@@ -143,3 +145,4 @@ public class BrandService {
         brand.markDeleted();
     }
 }
+

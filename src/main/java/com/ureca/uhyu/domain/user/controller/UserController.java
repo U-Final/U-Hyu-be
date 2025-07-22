@@ -40,7 +40,6 @@ public class UserController {
             @Valid @RequestBody UserOnboardingRequest request, HttpServletResponse response,
             @CurrentUser User user
     ) {
-
         Long userId = userService.saveOnboardingInfo(request, user);
 
         Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), UserRole.USER);
@@ -48,7 +47,7 @@ public class UserController {
 
         response.addCookie(accessCookie);
 
-        return CommonResponse.success(ResultCode.USER_ONBOARDING_SUCCESS, null); // todo
+        return CommonResponse.success(ResultCode.USER_ONBOARDING_SUCCESS, null);
     }
 
     @Operation(summary = "개인정보 조회", description = "개인정보 조회: 로그인 필요")
