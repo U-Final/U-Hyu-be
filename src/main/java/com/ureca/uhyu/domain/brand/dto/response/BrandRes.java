@@ -9,9 +9,16 @@ import java.util.stream.Collectors;
 
 @Schema(description = "제휴처 목록 조회 - 제휴처 1개당 보여줄 정보들")
 public record BrandRes (
+        @Schema(description = "브랜드 ID", example = "1")
         Long brandId,
+        
+        @Schema(description = "브랜드명", example = "스타벅스")
         String brandName,
+        
+        @Schema(description = "브랜드 로고 이미지 URL", example = "https://example.com/logo.jpg")
         String logoImage,
+        
+        @Schema(description = "브랜드 설명 (등급별 혜택 정보 포함)", example = "VVIP : 학생 할인 15%, VIP : 학생 할인 10%, 우수 : 기본 할인 5%")
         String description
 ){
     public static BrandRes from(Brand brand){
