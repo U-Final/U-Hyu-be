@@ -5,6 +5,7 @@ import com.ureca.uhyu.domain.brand.repository.BrandRepository;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
+import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
 import com.ureca.uhyu.domain.user.dto.response.*;
@@ -35,6 +36,7 @@ public class UserService {
     private final HistoryRepository historyRepository;
     private final ActionLogsRepository actionLogsRepository;
 
+
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
 
@@ -43,6 +45,17 @@ public class UserService {
 
         saveUserBrandData(user, request.recentBrands(), DataType.RECENT);
         saveUserBrandData(user, request.interestedBrands(), DataType.INTEREST);
+
+        //온보딩 시 해당 user에 대한 즐겨찾기 List도 생성
+        if (bookmarkListRepository.existsByUser(user)) {
+            throw new GlobalException(ResultCode.BOOKMARK_LIST_ALREADY_EXISTS);
+        }
+        else {
+            BookmarkList bookmarkList = BookmarkList.builder()
+                    .user(user)
+                    .build();
+            bookmarkListRepository.save(bookmarkList);
+        }
 
         return user.getId();
     }
@@ -145,6 +158,10 @@ public class UserService {
         List<BestBrandListRes> bestBrandListRes = brands.stream()
                 .map(BestBrandListRes::from)
                 .toList();
-        return UserStatisticsRes.from(discountMoney, bestBrandListRes);
+        List<Store> stores = historyRepository.findRecentStoreInMonth(user);
+        List<RecentStoreListRes> recentStoreListRes = stores.stream()
+                .map(RecentStoreListRes::from)
+                .toList();
+        return UserStatisticsRes.from(discountMoney, bestBrandListRes, recentStoreListRes);
     }
 }
