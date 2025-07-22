@@ -1,11 +1,10 @@
 package com.ureca.uhyu.domain.brand.service;
 
-import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
-import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
-import com.ureca.uhyu.domain.brand.dto.response.BrandPageResult;
-import com.ureca.uhyu.domain.brand.dto.response.BrandRes;
+import com.ureca.uhyu.domain.brand.dto.response.*;
 import com.ureca.uhyu.domain.brand.entity.Brand;
+import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -20,6 +20,7 @@ import java.util.List;
 public class BrandService {
 
     private final BrandRepository brandRepository;
+    private final CategoryRepository categoryRepository;
 
     public BrandListRes findBrands(String category, List<String> storeType, List<String> benefitType,
                                    String brandName, int page, int size) {
@@ -41,5 +42,14 @@ public class BrandService {
     public BrandInfoRes findBrandInfo(Long brandId) {
         Brand brand = brandRepository.findById(brandId).orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
         return BrandInfoRes.from(brand);
+    }
+
+    public List<BrandNameRes> findBrandByCategoryId(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_CATEGORY));
+        List<Brand> brands = brandRepository.findByCategory(category);
+
+        return brands.stream()
+                .map(BrandNameRes::from)
+                .toList();
     }
 }
