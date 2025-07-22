@@ -39,9 +39,6 @@ class BrandServiceTest {
     @InjectMocks
     private BrandService brandService;
 
-    @Mock
-    private CategoryRepository categoryRepository;
-
     @DisplayName("제휴처 목록 조회 - 다음 페이지 존재(페이지네이션 검증)")
     @Test
     void findBrands_hasNextTrue() {
