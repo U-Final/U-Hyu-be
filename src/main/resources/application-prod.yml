@@ -57,3 +57,6 @@ logging:
   level:
     org.hibernate.SQL: info
     org.hibernate.type.descriptor.sql.BasicBinder: info
+
+server:
+  forward-headers-strategy: framework

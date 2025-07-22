@@ -38,12 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        String serverName = request.getServerName();
-
-        // 외부 도메인 요청은 필터링하지 않음
-        if (!"api.u-hyu.site".equals(serverName) && !"localhost".equals(serverName)) {
-            return true;
-        }
 
         return PermitAllURI.isPermit(uri);
     }
@@ -51,10 +45,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        log.info("JWT필터 진입");
         try {
             String accessToken = extractAccessTokenFromCookie(request);
 
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+                log.info("토큰 존재 && 토큰 validate");
 
                 String userId = jwtTokenProvider.getUserIdFromToken(accessToken);
                 String role = jwtTokenProvider.getRoleFromToken(accessToken);
@@ -67,6 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
+            log.info("토큰 존재 하지 않음 || 토큰 validate하지 않음");
 
             String expiredAccessToken = extractAccessTokenFromCookie(request);
 
@@ -77,6 +74,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .orElse(null);
 
             if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
+                log.info("리프헤시 토큰 존재 || 리프레시 토큰 validate");
+
                 String userRoleString = jwtTokenProvider.getRoleFromToken(refreshToken);
                 if (userRoleString == null) {
                     throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
@@ -95,6 +94,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
+
+            log.info("리프헤시 토큰 존재 안함|| 리프레시 토큰 validate 존재 안함");
 
             response.sendRedirect("/login");
             return;
