@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.mymap.controller;
 
+import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.*;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
@@ -365,5 +366,15 @@ public class MyMapController {
     @GetMapping("/list/{store_id}")
     public CommonResponse<BookmarkedMyMapRes> getMyMapListWithIsBookmarked(@CurrentUser User user, @PathVariable(name = "store_id") Long storeId) {
         return CommonResponse.success(myMapService.findMyMapListWithIsBookmarked(user, storeId));
+    }
+
+    @Operation(summary = "매장 My Map 토글", description = "매장 상세정보에서 즐겨찾기 토글 버튼 API")
+    @PostMapping("/{myMapListId}/store/{store_id}")
+    public CommonResponse<ToggleMyMapRes> toggleMyMap(
+            @CurrentUser User user,
+            @PathVariable Long myMapListId,
+            @PathVariable(name = "store_id") Long storeId
+    ) {
+        return CommonResponse.success(ResultCode.SUCCESS, myMapService.toggleMyMap(user, storeId, myMapListId));
     }
 }
