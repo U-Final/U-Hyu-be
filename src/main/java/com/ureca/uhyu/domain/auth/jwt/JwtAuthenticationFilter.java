@@ -40,9 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         boolean result = PermitAllURI.isPermit(uri);
 
-        log.info("현재 URI : " +uri);
-        log.info("😀 isPermit 여부 : " + result);
-
+        log.debug("현재 URI : {}, isPermit 여부 : {}", uri, result);
         return result;
     }
 
@@ -55,17 +53,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = extractAccessTokenFromCookie(request);
 
             if (accessToken == null || accessToken.trim().isEmpty()) {
-                log.warn("access_token이 비어있음");
+                log.debug("access_token이 비어있음");
                 filterChain.doFilter(request, response);
                 return;
             }
 
             if (jwtTokenProvider.validateToken(accessToken)) {
-                log.info("토큰 존재 && 토큰 validate");
+                log.debug("토큰 존재 && 토큰 validate");
 
                 String userId = jwtTokenProvider.getUserIdFromToken(accessToken);
                 String role = jwtTokenProvider.getRoleFromToken(accessToken);
-                log.info("현재 로그인 회원" + userId + "현재 회원의 role : " + role);
+
+                log.debug("현재 로그인 회원ID: {}", userId);
 
                 if (role == null) {
                     throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
@@ -73,28 +72,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 setAuthenticationContext(request, userId, role);
 
-                log.info("doFilter로 다음 필터로 넘거갈거임");
                 filterChain.doFilter(request, response);
 
                 return;
             }
-            log.info("토큰 존재 하지 않음 || 토큰 validate하지 않음");
+
+            log.debug("토큰 존재 하지 않음 || 토큰 validate하지 않음");
 
             String expiredAccessToken = extractAccessTokenFromCookie(request);
 
             String userId = jwtTokenProvider.getUserIdFromExpiredToken(expiredAccessToken);
 
-            log.info("만료된 access token의 userId : " + userId);
+            log.debug("만료된 access token의 userId : " + userId);
 
             String refreshToken = tokenRepository.findByUserId(Long.parseLong(userId))
                 .map(token -> token.getRefreshToken())
                 .orElse(null);
 
-            log.info("리프레시 토큰 : " + refreshToken);
-            log.info("jwtTokenProvider.validateToken(refreshToken) 결과 : " + jwtTokenProvider.validateToken(refreshToken));
+            log.debug("리프레시 토큰 : " + refreshToken);
+            log.debug("jwtTokenProvider.validateToken(refreshToken) 결과 : " + jwtTokenProvider.validateToken(refreshToken));
 
             if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-                log.info("리프레시 토큰 존재 || 리프레시 토큰 validate");
+                log.debug("리프레시 토큰 존재 || 리프레시 토큰 validate");
 
                 String userRoleString = jwtTokenProvider.getRoleFromToken(refreshToken);
                 if (userRoleString == null) {
@@ -115,7 +114,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            log.info("리프레시 토큰 존재 안함 || 리프레시 토큰 validate 안함");
+            log.debug("리프레시 토큰 존재 안함 || 리프레시 토큰 validate 안함");
 
             response.sendRedirect("/login");
 
@@ -133,8 +132,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // SecurityContext에 인증 정보를 설정하고 다음 필터로 진행
     private void setAuthenticationContext(HttpServletRequest request, String userId, String role) {
-        log.info("setAuthenticationContext()이 실행되었음!!!");
-
         CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(userId);
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

@@ -46,7 +46,7 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
     }
 
     @Override
-    public List<Store> findStoresByFilters(Double lon, Double lat, Double radius, String categoryName, String brandName) {
+    public List<Store> findStoresByFilters(Double lat, Double lon, Double radius, String categoryName, String brandName) {
         BooleanBuilder builder = new BooleanBuilder();
 
         builder.and(withinRadius(lat, lon, radius));

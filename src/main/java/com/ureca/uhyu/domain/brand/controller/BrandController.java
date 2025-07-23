@@ -96,8 +96,6 @@ public class BrandController {
                     )
             )
     })
-
-
     public CommonResponse<BrandListRes> getBrands(
             @Parameter(
                     description = "카테고리 필터",

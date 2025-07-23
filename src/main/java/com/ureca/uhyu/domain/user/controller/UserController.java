@@ -23,7 +23,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -108,7 +107,7 @@ public class UserController {
         tokenService.addAccessTokenCookie(response, String.valueOf(userId), UserRole.USER);
 
         // ✅ refresh token DB 저장
-        tokenService.addRefreshTokenCookie(user);
+        tokenService.saveRefreshToken(user);
 
         return CommonResponse.success(ResultCode.USER_ONBOARDING_SUCCESS, null);
     }

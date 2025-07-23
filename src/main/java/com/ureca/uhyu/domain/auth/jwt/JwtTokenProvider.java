@@ -71,7 +71,6 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            log.info("토큰 Validate 하네요~");
             return true;
         } catch (ExpiredJwtException e) {
             log.warn("JWT 만료: {}", e.getMessage());

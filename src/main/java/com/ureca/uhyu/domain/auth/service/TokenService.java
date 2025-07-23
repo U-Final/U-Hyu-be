@@ -94,8 +94,8 @@ public class TokenService {
         log.info("✅ AccessToken 쿠키 설정 완료");
     }
 
-    // Refresh 토큰 생성 + 저장 + 쿠키 설정
-    public void addRefreshTokenCookie(User user) {
+    // Refresh 토큰 생성 + 저장
+    public void saveRefreshToken(User user) {
         String token = jwtTokenProvider.generateToken(String.valueOf(user.getId()), user.getUserRole());
         saveOrUpdateRefreshToken(user, token);
         log.info("RefreshToken DB 저장");
