@@ -86,8 +86,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.debug("만료된 access token의 userId : " + userId);
 
             String refreshToken = tokenRepository.findByUserId(Long.parseLong(userId))
-                .map(token -> token.getRefreshToken())
-                .orElse(null);
+                    .map(token -> token.getRefreshToken())
+                    .orElse(null);
 
             log.debug("리프레시 토큰 : " + refreshToken);
             log.debug("jwtTokenProvider.validateToken(refreshToken) 결과 : " + jwtTokenProvider.validateToken(refreshToken));

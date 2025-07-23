@@ -9,5 +9,6 @@ public record KakaoUserInfoResponse(
         String name,
         String profileImage,
         Gender gender,
-        String age_range
+        String age_range,
+        String birthyear
 ) {}
