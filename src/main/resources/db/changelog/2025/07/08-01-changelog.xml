@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1751963872282-1" author="djlim00">
+        <createTable tableName="benefit">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_benefit"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="grade" type="VARCHAR(255)"/>
+            <column name="brand_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1751963872282-2" author="djlim00">
+        <createTable tableName="brands">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_brands"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="category_id" type="BIGINT"/>
+            <column name="brand_name" type="VARCHAR(255)"/>
+            <column name="logo_image" type="VARCHAR(255)"/>
+            <column name="store_type" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1751963872282-3" author="djlim00">
+        <createTable tableName="categories">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_categories"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="category_name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1751963872282-4" author="djlim00">
+        <createTable tableName="store">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_store"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="geom" type="geometry(Point, 4326)"/>
+            <column name="addr_detail" type="VARCHAR(255)"/>
+            <column name="brand_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1751963872282-5" author="djlim00">
+        <createTable tableName="token">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_token"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="refresh_token" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expire_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1751963872282-6" author="djlim00">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_users"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="user_name" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="kakao_id" type="BIGINT"/>
+            <column name="email" type="VARCHAR(200)"/>
+            <column name="age" type="TINYINT"/>
+            <column name="gender" type="VARCHAR(255)"/>
+            <column name="role" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="grade" type="SMALLINT"/>
+            <column name="profile_image" type="VARCHAR(500)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1751963872282-7" author="djlim00">
+        <addUniqueConstraint columnNames="user_id" constraintName="uc_token_user" tableName="token"/>
+    </changeSet>
+    <changeSet id="1751963872282-8" author="djlim00">
+        <addUniqueConstraint columnNames="email" constraintName="uc_users_email" tableName="users"/>
+    </changeSet>
+    <changeSet id="1751963872282-9" author="djlim00">
+        <addUniqueConstraint columnNames="kakao_id" constraintName="uc_users_kakaoid" tableName="users"/>
+    </changeSet>
+    <changeSet id="1751963872282-10" author="djlim00">
+        <addForeignKeyConstraint baseColumnNames="brand_id" baseTableName="benefit" constraintName="FK_BENEFIT_ON_BRAND"
+                                 referencedColumnNames="id" referencedTableName="brands"/>
+    </changeSet>
+    <changeSet id="1751963872282-11" author="djlim00">
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="brands"
+                                 constraintName="FK_BRANDS_ON_CATEGORY" referencedColumnNames="id"
+                                 referencedTableName="categories"/>
+    </changeSet>
+    <changeSet id="1751963872282-12" author="djlim00">
+        <addForeignKeyConstraint baseColumnNames="brand_id" baseTableName="store" constraintName="FK_STORE_ON_BRAND"
+                                 referencedColumnNames="id" referencedTableName="brands"/>
+    </changeSet>
+    <changeSet id="1751963872282-13" author="djlim00">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="token" constraintName="FK_TOKEN_ON_USER"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+
+</databaseChangeLog>
