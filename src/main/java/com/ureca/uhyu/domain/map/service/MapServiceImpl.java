@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
+import com.ureca.uhyu.domain.recommendation.dto.RecommendationResponse;
 import com.ureca.uhyu.domain.recommendation.entity.Recommendation;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
@@ -112,21 +113,22 @@ public class MapServiceImpl implements MapService {
     @Override
     public List<MapRes> findRecommendedStores(Double lat, Double lon, Double radius, User user) {
 
-        // 가장 최근에 추천된 (최신화가 반영된?) 브랜드가 추천된 시간 가져오기
-        LocalDateTime latestCreatedAt = recommendationRepository
-                .findTop1CreatedAtByUserIdOrderByCreatedAtDesc(user.getId())
-                .orElseThrow(() -> new GlobalException((ResultCode.NOT_FOUND_RECOMMENDATION_FOR_USER)));
-
-        // 해당 시간의 top3 추천 브랜드 가져오기
-        List<Long> brandIds = recommendationRepository.findTop3ByUserIdAndCreatedAtOrderByRankAsc(user.getId(), LocalDateTime.from(latestCreatedAt))
+        // 가장 최근 추천 받은 브랜드들 중 top3 추천 브랜드 가져오기
+        List<Long> brandIds = recommendationRepository.findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId())
                 .stream()
-                .map(recommendation -> recommendation.getBrand().getId())
+                .map(r -> {
+                    if (r.getBrand() == null) {
+                        throw new GlobalException((ResultCode.BRAND_ID_IS_NULL));
+                    }
+                    return r.getBrand().getId();
+                })
                 .toList();
 
         if (brandIds.isEmpty()) {
             return List.of();
         }
 
+        //추천 받은 브랜드들의 매장 목록 가져오기
         List<Store> stores = storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, brandIds);
 
         return stores.stream()

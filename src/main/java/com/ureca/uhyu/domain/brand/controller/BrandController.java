@@ -105,7 +105,7 @@ public class BrandController {
             ) @RequestParam(required = false) String category,
             @Parameter(
                     description = "매장 타입 필터 (복수 선택 가능)",
-                    example = "[\"매장\", \"포차\"]"
+                    example = "[\"OFFLINE\", \"ONLINE\"]"
             ) @RequestParam(required = false) List<String> storeType,
             @Parameter(
                     description = "혜택 타입 필터 (복수 선택 가능)",
