@@ -22,6 +22,8 @@ import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -159,9 +162,9 @@ class MapServiceImplTest {
         }
     }
 
-    @DisplayName("")
+    @DisplayName("근처 추천 매장 목록 조회 - 성공")
     @Test
-    void findRecommendedStores() {
+    void findRecommendedStores_success() {
         // given
         User user = createUser();
         setId(user, 1L);
@@ -176,19 +179,19 @@ class MapServiceImplTest {
 
         Recommendation rec1 = createRecommendation(user, brand1);
         Recommendation rec2 = createRecommendation(user, brand2);
-
         List<Recommendation> recommendations = List.of(rec1, rec2);
 
         Store store1 = createStore("스토어A", "주소1", brand1);
         Store store2 = createStore("스토어B", "주소2", brand2);
         setId(store1, 100L);
         setId(store2, 101L);
-
         List<Store> stores = List.of(store1, store2);
 
         // mock
-        when(recommendationRepository.findByUserId(user.getId())).thenReturn(recommendations);
-        when(storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, List.of(10L, 11L))).thenReturn(stores);
+        when(recommendationRepository.findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId()))
+                .thenReturn(recommendations);
+        when(storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, List.of(10L, 11L)))
+                .thenReturn(stores);
 
         // when
         List<MapRes> result = mapService.findRecommendedStores(lat, lon, radius, user);
@@ -197,8 +200,39 @@ class MapServiceImplTest {
         assertEquals(2, result.size());
         assertEquals("스토어A", result.get(0).storeName());
         assertEquals("스토어B", result.get(1).storeName());
-        verify(recommendationRepository).findByUserId(user.getId());
+
+        verify(recommendationRepository).findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId());
         verify(storeRepositoryCustom).findStoresByBrandAndRadius(lat, lon, radius, List.of(10L, 11L));
+    }
+
+    @DisplayName("근처 추천 매장 목록 조회 - 브랜드가 null일 경우 예외 발생")
+    @Test
+    void findRecommendedStores_brandIsNull_throwsException() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+        double lat = 37.0;
+        double lon = 127.0;
+        double radius = 3.0;
+
+        Recommendation invalidRec = Recommendation.builder()
+                .userId(user.getId())
+                .brand(null) // 브랜드가 null인 추천
+                .build();
+
+        List<Recommendation> invalidRecommendations = List.of(invalidRec);
+
+        when(recommendationRepository.findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId()))
+                .thenReturn(invalidRecommendations);
+
+        // when & then
+        GlobalException ex = assertThrows(GlobalException.class, () ->
+                mapService.findRecommendedStores(lat, lon, radius, user)
+        );
+
+        assertEquals(ResultCode.BRAND_ID_IS_NULL, ex.getResultCode());
+        verify(recommendationRepository).findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId());
+        verifyNoInteractions(storeRepositoryCustom);
     }
 
     @Nested
