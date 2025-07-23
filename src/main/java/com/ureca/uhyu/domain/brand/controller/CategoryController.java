@@ -1,8 +1,6 @@
 package com.ureca.uhyu.domain.brand.controller;
 
 import com.ureca.uhyu.domain.brand.dto.response.CategoryListRes;
-import com.ureca.uhyu.domain.brand.entity.Category;
-import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
 import com.ureca.uhyu.domain.brand.service.CategoryService;
 import com.ureca.uhyu.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/admin/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 
