@@ -76,10 +76,14 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         log.info("Request host header: '{}'", host);
 
         // 환경에 따른 프론트엔드 URL 결정
-        String frontBaseUrl = host!=null && host.contains("localhost") ? localFrontendUrl : prodFrontendUrl;
+        String frontBaseUrl = (host!=null && host.contains("localhost"))
+                ? localFrontendUrl
+                : prodFrontendUrl;
 
         // 사용자 역할에 따른 리다이렉트 경로 결정
-        String finalRedirectUrl = userRole== UserRole.TMP_USER ? frontBaseUrl + "/user/extra-info" : frontBaseUrl;
+        String finalRedirectUrl = userRole== UserRole.TMP_USER
+                ? frontBaseUrl + "/user/extra-info"
+                : frontBaseUrl;
 
         log.debug("Final redirect URL: '{}'", finalRedirectUrl);
         return finalRedirectUrl;

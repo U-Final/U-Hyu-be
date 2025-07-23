@@ -56,5 +56,8 @@ domain:
 
 logging:
   level:
+    com.ureca.uhyu.domain.auth.jwt: debug
+    com.ureca.uhyu.domain.auth.filter: debug
+    com.ureca.uhyu.domain.auth.handler: debug
     org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    org.hibernate.type.descriptor.sql.BasicBinder: debug
