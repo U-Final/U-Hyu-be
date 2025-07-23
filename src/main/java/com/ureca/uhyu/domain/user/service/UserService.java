@@ -36,7 +36,6 @@ public class UserService {
     private final HistoryRepository historyRepository;
     private final ActionLogsRepository actionLogsRepository;
 
-
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
 
