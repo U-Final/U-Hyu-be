@@ -5,11 +5,11 @@ import com.ureca.uhyu.domain.auth.jwt.JwtTokenProvider;
 import com.ureca.uhyu.domain.auth.repository.TokenRepository;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
-import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -27,6 +27,15 @@ public class TokenService {
 
     @Value("${jwt.refresh-token-expiration-days}")
     private long refreshTokenExpMillis;
+
+    @Value("${jwt.cookie.domain}")
+    private String cookieDomain;
+
+    @Value("${jwt.cookie.secure}")
+    private boolean isSecure;
+
+    @Value("${jwt.cookie.same-site}")
+    private String sameSite;
 
     public void saveOrUpdateRefreshToken(User user, String refreshToken) {
         Optional<Token> optionalToken = tokenRepository.findByUserId(user.getId());
@@ -48,27 +57,72 @@ public class TokenService {
         tokenRepository.save(token);
     }
 
-    // Access 토큰 쿠키 생성
-    public Cookie createAccessTokenCookie(String userId, UserRole role) {
-        log.info("access 토큰 쿠키 생성");
-        String accessToken = jwtTokenProvider.generateToken(userId, role);
-        return buildHttpOnlyCookie("access_token", accessToken, jwtTokenProvider.getAccessTokenExp());
+    // Access 토큰 쿠키 생성 및 응답에 추가
+    public void addAccessTokenCookie(HttpServletResponse response, String userId, UserRole role) {
+        String token = jwtTokenProvider.generateToken(userId, role);
+
+        // 쿠키 도메인 처리 - 빈 값이면 null로 설정
+        String finalDomain = (cookieDomain == null || cookieDomain.isBlank()) ? null : cookieDomain;
+
+        ResponseCookie cookie = ResponseCookie.from("access_token", token)
+                .httpOnly(true)
+                .secure(isSecure)
+                .path("/")
+                .maxAge(jwtTokenProvider.getAccessTokenExp() / 1000)
+                .sameSite(sameSite)
+                .domain(finalDomain)
+                .build();
+
+        // 상세한 디버깅 로그
+        log.info("=== 쿠키 설정 상세 정보 ===");
+        log.info("Domain: '{}' (null={}) ", finalDomain, finalDomain == null);
+        log.info("Secure: {}", isSecure);
+        log.info("SameSite: '{}'", sameSite);
+        log.info("HttpOnly: true");
+        log.info("Path: '/'");
+        log.info("MaxAge: {} seconds", jwtTokenProvider.getAccessTokenExp() / 1000);
+        log.info("Token length: {}", token.length());
+        log.info("Full cookie string: '{}'", cookie.toString());
+
+        // Set-Cookie 헤더 설정
+        response.addHeader("Set-Cookie", cookie.toString());
+
+        // 실제로 설정된 헤더 확인
+        String setCookieHeader = response.getHeader("Set-Cookie");
+        log.info("Actual Set-Cookie header: '{}'", setCookieHeader);
+
+        log.info("✅ AccessToken 쿠키 설정 완료");
     }
 
-    // Refresh 토큰 쿠키 생성 및 DB 저장
-    public void createRefreshToken(User user) {
-        String refreshToken = jwtTokenProvider.generateToken(
-                String.valueOf(user.getId()), user.getUserRole());
-        log.info("refresh 토큰 저장");
-        saveOrUpdateRefreshToken(user, refreshToken);
+    // Refresh 토큰 생성 + 저장
+    public void saveRefreshToken(User user) {
+        String token = jwtTokenProvider.generateToken(String.valueOf(user.getId()), user.getUserRole());
+        saveOrUpdateRefreshToken(user, token);
+        log.info("RefreshToken DB 저장");
     }
 
-    private Cookie buildHttpOnlyCookie(String name, String token, long maxAgeMillis) {
-        Cookie cookie = new Cookie(name, token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge((int) (maxAgeMillis / 1000)); // Convert milliseconds to seconds
-        return cookie;
+    // 쿠키 삭제 메서드도 필요하다면 아래 추가
+    public void deleteAccessTokenCookie(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("access_token", "")
+                .httpOnly(true)
+                .secure(isSecure)
+                .path("/")
+                .maxAge(0)
+                .sameSite(sameSite)
+                .domain(cookieDomain.isBlank() ? null : cookieDomain)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+
+    public void deleteRefreshTokenCookie(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
+                .httpOnly(true)
+                .secure(isSecure)
+                .path("/")
+                .maxAge(0)
+                .sameSite(sameSite)
+                .domain(cookieDomain.isBlank() ? null : cookieDomain)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 }

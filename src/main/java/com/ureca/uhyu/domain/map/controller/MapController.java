@@ -110,7 +110,7 @@ public class MapController {
                     example = "스타벅스"
             ) @RequestParam(required = false) String brand
     ) {
-        return CommonResponse.success(mapService.getFilteredStores(lat, lon, radius, category, brand));
+        return CommonResponse.success(ResultCode.SUCCESS, mapService.getFilteredStores(lat, lon, radius, category, brand));
     }
 
     @Operation(
@@ -174,7 +174,7 @@ public class MapController {
                     )
             )
     })
-    @GetMapping("/{storeId}")
+    @GetMapping("/detail/stores/{storeId}")
     public CommonResponse<StoreDetailRes> getStoreDetail(
             @Parameter(
                     description = "매장 ID",

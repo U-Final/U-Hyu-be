@@ -48,6 +48,15 @@ public class BrandService {
         return BrandInfoRes.from(brand);
     }
 
+    public List<BrandNameRes> findBrandByCategoryId(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_CATEGORY));
+        List<Brand> brands = brandRepository.findByCategory(category);
+
+        return brands.stream()
+                .map(BrandNameRes::from)
+                .toList();
+    }
+
     @Transactional
     public CreateUpdateBrandRes createBrand(CreateBrandReq request) {
 
@@ -140,4 +149,3 @@ public class BrandService {
         brand.markDeleted();
     }
 }
-
