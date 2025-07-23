@@ -47,6 +47,7 @@ public enum ResultCode {
     MY_MAP_LIST_DELETE_SUCCESS(HttpStatus.OK, 4009, "My Map 리스트 삭제가 완료되었습니다."),
     NOT_FOUND_RECOMMENDATION_FOR_USER(HttpStatus.NOT_FOUND, 4010, "추천 결과가 존재하지 않습니다"),
     BRAND_ID_IS_NULL(HttpStatus.NOT_FOUND, 4011, "brand id가 존재하지 않습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, 4012, "해당 유저를 찾을 수 없습니다"),
 
     /**
      * 5000번대 (제휴처 관련)

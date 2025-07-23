@@ -39,24 +39,28 @@ public class UserService {
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
 
-        user.setUserGrade(request.grade());
-        user.setUserRole(UserRole.USER); // TMP_USER → USER 변경
+        User persistedUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new GlobalException(ResultCode.USER_NOT_FOUND));
 
-        saveUserBrandData(user, request.recentBrands(), DataType.RECENT);
-        saveUserBrandData(user, request.interestedBrands(), DataType.INTEREST);
+        persistedUser.setUserGrade(request.grade());
+        persistedUser.setUserRole(UserRole.USER); // TMP_USER → USER 변경
+        userRepository.save(persistedUser);
+
+        saveUserBrandData(persistedUser, request.recentBrands(), DataType.RECENT);
+        saveUserBrandData(persistedUser, request.interestedBrands(), DataType.INTEREST);
 
         //온보딩 시 해당 user에 대한 즐겨찾기 List도 생성
-        if (bookmarkListRepository.existsByUser(user)) {
+        if (bookmarkListRepository.existsByUser(persistedUser)) {
             throw new GlobalException(ResultCode.BOOKMARK_LIST_ALREADY_EXISTS);
         }
         else {
             BookmarkList bookmarkList = BookmarkList.builder()
-                    .user(user)
+                    .user(persistedUser)
                     .build();
             bookmarkListRepository.save(bookmarkList);
         }
 
-        return user.getId();
+        return persistedUser.getId();
     }
 
     public GetUserInfoRes findUserInfo(User user) {
