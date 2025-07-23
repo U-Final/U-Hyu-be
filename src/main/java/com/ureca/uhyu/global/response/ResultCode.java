@@ -52,6 +52,7 @@ public enum ResultCode {
      * 5000번대 (제휴처 관련)
      */
     BRAND_NOT_FOUND(HttpStatus.NOT_FOUND, 5001, "제휴처 정보를 찾을 수 없습니다."),
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 5002, "카테고리 정보를 찾을 수 없습니다."),
 
     /**
      * 6000번대 (어드민 관련)
