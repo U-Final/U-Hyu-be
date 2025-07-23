@@ -4,6 +4,9 @@ import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
+import com.ureca.uhyu.domain.recommendation.dto.RecommendationResponse;
+import com.ureca.uhyu.domain.recommendation.entity.Recommendation;
+import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.store.repository.StoreRepository;
@@ -20,6 +23,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +35,7 @@ public class MapServiceImpl implements MapService {
     private final StoreRepository storeRepository;
     private final BookmarkRepository bookmarkRepository;
     private final BookmarkListRepository bookmarkListRepository;
+    private final RecommendationRepository recommendationRepository;
 
     @Override
     public List<MapRes> getFilteredStores(Double lat, Double lon, Double radius, String categoryName, String brandName) {
@@ -103,5 +108,31 @@ public class MapServiceImpl implements MapService {
         }
 
         return new MapBookmarkRes(storeId,isBookmarked);
+    }
+
+    @Override
+    public List<MapRes> findRecommendedStores(Double lat, Double lon, Double radius, User user) {
+
+        // 가장 최근 추천 받은 브랜드들 중 top3 추천 브랜드 가져오기
+        List<Long> brandIds = recommendationRepository.findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId())
+                .stream()
+                .map(r -> {
+                    if (r.getBrand() == null) {
+                        throw new GlobalException((ResultCode.BRAND_ID_IS_NULL));
+                    }
+                    return r.getBrand().getId();
+                })
+                .toList();
+
+        if (brandIds.isEmpty()) {
+            return List.of();
+        }
+
+        //추천 받은 브랜드들의 매장 목록 가져오기
+        List<Store> stores = storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, brandIds);
+
+        return stores.stream()
+                .map(MapRes::from)
+                .toList();
     }
 }

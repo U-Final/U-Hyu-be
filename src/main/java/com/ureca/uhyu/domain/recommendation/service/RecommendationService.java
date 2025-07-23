@@ -1,6 +1,7 @@
 package com.ureca.uhyu.domain.recommendation.service;
 
 import com.ureca.uhyu.domain.recommendation.dto.RecommendationResponse;
+import com.ureca.uhyu.domain.recommendation.entity.Recommendation;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -21,13 +22,8 @@ public class RecommendationService {
     public List<RecommendationResponse> getLatestTop3Recommendations(User user) {
         Long userId = user.getId();
 
-        // 가장 최근에 추천된 (최신화가 반영된?) 브랜드 가져오기
-        LocalDateTime latestCreatedAt = recommendationRepository
-                .findTop1CreatedAtByUserIdOrderByCreatedAtDesc(userId)
-                .orElseThrow(() -> new GlobalException((ResultCode.NOT_FOUND_RECOMMENDATION_FOR_USER)));
-
-        // 해당 시간의 top3 추천 브랜드 가져오기
-        return recommendationRepository.findTop3ByUserIdAndCreatedAtOrderByRankAsc(userId, LocalDateTime.from(latestCreatedAt))
+        // 가장 최근 추천 받은 브랜드들 중 top3 추천 브랜드 가져오기
+        return recommendationRepository.findTop3ByUserOrderByCreatedAtDescRankAsc(userId)
                 .stream()
                 .map(r -> {
                     if (r.getBrand() == null) {
