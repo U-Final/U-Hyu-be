@@ -8,12 +8,12 @@ import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -29,56 +29,63 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenService tokenService;
     private final UserRepository userRepository;
 
+    @Value("${app.frontend.url.local}")
+    private String localFrontendUrl;
+
+    @Value("${app.frontend.url.prod}")
+    private String prodFrontendUrl;
+
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
-        // 세션 무효화
+        // 요청 정보 로깅
+        log.debug("=== OAuth2 성공 핸들러 시작 ===");
+        log.debug("Request URL: {}", request.getRequestURL());
+
         HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate(); // JSESSIONID 제거
+            session.invalidate();
         }
 
+        // 인증된 사용자 조회
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = userRepository.findById(customOAuth2User.getUserId())
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
-        Long userId = customOAuth2User.getUserId();
-        UserRole userRole = customOAuth2User.getUserRole();
-        Boolean isNewUser = customOAuth2User.isNewUser();
+        log.debug("✅ 로그인 성공: userId={}, role={}", user.getId(), user.getUserRole());
 
-        log.info("~~ 토큰 발급 ~~");
+        // AccessToken 쿠키 생성 및 추가
+        tokenService.addAccessTokenCookie(response, String.valueOf(user.getId()), user.getUserRole());
 
-        Cookie accessCookie = tokenService.createAccessTokenCookie(String.valueOf(userId), userRole);
+        // RefreshToken DB 저장
+        tokenService.saveRefreshToken(user);
 
-        tokenService.createRefreshToken(user);
+        // 리다이렉트 URL 결정
+        String redirectUrl = resolveRedirectUrl(request, user.getUserRole());
+        log.debug("✅ 최종 리다이렉트 대상: {}", redirectUrl);
 
-        response.addCookie(accessCookie);
-
-        // ~~신규/기존 유저에 따라 redirect~~ -> 유저 role에 따라 Redirect
-        String redirectUrl = resolveRedirectUrl(request, userRole);
-
-        response.setStatus(HttpServletResponse.SC_FOUND);
-        response.setHeader("Location", redirectUrl);
+        // 서버 사이드 리다이렉트
+        response.sendRedirect(redirectUrl);
+        log.debug("=== OAuth2 성공 핸들러 완료 ===");
     }
 
     private String resolveRedirectUrl(HttpServletRequest request, UserRole userRole) {
-
-//        if (userRole == UserRole.TMP_USER) {
-//            return "http://localhost:5173/user/extra-info";
-//        } else {
-//            return "http://localhost:5173";
-//        }
-
         String host = request.getHeader("host");
-        String frontBaseUrl = (host != null && host.contains("localhost"))
-                ? "http://13.209.87.43:8080"
-                : "http://localhost:5173";
+        log.info("Request host header: '{}'", host);
 
-        if (userRole == UserRole.TMP_USER) {
-            return frontBaseUrl + "/user/extra-info";
-        } else {
-            return frontBaseUrl;
-        }
+        // 환경에 따른 프론트엔드 URL 결정
+        String frontBaseUrl = (host!=null && host.contains("localhost"))
+                ? localFrontendUrl
+                : prodFrontendUrl;
+
+        // 사용자 역할에 따른 리다이렉트 경로 결정
+        String finalRedirectUrl = userRole== UserRole.TMP_USER
+                ? frontBaseUrl + "/user/extra-info"
+                : frontBaseUrl;
+
+        log.debug("Final redirect URL: '{}'", finalRedirectUrl);
+        return finalRedirectUrl;
     }
 }
