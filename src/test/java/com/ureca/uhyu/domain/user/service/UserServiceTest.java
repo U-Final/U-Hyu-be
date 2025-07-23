@@ -87,7 +87,7 @@ class UserServiceTest {
         assertEquals("asdsad.png", getUserInfoRes.profileImage());
         assertEquals("nick", getUserInfoRes.nickName());
         assertEquals("asdad@kakao.com", getUserInfoRes.email());
-        assertEquals((byte) 32, getUserInfoRes.age());
+        assertEquals(32, getUserInfoRes.age());
         assertEquals(Gender.MALE, getUserInfoRes.gender());
         assertEquals(timeValue, getUserInfoRes.updatedAt());
         assertEquals(Grade.GOOD, getUserInfoRes.grade());
