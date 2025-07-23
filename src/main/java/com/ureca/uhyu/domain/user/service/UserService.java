@@ -40,7 +40,7 @@ public class UserService {
     public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
 
         User persistedUser = userRepository.findById(user.getId())
-                .orElseThrow(() -> new GlobalException(ResultCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
         persistedUser.setUserGrade(request.grade());
         persistedUser.setUserRole(UserRole.USER); // TMP_USER → USER 변경
