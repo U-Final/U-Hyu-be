@@ -190,7 +190,7 @@ public class BrandController {
                     )
             )
     })
-    @GetMapping("/{brand_id}")
+    @GetMapping("/brand-list/{brand_id}")
     public CommonResponse<BrandInfoRes> getBrandInfo(
             @Parameter(
                     description = "제휴처 ID",

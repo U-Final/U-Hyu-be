@@ -528,7 +528,7 @@ class MyMapServiceTest {
                 .userName("홍길동")
                 .kakaoId(456465L)
                 .email("asdad@kakao.com")
-                .age((byte) 32)
+                .age((Integer) 32)
                 .gender(Gender.MALE)
                 .role(UserRole.TMP_USER)
                 .status(Status.ACTIVE)
