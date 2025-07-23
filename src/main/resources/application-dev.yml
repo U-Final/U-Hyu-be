@@ -1,8 +1,4 @@
 spring:
-  application:
-    name: uhyu
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
   security:
     oauth2:
       client:
@@ -10,8 +6,8 @@ spring:
           kakao:
             client-id: ${KAKAO_REST_API_KEY}
             client-name: Kakao
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            client-authentication-method: client_secret_post # kakao는 인증 토큰 발급 요청 메서드가 post
+            redirect-uri: "http://localhost:8080/login/oauth2/code/{registrationId}"
+            client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
@@ -20,7 +16,6 @@ spring:
               - name
               - gender
               - age_range
-              - birthyear
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
@@ -46,8 +41,23 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.yaml
 
-app:
-  frontend:
-    url:
-      local: http://localhost:5173
-      prod: https://www.u-hyu.site
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  access-token-expiration-time: ${ACCESS_TOKEN_EXP}
+  refresh-token-expiration-days: ${REFRESH_TOKEN_EXP}
+  cookie:
+    domain: localhost
+    secure: false
+    same-site: Lax
+
+domain:
+  base-url: https://localhost:5173
+
+
+logging:
+  level:
+    com.ureca.uhyu.domain.auth.jwt: debug
+    com.ureca.uhyu.domain.auth.filter: debug
+    com.ureca.uhyu.domain.auth.handler: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: debug
