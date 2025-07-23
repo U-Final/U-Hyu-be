@@ -5,6 +5,7 @@ import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
 import com.ureca.uhyu.domain.brand.dto.response.CreateUpdateBrandRes;
+import com.ureca.uhyu.domain.brand.dto.response.BrandNameRes;
 import com.ureca.uhyu.domain.brand.service.BrandService;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
@@ -217,5 +218,11 @@ public class BrandController {
     public CommonResponse<ResultCode> deleteBrand(@Valid @PathVariable(name = "brand_id") Long brandId) {
         brandService.deleteBrand(brandId);
         return CommonResponse.success(ResultCode.DELETE_BRAND_SUCCESS);
+    }
+
+    @Operation(summary = "카테고리별 제휴처 목록 조회", description = "카테고리를 요청값으로 받으면 해당 카테고리의 브랜드들 조회하는 기능")
+    @GetMapping("/category/{category_id}")
+    public CommonResponse<List<BrandNameRes>> getBrandByCategoryId(@PathVariable(name = "category_id") Long categoryId){
+        return CommonResponse.success(brandService.findBrandByCategoryId(categoryId));
     }
 }
