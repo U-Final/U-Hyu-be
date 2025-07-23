@@ -19,8 +19,6 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-//        return getCookie(request, OAUTH2_AUTH_REQUEST_COOKIE_NAME)
-//                .map(cookie -> deserialize(cookie.getValue()))
         Optional<Cookie> authRequestCookie = getCookie(request, OAUTH2_AUTH_REQUEST_COOKIE_NAME);
         if (authRequestCookie.isEmpty()) {
             System.out.println("⚠️ OAUTH2_AUTH_REQUEST 쿠키가 요청에 존재하지 않습니다.");
