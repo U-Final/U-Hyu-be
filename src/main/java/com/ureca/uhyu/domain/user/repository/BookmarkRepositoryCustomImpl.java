@@ -46,8 +46,20 @@ public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom{
                 .fetch();
 
         Set<UserBrandPair> savedPairs = new HashSet<>();
-        bookmarkTuples.forEach(t -> savedPairs.add(new UserBrandPair(t.get(0, Long.class), t.get(1, Long.class))));
-        myMapTuples.forEach(t -> savedPairs.add(new UserBrandPair(t.get(0, Long.class), t.get(1, Long.class))));
+        bookmarkTuples.forEach(t -> {
+            Long userId = t.get(0, Long.class);
+            Long brandId = t.get(1, Long.class);
+            if (userId != null && brandId != null) {
+                savedPairs.add(new UserBrandPair(userId, brandId));
+            }
+        });
+        myMapTuples.forEach(t -> {
+            Long userId = t.get(0, Long.class);
+            Long brandId = t.get(1, Long.class);
+            if (userId != null && brandId != null) {
+                savedPairs.add(new UserBrandPair(userId, brandId));
+            }
+        });
 
         return savedPairs;
     }

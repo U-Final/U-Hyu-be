@@ -80,4 +80,18 @@ class AdminServiceTest {
         verify(bookmarkRepository).findUserBrandSaves();
         verify(bookmarkRepository).findBrandToCategoryMap();
     }
+    
+    @DisplayName("카테고리, 브랜드 별 즐겨찾기 갯수 통계 조회 - 빈 리스트")
+    @Test
+    void findBookmarksByCategoryAndBrand_EmptyDataset() {
+        // given
+        when(bookmarkRepository.findUserBrandSaves()).thenReturn(Set.of());
+        when(bookmarkRepository.findBrandToCategoryMap()).thenReturn(Map.of());
+
+        // when
+        List<BookmarksByCategoryRes> result = adminService.findBookmarksByCategoryAndBrand();
+
+        // then
+        assertTrue(result.isEmpty());
+    }
 }
