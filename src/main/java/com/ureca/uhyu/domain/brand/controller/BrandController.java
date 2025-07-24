@@ -1,16 +1,10 @@
 package com.ureca.uhyu.domain.brand.controller;
 
-import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
-import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
-import com.ureca.uhyu.domain.brand.dto.response.CreateUpdateBrandRes;
-import com.ureca.uhyu.domain.brand.dto.response.BrandNameRes;
 import com.ureca.uhyu.domain.brand.service.BrandService;
 import com.ureca.uhyu.global.response.CommonResponse;
-import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

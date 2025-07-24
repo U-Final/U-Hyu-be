@@ -1,9 +1,7 @@
 package com.ureca.uhyu.domain.brand.controller;
 
 import com.ureca.uhyu.domain.brand.dto.response.BrandNameRes;
-import com.ureca.uhyu.domain.brand.dto.response.CategoryListRes;
 import com.ureca.uhyu.domain.brand.service.BrandService;
-import com.ureca.uhyu.domain.brand.service.CategoryService;
 import com.ureca.uhyu.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
