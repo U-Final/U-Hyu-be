@@ -198,31 +198,4 @@ public class BrandController {
             ) @PathVariable(name = "brand_id") Long brandId){
         return CommonResponse.success(brandService.findBrandInfo(brandId));
     }
-
-    @Operation(summary = "관리자 제휴 브랜드 추가", description = "관리자 유저 제휴 브랜드 추가 기능")
-    @PostMapping("/admin/brand")
-    public CommonResponse<CreateUpdateBrandRes> createBrand(@Valid @RequestBody CreateBrandReq createBrandReq) {
-        return CommonResponse.success(brandService.createBrand(createBrandReq));
-    }
-
-    @Operation(summary = "관리자 제휴 브랜드 수정", description = "관리자 유저 제휴 브랜드 수정 기능")
-    @PutMapping("/admin/brands/{brand_id}")
-    public CommonResponse<CreateUpdateBrandRes> updateBrand(
-            @PathVariable(name = "brand_id") Long brandId,
-            @Valid @RequestBody UpdateBrandReq updateBrandReq) {
-        return CommonResponse.success(brandService.updateBrand(brandId, updateBrandReq));
-    }
-
-    @Operation(summary = "관리자 제휴 브랜드 삭제", description = "관리자 유저 제휴 브랜드 삭제 기능")
-    @DeleteMapping("/admin/brands/{brand_id}")
-    public CommonResponse<ResultCode> deleteBrand(@Valid @PathVariable(name = "brand_id") Long brandId) {
-        brandService.deleteBrand(brandId);
-        return CommonResponse.success(ResultCode.DELETE_BRAND_SUCCESS);
-    }
-
-    @Operation(summary = "카테고리별 제휴처 목록 조회", description = "카테고리를 요청값으로 받으면 해당 카테고리의 브랜드들 조회하는 기능")
-    @GetMapping("/category/{category_id}")
-    public CommonResponse<List<BrandNameRes>> getBrandByCategoryId(@PathVariable(name = "category_id") Long categoryId){
-        return CommonResponse.success(brandService.findBrandByCategoryId(categoryId));
-    }
 }
