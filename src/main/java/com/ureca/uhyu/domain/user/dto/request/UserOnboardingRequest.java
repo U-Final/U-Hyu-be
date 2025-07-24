@@ -21,7 +21,7 @@ public record UserOnboardingRequest(
 
         @Schema(
                 description = "최근 이용한 브랜드 목록 (최소 1개 이상)",
-                example = "[\"스타벅스\", \"맥도날드\", \"버거킹\"]",
+                example = "[\"1\", \"2\", \"7\"]",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @NotEmpty(message = "최근 이용 브랜드는 1개 이상 입력해야 합니다.")
@@ -29,7 +29,7 @@ public record UserOnboardingRequest(
 
         @Schema(
                 description = "관심 있는 브랜드 목록 (최소 1개 이상)",
-                example = "[\"투썸플레이스\", \"KFC\", \"도미노피자\"]",
+                example = "[\"4\", \"9\"]",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @NotEmpty(message = "관심 있는 브랜드는 1개 이상 입력해야 합니다.")
