@@ -21,6 +21,7 @@ public class BarcodeServiceImpl implements BarcodeService {
     private static final String FOLDER = "uhyu-barcode";
 
     @Override
+    @Transactional
     public String upload(User user, MultipartFile image) {
         String key = s3Uploader.upload(image, FOLDER);
 
