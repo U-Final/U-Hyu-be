@@ -25,7 +25,7 @@ public record UserOnboardingRequest(
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @NotEmpty(message = "최근 이용 브랜드는 1개 이상 입력해야 합니다.")
-        List<String> recentBrands,
+        List<Long> recentBrands,
 
         @Schema(
                 description = "관심 있는 브랜드 목록 (최소 1개 이상)",
@@ -33,6 +33,6 @@ public record UserOnboardingRequest(
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @NotEmpty(message = "관심 있는 브랜드는 1개 이상 입력해야 합니다.")
-        List<String> interestedBrands
+        List<Long> interestedBrands
 
 ) {}
