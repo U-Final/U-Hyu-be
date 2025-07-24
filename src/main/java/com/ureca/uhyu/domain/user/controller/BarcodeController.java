@@ -33,6 +33,6 @@ public class BarcodeController implements BarcodeControllerDocs {
     @PatchMapping
     public CommonResponse<String> updateBarcodeImage(@CurrentUser User user, MultipartFile image) {
         String url = barcodeService.update(user, image);
-        return CommonResponse.success(url);
+        return CommonResponse.success(ResultCode.BARCODE_UPDATE_SUCCESS,url);
     }
 }

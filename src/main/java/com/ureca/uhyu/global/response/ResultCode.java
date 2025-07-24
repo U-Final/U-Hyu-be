@@ -49,6 +49,7 @@ public enum ResultCode {
     BRAND_ID_IS_NULL(HttpStatus.NOT_FOUND, 4011, "brand id가 존재하지 않습니다."),
     BARCODE_UPLOAD_SUCCESS(HttpStatus.OK,4012, "바코드 이미지가 저장되었습니다."),
     BARCODE_NOT_FOUND(HttpStatus.NOT_FOUND,4013,"바코드가 존재하지 않습니다"),
+    BARCODE_UPDATE_SUCCESS(HttpStatus.OK,4014, "바코드 이미지가 수정되었습니다."),
 
     /**
      * 5000번대 (제휴처 관련)
