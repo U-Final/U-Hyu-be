@@ -105,10 +105,10 @@ public class UserService {
         return UpdateUserRes.from(savedUser);
     }
 
-    private void saveUserBrandData(User user, List<String> brandNames, DataType dataType) {
-        List<Brand> brands = brandRepository.findByBrandNameIn(brandNames);
+    private void saveUserBrandData(User user, List<Long> brandIds, DataType dataType) {
+        List<Brand> brands = brandRepository.findAllById(brandIds);
 
-        if (brands.size() != brandNames.size()) {
+        if (brands.size() != brandIds.size()) {
             throw new GlobalException(ResultCode.INVALID_INPUT); // 일부 브랜드가 존재하지 않음
         }
 
