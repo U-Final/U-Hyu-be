@@ -253,4 +253,15 @@ public class MapController {
     ) {
         return CommonResponse.success(mapService.toggleBookmark(user, storeId));
     }
+
+    @Operation(summary = "추천 매장 조회", description = "사용자의 추천 브랜드에 해당하는 근처 매장 조회")
+    @GetMapping("/recommendation/stores")
+    public CommonResponse<List<MapRes>> getRecommendedStores(
+            @RequestParam Double lat,
+            @RequestParam Double lon,
+            @RequestParam Double radius,
+            @CurrentUser User user
+    ) {
+        return CommonResponse.success(mapService.findRecommendedStores(lat, lon, radius, user));
+    }
 }

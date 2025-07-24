@@ -13,7 +13,7 @@ public record GetUserInfoRes(
         String userName,
         String nickName,
         String email,
-        Byte age,
+        Integer age,
         Gender gender,
         Grade grade,
         LocalDateTime updatedAt

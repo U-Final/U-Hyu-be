@@ -87,7 +87,7 @@ class UserServiceTest {
         assertEquals("asdsad.png", getUserInfoRes.profileImage());
         assertEquals("nick", getUserInfoRes.nickName());
         assertEquals("asdad@kakao.com", getUserInfoRes.email());
-        assertEquals((byte) 32, getUserInfoRes.age());
+        assertEquals(32, getUserInfoRes.age());
         assertEquals(Gender.MALE, getUserInfoRes.gender());
         assertEquals(timeValue, getUserInfoRes.updatedAt());
         assertEquals(Grade.GOOD, getUserInfoRes.grade());
@@ -394,7 +394,7 @@ class UserServiceTest {
                 .userName("홍길동")
                 .kakaoId(456465L)
                 .email("asdad@kakao.com")
-                .age((byte) 32)
+                .age((Integer) 32)
                 .gender(Gender.MALE)
                 .role(UserRole.TMP_USER)
                 .status(Status.ACTIVE)

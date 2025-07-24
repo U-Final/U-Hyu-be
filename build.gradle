@@ -65,6 +65,8 @@ dependencies {
 	// validation
 	implementation("jakarta.validation:jakarta.validation-api")
 	implementation("org.hibernate.validator:hibernate-validator")
+
+    implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names'
 }
 
 tasks.named('test') {

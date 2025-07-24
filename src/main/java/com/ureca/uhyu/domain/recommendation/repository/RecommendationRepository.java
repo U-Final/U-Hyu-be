@@ -9,13 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RecommendationRepository extends JpaRepository<Recommendation, Long> {
+public interface RecommendationRepository extends JpaRepository<Recommendation, Long>
+        , RecommendationRepositoryCustom {
 
     List<Recommendation> findByUserId(Long userId);
-
-    // 가장 최신 추천 시간 조회
-    Optional<LocalDateTime> findTop1CreatedAtByUserIdOrderByCreatedAtDesc(Long userId);
-
-    // 해당 날짜의 추천 중 rank 상위 3개
-    List<Recommendation> findTop3ByUserIdAndCreatedAtOrderByRankAsc(Long userId, LocalDateTime createdAt);
 }
