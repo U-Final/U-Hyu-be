@@ -56,6 +56,9 @@ public class User extends BaseEntity {
     @JoinColumn(name = "marker_id")
     private Marker marker;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Barcode barcode;
+
     public void withdraw() {
         this.status = Status.DELETED;
         this.updatedAt = LocalDateTime.now(); // 업데이트 시간도 갱신
