@@ -14,7 +14,6 @@ import com.ureca.uhyu.domain.store.repository.StoreRepository;
 import com.ureca.uhyu.domain.store.repository.StoreRepositoryCustom;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
-import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
@@ -89,8 +88,7 @@ class MapServiceImplTest {
             .build();
 
     private User createUser() {
-        Marker marker = Marker.builder().markerImage("marker.jpg").build();
-        setId(marker, 1L);
+        Long markerId = 1L;
 
         User user = User.builder()
                 .userName("홍길동")
@@ -103,7 +101,7 @@ class MapServiceImplTest {
                 .grade(Grade.GOOD)
                 .profileImage("asdsad.png")
                 .nickname("nick")
-                .marker(marker)
+                .markerId(markerId)
                 .build();
 
         return user;
