@@ -1,15 +1,12 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrand;
-import com.ureca.uhyu.domain.admin.dto.response.CountBookmarkRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountRecommendationRes;
-import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
+import com.ureca.uhyu.domain.admin.dto.response.*;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.domain.user.enums.ActionType;
+import com.ureca.uhyu.domain.user.repository.history.HistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +25,7 @@ public class AdminService {
     private final BookmarkRepository bookmarkRepository;
     private final ActionLogsRepository actionLogsRepository;
     private final RecommendationRepository recommendationRepository;
+    private final HistoryRepository historyRepository;
 
     public List<CountBookmarkRes> findBookmarksByCategoryAndBrand() {
         Set<UserBrandPair> userBrandSaves = bookmarkRepository.findUserBrandSaves();
@@ -89,5 +87,9 @@ public class AdminService {
 
     public List<CountRecommendationRes> findCountRecommendationByCategoryAndBrand() {
         return recommendationRepository.findCountRecommendationByCategory();
+    }
+
+    public List<CountMembershipUsageRes> findCountMembershipUsageByCategoryAndBrand() {
+        return historyRepository.findCountMembershipUsageByCategory();
     }
 }

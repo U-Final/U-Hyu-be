@@ -2,6 +2,7 @@ package com.ureca.uhyu.domain.admin.controller;
 
 import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.CountBookmarkRes;
+import com.ureca.uhyu.domain.admin.dto.response.CountMembershipUsageRes;
 import com.ureca.uhyu.domain.admin.dto.response.CountRecommendationRes;
 import com.ureca.uhyu.domain.admin.service.AdminService;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
@@ -75,5 +76,11 @@ public class AdminController {
     @GetMapping("/statistics/recommendation")
     public CommonResponse<List<CountRecommendationRes>> getCountRecommendationByCategoryAndBrand() {
         return CommonResponse.success(adminService.findCountRecommendationByCategoryAndBrand());
+    }
+
+    @Operation(summary = "카테고리, 브랜드별 멤버십 사용횟수 통계", description = "관리자가 사람들이 사용한 멤버십 브랜드 카테고리 별로 확인 가능")
+    @GetMapping("/statistics/membership")
+    public CommonResponse<List<CountMembershipUsageRes>> getCountMembershipByCategoryAndBrand() {
+        return CommonResponse.success(adminService.findCountMembershipUsageByCategoryAndBrand());
     }
 }
