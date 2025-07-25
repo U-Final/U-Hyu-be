@@ -19,6 +19,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -39,8 +40,13 @@ public class S3Uploader {
     @Value("${cloud.aws.credentials.secret-key}")
     private String secretKey;
 
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif");
+
     public String upload(MultipartFile file, String folderName) {
         String originalName = file.getOriginalFilename();
+
+        validateFileExtension(originalName);
+
         String key = folderName + "/" + UUID.randomUUID() + "_" + originalName;
 
         try {
@@ -86,5 +92,12 @@ public class S3Uploader {
                 .build();
 
         return presigner.presignGetObject(presignRequest).url().toString();
+    }
+
+    private void validateFileExtension(String filename) {
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        if (!ALLOWED_EXTENSIONS.contains(extension)) {
+            throw new GlobalException(ResultCode.INVALID_FILE_EXTENSION);
+        }
     }
 }

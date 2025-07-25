@@ -55,6 +55,7 @@ public enum ResultCode {
     BARCODE_NOT_FOUND(HttpStatus.NOT_FOUND,4103,"바코드가 존재하지 않습니다"),
     BARCODE_UPDATE_SUCCESS(HttpStatus.OK,4104, "바코드 이미지가 수정되었습니다."),
     S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR,4105, "S3 이미지 업로드에 실패했습니다."),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST,4106, "허용되지 않은 파일 확장자입니다."),
 
     /**
      * 5000번대 (제휴처 관련)
