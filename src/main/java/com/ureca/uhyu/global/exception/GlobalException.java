@@ -8,4 +8,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GlobalException extends RuntimeException {
     private final ResultCode resultCode;
+
+    public GlobalException(ResultCode resultCode, Throwable cause) {
+        super(resultCode.getMessage(), cause);
+        this.resultCode = resultCode;
+    }
 }

@@ -54,6 +54,9 @@ public class User extends BaseEntity {
 
     private Long markerId;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Barcode barcode;
+
     public void withdraw() {
         this.status = Status.DELETED;
         this.updatedAt = LocalDateTime.now(); // 업데이트 시간도 갱신
