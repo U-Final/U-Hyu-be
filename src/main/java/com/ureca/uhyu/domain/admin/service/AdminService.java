@@ -3,9 +3,12 @@ package com.ureca.uhyu.domain.admin.service;
 import com.querydsl.core.Tuple;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrandRes;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
+import com.ureca.uhyu.domain.user.entity.ActionLogs;
+import com.ureca.uhyu.domain.user.enums.ActionType;
+import com.ureca.uhyu.domain.user.repository.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
-import com.ureca.uhyu.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,7 @@ public class AdminService {
     private static final int BRAND_NAME_INDEX = 3;
 
     private final BookmarkRepository bookmarkRepository;
+    private final ActionLogsRepository actionLogsRepository;
 
     public List<BookmarksByCategoryRes> findBookmarksByCategoryAndBrand() {
         Set<UserBrandPair> userBrandSaves = bookmarkRepository.findUserBrandSaves();
@@ -75,5 +79,9 @@ public class AdminService {
         }
 
         return new ArrayList<>(categoryMap.values());
+    }
+
+    public List<CountFilterByCategoryRes> findFilteringByCategory() {
+        return actionLogsRepository.findCountFilterByActionType(ActionType.FILTER_USED);
     }
 }

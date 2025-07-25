@@ -1,6 +1,7 @@
 package com.ureca.uhyu.domain.admin.controller;
 
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.service.AdminService;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
@@ -61,5 +62,11 @@ public class AdminController {
     @GetMapping("/statistics/bookmark")
     public CommonResponse<List<BookmarksByCategoryRes>> getBookmarksByCategoryAndBrand() {
         return CommonResponse.success(adminService.findBookmarksByCategoryAndBrand());
+    }
+
+    @Operation(summary = "카테고리별 필터링 수 비교", description = "관리자가 필터링 된 횟수에 대한 카테고리별 통계 확인 가능")
+    @GetMapping("/statistics/filter")
+    public CommonResponse<List<CountFilterByCategoryRes>> getFilteringByCategory() {
+        return CommonResponse.success(adminService.findFilteringByCategory());
     }
 }
