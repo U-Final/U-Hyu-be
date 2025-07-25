@@ -15,7 +15,6 @@ import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
 import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
-import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.UserRole;
@@ -49,9 +48,6 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private MarkerRepository markerRepository;
 
     @Mock
     private BrandRepository brandRepository;
@@ -104,20 +100,17 @@ class UserServiceTest {
         User user = createUser();
         setId(user, 1L);
 
-        Marker marker2 = Marker.builder().markerImage("marker2.jpg").build();
-        setId(marker2, 2L);
+        Long markerId2 = 2L;
 
         UpdateUserReq request = new UpdateUserReq(
                 "asdsad2.png",
                 "nick2",
                 Grade.VIP,
                 List.of(1L, 2L, 3L),
-                2L
+                markerId2
         );
 
         // mock
-        when(markerRepository.findById(2L)).thenReturn(Optional.of(marker2));
-
         for (Long brandId : request.updatedBrandIdList()) {
             Brand brand = Brand.builder().brandName("브랜드" + brandId).build();
             setId(brand, brandId);
@@ -135,37 +128,10 @@ class UserServiceTest {
         assertEquals("asdsad2.png", user.getProfileImage());
         assertEquals("nick2", user.getNickname());
         assertEquals(Grade.VIP, user.getGrade());
-        assertEquals(marker2, user.getMarker());
+        assertEquals(markerId2, user.getMarkerId());
 
         Mockito.verify(recommendationRepository).deleteByUserAndDataType(user, DataType.INTEREST);
         Mockito.verify(recommendationRepository, Mockito.times(3)).save(Mockito.any());
-    }
-
-    @DisplayName("개인정보 수정 - 존재하지 않는 마커 ID로 실패")
-    @Test
-    void updateUserInfoFail_InvalidMarker() {
-        // given
-        User user = createUser();
-        setId(user, 1L);
-        Long invalidMarkerId = 999L;
-
-        UpdateUserReq request = new UpdateUserReq(
-                null,
-                null,
-                null,
-                null,
-                invalidMarkerId
-        );
-
-        // mock
-        when(markerRepository.findById(invalidMarkerId)).thenReturn(Optional.empty());
-
-        // when & then
-        GlobalException exception = assertThrows(GlobalException.class, () -> {
-            userService.updateUserInfo(user, request);
-        });
-
-        assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
     }
 
     @DisplayName("개인정보 수정 - 존재하지 않는 브랜드 ID로 실패")
@@ -351,7 +317,7 @@ class UserServiceTest {
         // mock
         when(historyRepository.findDiscountMoneyThisMonth(user)).thenReturn(discountMoney);
         when(actionLogsRepository.findTop3ClickedBrands(user)).thenReturn(topBrands);
-//        when(historyRepository.findTop3RecentStore(user)).thenReturn(recentStores);
+        when(historyRepository.findRecentStoreInMonth(user)).thenReturn(recentStores);
 
         // when
         UserStatisticsRes result = userService.findUserStatistics(user);
@@ -375,24 +341,23 @@ class UserServiceTest {
         assertEquals("logo1.png", result.bestBrandList().get(2).bestBrandImage());
 
         // 가장 최근 방문 매장
-//        assertEquals(3, result.recentStoreList().size());
+        assertEquals(3, result.recentStoreList().size());
 
-//        assertEquals(11L, result.recentStoreList().get(0).recentStoreId());
-//        assertEquals("스토어1", result.recentStoreList().get(0).recentStoreName());
-//        assertEquals("logo1.png", result.recentStoreList().get(0).recentBrandImage());
-//
-//        assertEquals(12L, result.recentStoreList().get(1).recentStoreId());
-//        assertEquals("스토어2", result.recentStoreList().get(1).recentStoreName());
-//        assertEquals("logo2.png", result.recentStoreList().get(1).recentBrandImage());
-//
-//        assertEquals(13L, result.recentStoreList().get(2).recentStoreId());
-//        assertEquals("스토어3", result.recentStoreList().get(2).recentStoreName());
-//        assertEquals("logo3.png", result.recentStoreList().get(2).recentBrandImage());
+        assertEquals(11L, result.recentStoreList().get(0).recentStoreId());
+        assertEquals("스토어1", result.recentStoreList().get(0).recentStoreName());
+        assertEquals("logo1.png", result.recentStoreList().get(0).recentBrandImage());
+
+        assertEquals(12L, result.recentStoreList().get(1).recentStoreId());
+        assertEquals("스토어2", result.recentStoreList().get(1).recentStoreName());
+        assertEquals("logo2.png", result.recentStoreList().get(1).recentBrandImage());
+
+        assertEquals(13L, result.recentStoreList().get(2).recentStoreId());
+        assertEquals("스토어3", result.recentStoreList().get(2).recentStoreName());
+        assertEquals("logo3.png", result.recentStoreList().get(2).recentBrandImage());
     }
 
     private User createUser() {
-        Marker marker = Marker.builder().markerImage("marker.jpg").build();
-        setId(marker, 1L);
+        Long markerId = 1L;
 
         User user = User.builder()
                 .userName("홍길동")
@@ -405,7 +370,7 @@ class UserServiceTest {
                 .grade(Grade.GOOD)
                 .profileImage("asdsad.png")
                 .nickname("nick")
-                .marker(marker)
+                .markerId(markerId)
                 .build();
 
         return user;

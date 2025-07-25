@@ -52,9 +52,7 @@ public class User extends BaseEntity {
     @Column(length = 20)
     private String age_range;
 
-    @OneToOne
-    @JoinColumn(name = "marker_id")
-    private Marker marker;
+    private Long markerId;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Barcode barcode;
@@ -69,12 +67,12 @@ public class User extends BaseEntity {
     }
 
     public void updateUser(
-            String profileImage, String nickname, Grade grade, Marker marker
+            String profileImage, String nickname, Grade grade, Long markerId
     ){
         this.profileImage = profileImage;
         this.nickname = nickname;
         this.grade = grade;
-        this.marker = marker;
+        this.markerId = markerId;
     }
 
     public void setUserGrade(Grade grade) {

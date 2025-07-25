@@ -34,7 +34,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
     private final RecommendationBaseDataRepository recommendationRepository;
-    private final MarkerRepository markerRepository;
     private final BookmarkListRepository bookmarkListRepository;
     private final BookmarkRepository bookmarkRepository;
     private final HistoryRepository historyRepository;
@@ -82,11 +81,10 @@ public class UserService {
         Grade grade = (request.updatedGrade() != null)?
                 request.updatedGrade():user.getGrade();
 
-        Marker marker = (request.markerId() != null)?
-                markerRepository.findById(request.markerId())
-                        .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT)):user.getMarker();
+        Long markerId = (request.markerId() != null)?
+                request.markerId():user.getMarkerId();
 
-        user.updateUser(image, nickname, grade, marker);
+        user.updateUser(image, nickname, grade, markerId);
 
         if (request.updatedBrandIdList() != null && !request.updatedBrandIdList().isEmpty()) {
             recommendationRepository.deleteByUserAndDataType(user, DataType.INTEREST);
