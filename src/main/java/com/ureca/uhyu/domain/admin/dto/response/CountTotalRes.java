@@ -1,12 +1,12 @@
 package com.ureca.uhyu.domain.admin.dto.response;
 
 public record CountTotalRes(
-        Long totalBookmark,
-        Long totalFiltering,
-        Long totalSearch,
-        Long totalMembershipUsage
+        Integer totalBookmark,
+        Integer totalFiltering,
+        Integer totalSearch,
+        Integer totalMembershipUsage
 ) {
-    public static CountTotalRes of(Long totalBookmark, Long totalFiltering, Long totalSearch, Long totalMembershipUsage) {
+    public static CountTotalRes of(Integer totalBookmark, Integer totalFiltering, Integer totalSearch, Integer totalMembershipUsage) {
         return new CountTotalRes(
                 totalBookmark,
                 totalFiltering,
