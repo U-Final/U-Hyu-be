@@ -66,48 +66,49 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
         QBrand brand = QBrand.brand;
         QCategory category = QCategory.category;
 
-        // 브랜드 단위로 방문 집계
-        List<Tuple> brandTuples = queryFactory
+        // 1. DB에서 카테고리, 브랜드 단위로 집계된 결과 가져오기
+        List<Tuple> tuples = queryFactory
                 .select(
-                        brand.id,
+                        category.id,
+                        category.categoryName,
                         brand.brandName,
-                        brand.category.id,
-                        brand.category.categoryName,
                         history.count()
                 )
                 .from(history)
                 .join(store).on(history.store.id.eq(store.id))
                 .join(brand).on(store.brand.id.eq(brand.id))
                 .join(category).on(brand.category.id.eq(category.id))
-                .groupBy(brand.id, brand.brandName, brand.category.id, brand.category.categoryName)
+                .groupBy(category.id, category.categoryName, brand.brandName)
                 .fetch();
 
-        // 카테고리 ID → 브랜드 리스트, 총합 계산
+        // 2. Java에서 categoryId → 브랜드 리스트, 총합 매핑
         Map<Long, List<MembershipUsageByBrand>> categoryGrouped = new LinkedHashMap<>();
         Map<Long, Integer> categorySumMap = new HashMap<>();
         Map<Long, String> categoryNameMap = new HashMap<>();
 
-        for (Tuple t : brandTuples) {
-            Long categoryId = t.get(2, Long.class);
-            String categoryName = t.get(3, String.class);
-            String brandName = t.get(1, String.class);
-            Integer brandCount = t.get(4, Long.class).intValue();
+        for (Tuple t : tuples) {
+            Long categoryId = t.get(0, Long.class);
+            String categoryName = t.get(1, String.class);
+            String brandName = t.get(2, String.class);
+            Integer usageCount = t.get(3, Long.class).intValue();
 
+            // 브랜드별 리스트 추가
             categoryGrouped
                     .computeIfAbsent(categoryId, k -> new ArrayList<>())
-                    .add(MembershipUsageByBrand.of(brandName, brandCount));
+                    .add(MembershipUsageByBrand.of(brandName, usageCount));
 
-            categorySumMap.merge(categoryId, brandCount, Integer::sum);
+            // 카테고리별 총합
+            categorySumMap.merge(categoryId, usageCount, Integer::sum);
             categoryNameMap.putIfAbsent(categoryId, categoryName);
         }
 
-        // DTO 조립
+        // 3. DTO 조립
         return categoryGrouped.entrySet().stream()
                 .map(entry -> CountMembershipUsageRes.of(
-                        entry.getKey(),                                 //카테고리 id
-                        categoryNameMap.get(entry.getKey()),            //카테고리 이름
-                        categorySumMap.get(entry.getKey()),             //카테고리별 사용횟수
-                        entry.getValue()                                //브랜드별 사용횟수 리스트
+                        entry.getKey(),
+                        categoryNameMap.get(entry.getKey()),
+                        categorySumMap.get(entry.getKey()),
+                        entry.getValue()
                 ))
                 .toList();
     }
