@@ -19,6 +19,7 @@ public class Barcode extends BaseEntity {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
+    @Column(name = "image_url")
     private String imageURL;
 
     public void updateImageUrl(String imageUrl){
