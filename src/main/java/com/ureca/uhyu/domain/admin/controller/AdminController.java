@@ -79,7 +79,7 @@ public class AdminController {
     }
 
     @Operation(summary = "카테고리, 브랜드별 멤버십 사용횟수 통계", description = "관리자가 사람들이 사용한 멤버십 브랜드 카테고리 별로 확인 가능")
-    @GetMapping("/statistics/membership")
+    @GetMapping("/statistics/membershipUsage")
     public CommonResponse<List<CountMembershipUsageRes>> getCountMembershipByCategoryAndBrand() {
         return CommonResponse.success(adminService.findCountMembershipUsageByCategoryAndBrand());
     }
