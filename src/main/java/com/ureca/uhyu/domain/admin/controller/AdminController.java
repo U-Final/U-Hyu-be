@@ -1,9 +1,6 @@
 package com.ureca.uhyu.domain.admin.controller;
 
-import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountBookmarkRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountMembershipUsageRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountRecommendationRes;
+import com.ureca.uhyu.domain.admin.dto.response.*;
 import com.ureca.uhyu.domain.admin.service.AdminService;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
@@ -82,5 +79,11 @@ public class AdminController {
     @GetMapping("/statistics/membership")
     public CommonResponse<List<CountMembershipUsageRes>> getCountMembershipByCategoryAndBrand() {
         return CommonResponse.success(adminService.findCountMembershipUsageByCategoryAndBrand());
+    }
+
+    @Operation(summary = "전체 통계", description = "관리자가 총 즐겨찾기, 총 필터링 횟수, 총 검색 수, 총 멤버십 사용 수 확인가능")
+    @GetMapping("/statistics/membership")
+    public CommonResponse<List<CountTotalRes>> getCountTotal() {
+        return CommonResponse.success(adminService.findCountTotal());
     }
 }

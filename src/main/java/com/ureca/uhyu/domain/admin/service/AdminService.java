@@ -92,4 +92,9 @@ public class AdminService {
     public List<CountMembershipUsageRes> findCountMembershipUsageByCategoryAndBrand() {
         return historyRepository.findCountMembershipUsageByCategory();
     }
+
+    public List<CountTotalRes> findCountTotal() {
+        //TODO: 총 즐겨찾기 / 필터링 / 검색 / 멤버십 사용 수 가져오는 로직 작성 예정
+        return null;
+    }
 }
