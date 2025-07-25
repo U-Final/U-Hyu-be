@@ -8,6 +8,4 @@ import java.util.List;
 
 public interface ActionLogsRepository extends JpaRepository<ActionLogs, Long>
         , ActionLogsRepositoryCustom{
-
-    List<ActionLogs> findByActionType(ActionType actionType);
 }

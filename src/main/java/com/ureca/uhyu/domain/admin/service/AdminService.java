@@ -81,7 +81,7 @@ public class AdminService {
         return new ArrayList<>(categoryMap.values());
     }
 
-    public List<CountFilterByCategoryRes> findFilteringByCategory() {
+    public List<CountFilterByCategoryRes> findCountFilterByCategory() {
         return actionLogsRepository.findCountFilterByActionType(ActionType.FILTER_USED);
     }
 }

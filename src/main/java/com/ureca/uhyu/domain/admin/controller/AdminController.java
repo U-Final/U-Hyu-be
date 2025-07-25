@@ -58,15 +58,15 @@ public class AdminController {
         return CommonResponse.success(categoryService.getAllCategories());
     }
 
-    @Operation(summary = "카테고리, 브랜드별 즐겨찾기 수 비교", description = "관리자가 즐겨찾기 수에 대한 카테고리별, 브랜드 별 통계 확인 가능")
+    @Operation(summary = "카테고리, 브랜드별 즐겨찾기 수 통계", description = "관리자가 즐겨찾기 수에 대한 카테고리별, 브랜드 별 통계 확인 가능")
     @GetMapping("/statistics/bookmark")
     public CommonResponse<List<BookmarksByCategoryRes>> getBookmarksByCategoryAndBrand() {
         return CommonResponse.success(adminService.findBookmarksByCategoryAndBrand());
     }
 
-    @Operation(summary = "카테고리별 필터링 수 비교", description = "관리자가 필터링 된 횟수에 대한 카테고리별 통계 확인 가능")
+    @Operation(summary = "카테고리별 필터링 수 통계", description = "관리자가 필터링 된 횟수에 대한 카테고리별 통계 확인 가능")
     @GetMapping("/statistics/filter")
-    public CommonResponse<List<CountFilterByCategoryRes>> getFilteringByCategory() {
-        return CommonResponse.success(adminService.findFilteringByCategory());
+    public CommonResponse<List<CountFilterByCategoryRes>> getCountFilterByCategory() {
+        return CommonResponse.success(adminService.findCountFilterByCategory());
     }
 }
