@@ -1,11 +1,10 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrandRes;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrand;
+import com.ureca.uhyu.domain.admin.dto.response.CountBookmarkRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
-import com.ureca.uhyu.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,20 +59,20 @@ class AdminServiceTest {
         when(bookmarkRepository.findBrandToCategoryMap()).thenReturn(brandCategoryMap);
 
         // when
-        List<BookmarksByCategoryRes> result = adminService.findBookmarksByCategoryAndBrand();
+        List<CountBookmarkRes> result = adminService.findBookmarksByCategoryAndBrand();
 
         // then
         assertEquals(1, result.size());
-        BookmarksByCategoryRes categoryRes = result.get(0);
+        CountBookmarkRes categoryRes = result.get(0);
         assertEquals(10L, categoryRes.categoryId());
         assertEquals("카테고리A", categoryRes.categoryName());
         assertEquals(3, categoryRes.sumBookmarksByCategory()); // 2 + 1
 
-        List<BookmarksByBrandRes> brandList = categoryRes.bookmarksByBrandList();
+        List<BookmarksByBrand> brandList = categoryRes.bookmarksByBrandList();
         assertEquals(2, brandList.size());
 
         Map<String, Integer> brandCountMap = brandList.stream()
-                .collect(Collectors.toMap(BookmarksByBrandRes::brandName, BookmarksByBrandRes::sumBookmarksByBrand));
+                .collect(Collectors.toMap(BookmarksByBrand::brandName, BookmarksByBrand::sumBookmarksByBrand));
         assertEquals(2, brandCountMap.get("브랜드101"));
         assertEquals(1, brandCountMap.get("브랜드102"));
 
@@ -89,7 +88,7 @@ class AdminServiceTest {
         when(bookmarkRepository.findBrandToCategoryMap()).thenReturn(Map.of());
 
         // when
-        List<BookmarksByCategoryRes> result = adminService.findBookmarksByCategoryAndBrand();
+        List<CountBookmarkRes> result = adminService.findBookmarksByCategoryAndBrand();
 
         // then
         assertTrue(result.isEmpty());
