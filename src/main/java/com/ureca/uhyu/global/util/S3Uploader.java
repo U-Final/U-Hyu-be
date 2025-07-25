@@ -1,5 +1,7 @@
 package com.ureca.uhyu.global.util;
 
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -53,7 +55,7 @@ public class S3Uploader {
             return key;
 
         } catch (IOException e) {
-            throw new RuntimeException("S3 업로드 실패", e);
+            throw new GlobalException(ResultCode.S3_UPLOAD_FAIL, e);
         }
     }
 

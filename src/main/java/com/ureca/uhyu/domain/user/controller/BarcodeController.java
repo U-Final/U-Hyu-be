@@ -18,7 +18,7 @@ public class BarcodeController implements BarcodeControllerDocs {
 
     @Override
     @PostMapping
-    public CommonResponse<String> uploadBarcodeImage(@CurrentUser User user, MultipartFile image) {
+    public CommonResponse<String> uploadBarcodeImage(@CurrentUser User user, @RequestPart MultipartFile image) {
         String url = barcodeService.upload(user, image);
         return CommonResponse.success(ResultCode.BARCODE_UPLOAD_SUCCESS,url);
     }
@@ -31,7 +31,7 @@ public class BarcodeController implements BarcodeControllerDocs {
 
     @Override
     @PatchMapping
-    public CommonResponse<String> updateBarcodeImage(@CurrentUser User user, MultipartFile image) {
+    public CommonResponse<String> updateBarcodeImage(@CurrentUser User user, @RequestPart MultipartFile image) {
         String url = barcodeService.update(user, image);
         return CommonResponse.success(ResultCode.BARCODE_UPDATE_SUCCESS,url);
     }

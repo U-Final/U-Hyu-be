@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-public interface UserConrollerDocs {
+public interface UserControllerDocs {
 
     @Operation(
             summary = "신규 유저 온보딩 정보 저장",
