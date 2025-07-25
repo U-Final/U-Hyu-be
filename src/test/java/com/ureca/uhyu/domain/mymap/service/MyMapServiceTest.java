@@ -16,14 +16,13 @@ import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.store.repository.StoreRepository;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
-import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
-import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
-import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
+import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.DisplayName;
@@ -521,8 +520,7 @@ class MyMapServiceTest {
     }
 
     private User createUser() {
-        Marker marker = Marker.builder().markerImage("marker.jpg").build();
-        setId(marker, 1L);
+        Long markerId = 1L;
 
         User user = User.builder()
                 .userName("홍길동")
@@ -535,7 +533,7 @@ class MyMapServiceTest {
                 .grade(Grade.GOOD)
                 .profileImage("asdsad.png")
                 .nickname("nick")
-                .marker(marker)
+                .markerId(markerId)
                 .build();
 
         return user;

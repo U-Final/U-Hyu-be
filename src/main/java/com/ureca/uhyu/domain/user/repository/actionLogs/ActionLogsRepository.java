@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.user.repository;
+package com.ureca.uhyu.domain.user.repository.actionLogs;
 
 import com.ureca.uhyu.domain.user.entity.ActionLogs;
 import org.springframework.data.jpa.repository.JpaRepository;

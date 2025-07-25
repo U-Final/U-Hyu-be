@@ -66,7 +66,13 @@ dependencies {
 	implementation("jakarta.validation:jakarta.validation-api")
 	implementation("org.hibernate.validator:hibernate-validator")
 
+	// JSON 역직렬화
     implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names'
+
+	// AWS SDK v2
+	implementation platform('software.amazon.awssdk:bom:2.25.25')
+	implementation 'software.amazon.awssdk:s3'
+	implementation 'software.amazon.awssdk:auth'
 }
 
 tasks.named('test') {

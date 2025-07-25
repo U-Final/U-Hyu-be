@@ -13,6 +13,10 @@ import com.ureca.uhyu.domain.user.entity.*;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.repository.*;
+import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
+import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
+import com.ureca.uhyu.domain.user.repository.history.HistoryRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +34,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
     private final RecommendationBaseDataRepository recommendationRepository;
-    private final MarkerRepository markerRepository;
     private final BookmarkListRepository bookmarkListRepository;
     private final BookmarkRepository bookmarkRepository;
     private final HistoryRepository historyRepository;
@@ -78,11 +81,10 @@ public class UserService {
         Grade grade = (request.updatedGrade() != null)?
                 request.updatedGrade():user.getGrade();
 
-        Marker marker = (request.markerId() != null)?
-                markerRepository.findById(request.markerId())
-                        .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT)):user.getMarker();
+        Long markerId = (request.markerId() != null)?
+                request.markerId():user.getMarkerId();
 
-        user.updateUser(image, nickname, grade, marker);
+        user.updateUser(image, nickname, grade, markerId);
 
         if (request.updatedBrandIdList() != null && !request.updatedBrandIdList().isEmpty()) {
             recommendationRepository.deleteByUserAndDataType(user, DataType.INTEREST);
@@ -105,10 +107,10 @@ public class UserService {
         return UpdateUserRes.from(savedUser);
     }
 
-    private void saveUserBrandData(User user, List<String> brandNames, DataType dataType) {
-        List<Brand> brands = brandRepository.findByBrandNameIn(brandNames);
+    private void saveUserBrandData(User user, List<Long> brandIds, DataType dataType) {
+        List<Brand> brands = brandRepository.findAllById(brandIds);
 
-        if (brands.size() != brandNames.size()) {
+        if (brands.size() != brandIds.size()) {
             throw new GlobalException(ResultCode.INVALID_INPUT); // 일부 브랜드가 존재하지 않음
         }
 

@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.user.repository;
+package com.ureca.uhyu.domain.user.repository.bookmark;
 
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.User;

@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.user.repository;
+package com.ureca.uhyu.domain.user.repository.history;
 
 import com.ureca.uhyu.domain.user.entity.History;
 import org.springframework.data.jpa.repository.JpaRepository;
