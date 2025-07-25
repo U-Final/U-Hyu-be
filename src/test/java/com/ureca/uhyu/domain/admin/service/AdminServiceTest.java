@@ -1,8 +1,6 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrandRes;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.user.enums.ActionType;
@@ -10,7 +8,6 @@ import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.domain.admin.dto.response.*;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
-import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
