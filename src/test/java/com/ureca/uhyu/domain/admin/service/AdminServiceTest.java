@@ -8,6 +8,7 @@ import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.domain.admin.dto.response.*;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
+import com.ureca.uhyu.domain.user.repository.history.HistoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,9 @@ class AdminServiceTest {
 
     @Mock
     private RecommendationRepository recommendationRepository;
+
+    @Mock
+    private HistoryRepository historyRepository;
 
     @InjectMocks
     private AdminService adminService;
@@ -120,17 +124,17 @@ class AdminServiceTest {
         CountFilterByCategoryRes first = result.get(0);
         assertEquals(1L, first.categoryId());
         assertEquals("카페", first.categoryName());
-        assertEquals(15, first.sumBookmarksByCategory());
+        assertEquals(15, first.sumCountFilterByCategory());
 
         CountFilterByCategoryRes second = result.get(1);
         assertEquals(2L, second.categoryId());
         assertEquals("패션", second.categoryName());
-        assertEquals(8, second.sumBookmarksByCategory());
+        assertEquals(8, second.sumCountFilterByCategory());
 
         verify(actionLogsRepository).findCountFilterByActionType(ActionType.FILTER_USED);
     }
 
-    @DisplayName("카테고리, 브랜드 별 추천 통계 조회 - 성공")
+    @DisplayName("카테고리, 브랜드별 추천 통계 조회 - 성공")
     @Test
     void findCountRecommendationByCategoryAndBrand_success() {
         // given
@@ -170,7 +174,7 @@ class AdminServiceTest {
         verify(recommendationRepository).findCountRecommendationByCategory();
     }
 
-    @DisplayName("카테고리, 브랜드 별 추천 통계 조회 - 빈 리스트")
+    @DisplayName("카테고리, 브랜드별 추천 통계 조회 - 빈 리스트")
     @Test
     void findCountRecommendationByCategoryAndBrand_emptyDataset() {
         // given
@@ -184,5 +188,51 @@ class AdminServiceTest {
         assertTrue(result.isEmpty(), "빈 리스트가 반환되어야 합니다.");
 
         verify(recommendationRepository).findCountRecommendationByCategory();
+    }
+
+    @DisplayName("카테고리, 브랜드별 멤버십 사용횟수 통계 조회 - 성공")
+    @Test
+    void findCountMembershipUsageByCategoryAndBrand_success() {
+        // given
+        List<MembershipUsageByBrand> usageList1 = List.of(
+                MembershipUsageByBrand.of("브랜드A", 5),
+                MembershipUsageByBrand.of("브랜드B", 3)
+        );
+
+        List<MembershipUsageByBrand> usageList2 = List.of(
+                MembershipUsageByBrand.of("브랜드C", 2)
+        );
+
+        List<CountMembershipUsageRes> expected = List.of(
+                CountMembershipUsageRes.of(1L, "카테고리1", 8, usageList1),
+                CountMembershipUsageRes.of(2L, "카테고리2", 2, usageList2)
+        );
+
+        when(historyRepository.findCountMembershipUsageByCategory()).thenReturn(expected);
+
+        // when
+        List<CountMembershipUsageRes> result = adminService.findCountMembershipUsageByCategoryAndBrand();
+
+        // then
+        assertEquals(2, result.size());
+        assertEquals("카테고리1", result.get(0).categoryName());
+        assertEquals(8, result.get(0).sumMembershipUsageByCategory());
+        assertEquals("브랜드A", result.get(0).membershipUsageByBrandList().get(0).brandName());
+        verify(historyRepository).findCountMembershipUsageByCategory();
+    }
+
+    @DisplayName("카테고리, 브랜드별 멤버십 사용횟수 통계 조회 - 빈 리스트")
+    @Test
+    void findCountMembershipUsageByCategoryAndBrand_emptyDataset() {
+        // given
+        when(historyRepository.findCountMembershipUsageByCategory()).thenReturn(List.of());
+
+        // when
+        List<CountMembershipUsageRes> result = adminService.findCountMembershipUsageByCategoryAndBrand();
+
+        // then
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(historyRepository).findCountMembershipUsageByCategory();
     }
 }
