@@ -4,8 +4,6 @@ import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
-import com.ureca.uhyu.domain.recommendation.dto.RecommendationResponse;
-import com.ureca.uhyu.domain.recommendation.entity.Recommendation;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
 import com.ureca.uhyu.domain.store.entity.Store;
@@ -15,15 +13,14 @@ import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.Grade;
-import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
-import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
+import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

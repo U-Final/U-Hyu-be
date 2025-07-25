@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.user.repository;
+package com.ureca.uhyu.domain.user.repository.history;
 
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.user.entity.User;

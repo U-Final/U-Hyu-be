@@ -4,6 +4,16 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev} # 기본값 dev, 환경변수로 override 가능
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+
 app:
   frontend:
     url:

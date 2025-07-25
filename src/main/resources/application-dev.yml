@@ -41,6 +41,7 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.yaml
+    clear-checksums: true
 
 jwt:
   secret: ${JWT_SECRET_KEY}
