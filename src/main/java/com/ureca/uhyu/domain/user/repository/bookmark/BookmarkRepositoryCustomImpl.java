@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.user.repository;
+package com.ureca.uhyu.domain.user.repository.bookmark;
 
 
 import com.querydsl.core.Tuple;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom{
+public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
