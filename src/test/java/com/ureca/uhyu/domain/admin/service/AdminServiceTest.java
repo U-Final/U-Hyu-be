@@ -100,7 +100,7 @@ class AdminServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    @DisplayName("카테고리, 브랜드 별 즐겨찾기 갯수 통계 조회 - 성공")
+    @DisplayName("카테고리별 필터링 횟수 통계 조회 - 성공")
     @Test
     void findCountFilterByCategory() {
         // given

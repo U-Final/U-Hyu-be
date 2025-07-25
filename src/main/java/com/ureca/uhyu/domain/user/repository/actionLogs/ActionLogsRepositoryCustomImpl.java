@@ -53,7 +53,7 @@ public class ActionLogsRepositoryCustomImpl implements ActionLogsRepositoryCusto
                 .from(actionLogs)
                 .join(category)
                 .on(actionLogs.categoryId.eq(category.id))
-                .where(actionLogs.actionType.eq(ActionType.FILTER_USED))
+                .where(actionLogs.actionType.eq(actionType))
                 .groupBy(category.id, category.categoryName)
                 .orderBy(actionLogs.count().desc())
                 .fetch();
