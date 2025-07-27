@@ -1,6 +1,9 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
+import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrandRes;
+import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrand;
 import com.ureca.uhyu.domain.admin.dto.response.CountBookmarkRes;
@@ -83,8 +86,8 @@ public class AdminService {
         return new ArrayList<>(categoryMap.values());
     }
 
-    public List<CountFilterByCategoryRes> findCountFilterByCategory() {
-        return actionLogsRepository.findCountFilterByActionType(ActionType.FILTER_USED);
+    public List<StatisticsFilterByCategoryRes> findStatisticsFilterByCategory() {
+        return actionLogsRepository.findStatisticsFilterByActionType(ActionType.FILTER_USED);
     }
 
     public List<CountRecommendationRes> findCountRecommendationByCategoryAndBrand() {
