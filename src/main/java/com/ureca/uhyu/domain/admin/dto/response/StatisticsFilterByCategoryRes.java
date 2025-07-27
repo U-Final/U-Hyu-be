@@ -1,12 +1,12 @@
 package com.ureca.uhyu.domain.admin.dto.response;
 
-public record CountFilterByCategoryRes(
+public record StatisticsFilterByCategoryRes(
         Long categoryId,
         String categoryName,
         Integer sumCountFilterByCategory
 ){
-    public static CountFilterByCategoryRes of(Long categoryId, String categoryName, Integer sumCountFilterByCategory){
-        return new CountFilterByCategoryRes(
+    public static StatisticsFilterByCategoryRes of(Long categoryId, String categoryName, Integer sumCountFilterByCategory){
+        return new StatisticsFilterByCategoryRes(
                 categoryId,
                 categoryName,
                 sumCountFilterByCategory

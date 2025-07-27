@@ -3,7 +3,7 @@ package com.ureca.uhyu.domain.admin.service;
 import com.querydsl.core.Tuple;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrandRes;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.user.enums.ActionType;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
@@ -102,31 +102,31 @@ class AdminServiceTest {
 
     @DisplayName("카테고리별 필터링 횟수 통계 조회 - 성공")
     @Test
-    void findCountFilterByCategory() {
+    void findStatisticsFilterByCategory() {
         // given
-        CountFilterByCategoryRes res1 = new CountFilterByCategoryRes(1L, "카페", 15);
-        CountFilterByCategoryRes res2 = new CountFilterByCategoryRes(2L, "패션", 8);
-        List<CountFilterByCategoryRes> mockResult = List.of(res1, res2);
+        StatisticsFilterByCategoryRes res1 = new StatisticsFilterByCategoryRes(1L, "카페", 15);
+        StatisticsFilterByCategoryRes res2 = new StatisticsFilterByCategoryRes(2L, "패션", 8);
+        List<StatisticsFilterByCategoryRes> mockResult = List.of(res1, res2);
 
-        when(actionLogsRepository.findCountFilterByActionType(ActionType.FILTER_USED))
+        when(actionLogsRepository.findStatisticsFilterByActionType(ActionType.FILTER_USED))
                 .thenReturn(mockResult);
 
         // when
-        List<CountFilterByCategoryRes> result = adminService.findCountFilterByCategory();
+        List<StatisticsFilterByCategoryRes> result = adminService.findStatisticsFilterByCategory();
 
         // then
         assertEquals(2, result.size());
 
-        CountFilterByCategoryRes first = result.get(0);
+        StatisticsFilterByCategoryRes first = result.get(0);
         assertEquals(1L, first.categoryId());
         assertEquals("카페", first.categoryName());
         assertEquals(15, first.sumBookmarksByCategory());
 
-        CountFilterByCategoryRes second = result.get(1);
+        StatisticsFilterByCategoryRes second = result.get(1);
         assertEquals(2L, second.categoryId());
         assertEquals("패션", second.categoryName());
         assertEquals(8, second.sumBookmarksByCategory());
 
-        verify(actionLogsRepository).findCountFilterByActionType(ActionType.FILTER_USED);
+        verify(actionLogsRepository).findStatisticsFilterByActionType(ActionType.FILTER_USED);
     }
 }
