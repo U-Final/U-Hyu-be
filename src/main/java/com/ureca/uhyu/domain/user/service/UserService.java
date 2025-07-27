@@ -7,7 +7,7 @@ import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
-import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
+import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
 import com.ureca.uhyu.domain.user.dto.response.*;
 import com.ureca.uhyu.domain.user.entity.*;
 import com.ureca.uhyu.domain.user.enums.Grade;
@@ -40,7 +40,7 @@ public class UserService {
     private final ActionLogsRepository actionLogsRepository;
 
     @Transactional
-    public Long saveOnboardingInfo(UserOnboardingRequest request, User user) {
+    public Long saveOnboardingInfo(UserOnboardingReq request, User user) {
 
         User persistedUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));

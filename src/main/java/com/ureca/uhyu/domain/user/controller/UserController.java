@@ -3,7 +3,7 @@ package com.ureca.uhyu.domain.user.controller;
 import com.ureca.uhyu.domain.auth.dto.UserEmailCheckRequest;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
-import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
+import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
 import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
@@ -33,7 +33,7 @@ public class UserController implements UserControllerDocs {
 
     @PostMapping("/extra-info")
     public CommonResponse<ResultCode> onboarding(
-            @Valid @RequestBody UserOnboardingRequest request,
+            @Valid @RequestBody UserOnboardingReq request,
             HttpServletResponse response,
             @CurrentUser User user
     ) {
@@ -95,4 +95,7 @@ public class UserController implements UserControllerDocs {
     ) {
         return CommonResponse.success(userService.findUserStatistics(user));
     }
+
+    @PostMapping("/action-logs")
+    public CommonResponse<> actionLogs()
 }
