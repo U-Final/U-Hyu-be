@@ -2,7 +2,7 @@ package com.ureca.uhyu.domain.user.controller;
 
 import com.ureca.uhyu.domain.auth.dto.UserEmailCheckRequest;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
-import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
+import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
 import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
 import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
 import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
@@ -81,7 +81,7 @@ public interface UserControllerDocs {
             @Parameter(
                     description = "온보딩 정보",
                     required = true
-            ) @Valid @RequestBody UserOnboardingRequest request,
+            ) @Valid @RequestBody UserOnboardingReq request,
             @Parameter(hidden = true) HttpServletResponse response,
             @Parameter(
                     description = "현재 로그인된 사용자 정보",
