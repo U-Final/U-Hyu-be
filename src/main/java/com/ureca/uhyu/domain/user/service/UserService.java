@@ -172,7 +172,7 @@ public class UserService {
     }
 
     @Transactional
-    public ActionLogsRes saveActionLogs(User user, ActionLogsReq request) {
+    public SaveUserInfoRes saveActionLogs(User user, ActionLogsReq request) {
         if (request.storeId() == null && request.categoryId() == null) {
             throw new GlobalException(ResultCode.INVALID_INPUT);
         }
@@ -186,6 +186,6 @@ public class UserService {
 
         actionLogsRepository.save(actionLogs);
 
-        return ActionLogsRes.from(user);
+        return SaveUserInfoRes.from(user);
     }
 }

@@ -449,7 +449,7 @@ class UserServiceTest {
         ActionLogsReq req = new ActionLogsReq(ActionType.MARKER_CLICK, 10L, null);
 
         // when
-        ActionLogsRes res = userService.saveActionLogs(user, req);
+        SaveUserInfoRes res = userService.saveActionLogs(user, req);
 
         // then
         ArgumentCaptor<ActionLogs> captor = ArgumentCaptor.forClass(ActionLogs.class);
@@ -473,7 +473,7 @@ class UserServiceTest {
         ActionLogsReq req = new ActionLogsReq(ActionType.FILTER_USED, null, 5L);
 
         // when
-        ActionLogsRes res = userService.saveActionLogs(user, req);
+        SaveUserInfoRes res = userService.saveActionLogs(user, req);
 
         // then
         ArgumentCaptor<ActionLogs> captor = ArgumentCaptor.forClass(ActionLogs.class);
