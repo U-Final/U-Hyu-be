@@ -73,7 +73,9 @@ public class UserService {
     }
 
     public GetUserInfoRes findUserInfo(User user) {
-        return GetUserInfoRes.from(user);
+        //todo:recommendationRepository 수정 후 마저 구현
+        List<Brand> brandList = recommendationRepository.findbyuserid(user);
+        return GetUserInfoRes.from(user, brandList);
     }
 
     @Transactional
