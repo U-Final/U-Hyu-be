@@ -1,12 +1,9 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrandRes;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterByCategoryRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrand;
-import com.ureca.uhyu.domain.admin.dto.response.CountBookmarkRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsBookmarkRes;
 import com.ureca.uhyu.domain.admin.dto.response.CountRecommendationRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
@@ -32,7 +29,7 @@ public class AdminService {
     private final ActionLogsRepository actionLogsRepository;
     private final RecommendationRepository recommendationRepository;
 
-    public List<CountBookmarkRes> findBookmarksByCategoryAndBrand() {
+    public List<StatisticsBookmarkRes> findStatisticsBookmarkByCategoryAndBrand() {
         Set<UserBrandPair> userBrandSaves = bookmarkRepository.findUserBrandSaves();
         Map<Long, Tuple> brandCategoryMap = bookmarkRepository.findBrandToCategoryMap();
 
@@ -48,9 +45,9 @@ public class AdminService {
         return aggregateBookmarksByCategory(brandSaveCounts, brandCategoryMap);
     }
 
-    private List<CountBookmarkRes> aggregateBookmarksByCategory(Map<Long, Integer> brandSaveCounts, Map<Long, Tuple> brandCategoryMap) {
+    private List<StatisticsBookmarkRes> aggregateBookmarksByCategory(Map<Long, Integer> brandSaveCounts, Map<Long, Tuple> brandCategoryMap) {
         // 카테고리별 DTO 조립
-        Map<Long, CountBookmarkRes> categoryMap = new LinkedHashMap<>();
+        Map<Long, StatisticsBookmarkRes> categoryMap = new LinkedHashMap<>();
 
         for (Map.Entry<Long, Integer> entry : brandSaveCounts.entrySet()) {
             Long brandId = entry.getKey();
@@ -74,11 +71,11 @@ public class AdminService {
                 if (existing == null) {
                     List<BookmarksByBrand> brandList = new ArrayList<>();
                     brandList.add(brandRes);
-                    return CountBookmarkRes.of(categoryId, categoryName, count, brandList);
+                    return StatisticsBookmarkRes.of(categoryId, categoryName, count, brandList);
                 } else {
                     existing.bookmarksByBrandList().add(brandRes);
-                    int newSum = existing.sumBookmarksByCategory() + count;
-                    return CountBookmarkRes.of(categoryId, categoryName, newSum, existing.bookmarksByBrandList());
+                    int newSum = existing.sumStatisticsBookmarksByCategory() + count;
+                    return StatisticsBookmarkRes.of(categoryId, categoryName, newSum, existing.bookmarksByBrandList());
                 }
             });
         }

@@ -1,10 +1,7 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrandRes;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterByCategoryRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.user.enums.ActionType;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
@@ -41,7 +38,7 @@ class AdminServiceTest {
 
     @DisplayName("카테고리, 브랜드 별 즐겨찾기 갯수 통계 조회 - 성공")
     @Test
-    void findBookmarksByCategoryAndBrand() {
+    void findStatisticsBookmarkByCategoryAndBrand() {
         // given
         UserBrandPair pair1 = new UserBrandPair(1L, 101L); // 유저1, 브랜드101
         UserBrandPair pair2 = new UserBrandPair(2L, 101L); // 유저2, 브랜드101
@@ -68,14 +65,14 @@ class AdminServiceTest {
         when(bookmarkRepository.findBrandToCategoryMap()).thenReturn(brandCategoryMap);
 
         // when
-        List<CountBookmarkRes> result = adminService.findBookmarksByCategoryAndBrand();
+        List<StatisticsBookmarkRes> result = adminService.findStatisticsBookmarkByCategoryAndBrand();
 
         // then
         assertEquals(1, result.size());
-        CountBookmarkRes categoryRes = result.get(0);
+        StatisticsBookmarkRes categoryRes = result.get(0);
         assertEquals(10L, categoryRes.categoryId());
         assertEquals("카테고리A", categoryRes.categoryName());
-        assertEquals(3, categoryRes.sumBookmarksByCategory()); // 2 + 1
+        assertEquals(3, categoryRes.sumStatisticsBookmarksByCategory()); // 2 + 1
 
         List<BookmarksByBrand> brandList = categoryRes.bookmarksByBrandList();
         assertEquals(2, brandList.size());
@@ -91,13 +88,13 @@ class AdminServiceTest {
     
     @DisplayName("카테고리, 브랜드 별 즐겨찾기 갯수 통계 조회 - 빈 리스트")
     @Test
-    void findBookmarksByCategoryAndBrand_EmptyDataset() {
+    void findStatisticsBookmarkByCategoryAndBrand_EmptyDataset() {
         // given
         when(bookmarkRepository.findUserBrandSaves()).thenReturn(Set.of());
         when(bookmarkRepository.findBrandToCategoryMap()).thenReturn(Map.of());
 
         // when
-        List<CountBookmarkRes> result = adminService.findBookmarksByCategoryAndBrand();
+        List<StatisticsBookmarkRes> result = adminService.findStatisticsBookmarkByCategoryAndBrand();
 
         // then
         assertTrue(result.isEmpty());
@@ -123,12 +120,12 @@ class AdminServiceTest {
         StatisticsFilterByCategoryRes first = result.get(0);
         assertEquals(1L, first.categoryId());
         assertEquals("카페", first.categoryName());
-        assertEquals(15, first.sumBookmarksByCategory());
+        assertEquals(15, first.sumStatisticsFilterByCategory());
 
         StatisticsFilterByCategoryRes second = result.get(1);
         assertEquals(2L, second.categoryId());
         assertEquals("패션", second.categoryName());
-        assertEquals(8, second.sumBookmarksByCategory());
+        assertEquals(8, second.sumStatisticsFilterByCategory());
 
         verify(actionLogsRepository).findStatisticsFilterByActionType(ActionType.FILTER_USED);
     }
