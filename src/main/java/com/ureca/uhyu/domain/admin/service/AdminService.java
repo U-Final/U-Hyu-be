@@ -1,11 +1,7 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterByCategoryRes;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrand;
-import com.ureca.uhyu.domain.admin.dto.response.StatisticsBookmarkRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountRecommendationRes;
-import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
+import com.ureca.uhyu.domain.admin.dto.response.*;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
@@ -89,11 +85,11 @@ public class AdminService {
         return actionLogsRepository.findStatisticsFilterByActionType(ActionType.FILTER_USED);
     }
 
-    public List<CountRecommendationRes> findCountRecommendationByCategoryAndBrand() {
-        return recommendationRepository.findCountRecommendationByCategory();
+    public List<StatisticsRecommendationRes> findStatisticsRecommendationByCategoryAndBrand() {
+        return recommendationRepository.findStatisticsRecommendationByCategory();
     }
 
-    public List<CountMembershipUsageRes> findCountMembershipUsageByCategoryAndBrand() {
-        return historyRepository.findCountMembershipUsageByCategory();
+    public List<StatisticsMembershipUsageRes> findStatisticsMembershipUsageByCategoryAndBrand() {
+        return historyRepository.findStatisticsMembershipUsageByCategory();
     }
 }

@@ -2,7 +2,7 @@ package com.ureca.uhyu.domain.user.repository.history;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ureca.uhyu.domain.admin.dto.response.CountMembershipUsageRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsMembershipUsageRes;
 import com.ureca.uhyu.domain.admin.dto.response.MembershipUsageByBrand;
 import com.ureca.uhyu.domain.brand.entity.QBrand;
 import com.ureca.uhyu.domain.brand.entity.QCategory;
@@ -60,7 +60,7 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
     }
 
     @Override
-    public List<CountMembershipUsageRes> findCountMembershipUsageByCategory() {
+    public List<StatisticsMembershipUsageRes> findStatisticsMembershipUsageByCategory() {
         QHistory history = QHistory.history;
         QStore store = QStore.store;
         QBrand brand = QBrand.brand;
@@ -104,7 +104,7 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
 
         // 3. DTO 조립
         return categoryGrouped.entrySet().stream()
-                .map(entry -> CountMembershipUsageRes.of(
+                .map(entry -> StatisticsMembershipUsageRes.of(
                         entry.getKey(),
                         categoryNameMap.get(entry.getKey()),
                         categorySumMap.get(entry.getKey()),

@@ -5,17 +5,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 @Schema(description = "카테고리, 브랜드별 멤버십 사용횟수 통계 응답 DTO")
-public record CountMembershipUsageRes(
+public record StatisticsMembershipUsageRes(
         Long categoryId,
         String categoryName,
-        Integer sumMembershipUsageByCategory,
+        Integer sumStatisticsMembershipUsageByCategory,
         List<MembershipUsageByBrand> membershipUsageByBrandList
 ){
-    public static CountMembershipUsageRes of (Long categoryId, String categoryName, Integer sumMembershipUsageByCategory, List<MembershipUsageByBrand> membershipUsageByBrandList){
-        return new CountMembershipUsageRes(
+    public static StatisticsMembershipUsageRes of (Long categoryId, String categoryName, Integer sumStatisticsMembershipUsageByCategory, List<MembershipUsageByBrand> membershipUsageByBrandList){
+        return new StatisticsMembershipUsageRes(
                 categoryId,
                 categoryName,
-                sumMembershipUsageByCategory,
+                sumStatisticsMembershipUsageByCategory,
                 membershipUsageByBrandList
         );
     }

@@ -136,63 +136,63 @@ class AdminServiceTest {
 
     @DisplayName("카테고리, 브랜드별 추천 통계 조회 - 성공")
     @Test
-    void findCountRecommendationByCategoryAndBrand_success() {
+    void findStatisticsRecommendationByCategoryAndBrand_success() {
         // given
         RecommendationsByBrand brand1 = RecommendationsByBrand.of("스타벅스", 12);
         RecommendationsByBrand brand2 = RecommendationsByBrand.of("이디야", 8);
-        CountRecommendationRes category1 = CountRecommendationRes.of(1L, "카페", 20, List.of(brand1, brand2));
+        StatisticsRecommendationRes category1 = StatisticsRecommendationRes.of(1L, "카페", 20, List.of(brand1, brand2));
 
         RecommendationsByBrand brand3 = RecommendationsByBrand.of("무신사", 6);
-        CountRecommendationRes category2 = CountRecommendationRes.of(2L, "패션", 6, List.of(brand3));
+        StatisticsRecommendationRes category2 = StatisticsRecommendationRes.of(2L, "패션", 6, List.of(brand3));
 
-        List<CountRecommendationRes> mockResult = List.of(category1, category2);
+        List<StatisticsRecommendationRes> mockResult = List.of(category1, category2);
 
-        when(recommendationRepository.findCountRecommendationByCategory()).thenReturn(mockResult);
+        when(recommendationRepository.findStatisticsRecommendationByCategory()).thenReturn(mockResult);
 
         // when
-        List<CountRecommendationRes> result = adminService.findCountRecommendationByCategoryAndBrand();
+        List<StatisticsRecommendationRes> result = adminService.findStatisticsRecommendationByCategoryAndBrand();
 
         // then
         assertEquals(2, result.size());
 
-        CountRecommendationRes res1 = result.get(0);
+        StatisticsRecommendationRes res1 = result.get(0);
         assertEquals(1L, res1.categoryId());
         assertEquals("카페", res1.categoryName());
-        assertEquals(20, res1.sumRecommendationByCategory());
+        assertEquals(20, res1.sumStatisticsRecommendationByCategory());
         assertEquals(2, res1.recommendationsByBrandList().size());
         assertEquals("스타벅스", res1.recommendationsByBrandList().get(0).brandName());
         assertEquals(12, res1.recommendationsByBrandList().get(0).sumRecommendationsByBrand());
 
-        CountRecommendationRes res2 = result.get(1);
+        StatisticsRecommendationRes res2 = result.get(1);
         assertEquals(2L, res2.categoryId());
         assertEquals("패션", res2.categoryName());
-        assertEquals(6, res2.sumRecommendationByCategory());
+        assertEquals(6, res2.sumStatisticsRecommendationByCategory());
         assertEquals(1, res2.recommendationsByBrandList().size());
         assertEquals("무신사", res2.recommendationsByBrandList().get(0).brandName());
         assertEquals(6, res2.recommendationsByBrandList().get(0).sumRecommendationsByBrand());
 
-        verify(recommendationRepository).findCountRecommendationByCategory();
+        verify(recommendationRepository).findStatisticsRecommendationByCategory();
     }
 
     @DisplayName("카테고리, 브랜드별 추천 통계 조회 - 빈 리스트")
     @Test
-    void findCountRecommendationByCategoryAndBrand_emptyDataset() {
+    void findStatisticsRecommendationByCategoryAndBrand_emptyDataset() {
         // given
-        when(recommendationRepository.findCountRecommendationByCategory()).thenReturn(Collections.emptyList());
+        when(recommendationRepository.findStatisticsRecommendationByCategory()).thenReturn(Collections.emptyList());
 
         // when
-        List<CountRecommendationRes> result = adminService.findCountRecommendationByCategoryAndBrand();
+        List<StatisticsRecommendationRes> result = adminService.findStatisticsRecommendationByCategoryAndBrand();
 
         // then
         assertNotNull(result);
         assertTrue(result.isEmpty(), "빈 리스트가 반환되어야 합니다.");
 
-        verify(recommendationRepository).findCountRecommendationByCategory();
+        verify(recommendationRepository).findStatisticsRecommendationByCategory();
     }
 
     @DisplayName("카테고리, 브랜드별 멤버십 사용횟수 통계 조회 - 성공")
     @Test
-    void findCountMembershipUsageByCategoryAndBrand_success() {
+    void findStatisticsMembershipUsageByCategoryAndBrand_success() {
         // given
         List<MembershipUsageByBrand> usageList1 = List.of(
                 MembershipUsageByBrand.of("브랜드A", 5),
@@ -203,36 +203,36 @@ class AdminServiceTest {
                 MembershipUsageByBrand.of("브랜드C", 2)
         );
 
-        List<CountMembershipUsageRes> expected = List.of(
-                CountMembershipUsageRes.of(1L, "카테고리1", 8, usageList1),
-                CountMembershipUsageRes.of(2L, "카테고리2", 2, usageList2)
+        List<StatisticsMembershipUsageRes> expected = List.of(
+                StatisticsMembershipUsageRes.of(1L, "카테고리1", 8, usageList1),
+                StatisticsMembershipUsageRes.of(2L, "카테고리2", 2, usageList2)
         );
 
-        when(historyRepository.findCountMembershipUsageByCategory()).thenReturn(expected);
+        when(historyRepository.findStatisticsMembershipUsageByCategory()).thenReturn(expected);
 
         // when
-        List<CountMembershipUsageRes> result = adminService.findCountMembershipUsageByCategoryAndBrand();
+        List<StatisticsMembershipUsageRes> result = adminService.findStatisticsMembershipUsageByCategoryAndBrand();
 
         // then
         assertEquals(2, result.size());
         assertEquals("카테고리1", result.get(0).categoryName());
-        assertEquals(8, result.get(0).sumMembershipUsageByCategory());
+        assertEquals(8, result.get(0).sumStatisticsMembershipUsageByCategory());
         assertEquals("브랜드A", result.get(0).membershipUsageByBrandList().get(0).brandName());
-        verify(historyRepository).findCountMembershipUsageByCategory();
+        verify(historyRepository).findStatisticsMembershipUsageByCategory();
     }
 
     @DisplayName("카테고리, 브랜드별 멤버십 사용횟수 통계 조회 - 빈 리스트")
     @Test
-    void findCountMembershipUsageByCategoryAndBrand_emptyDataset() {
+    void findStatisticsMembershipUsageByCategoryAndBrand_emptyDataset() {
         // given
-        when(historyRepository.findCountMembershipUsageByCategory()).thenReturn(List.of());
+        when(historyRepository.findStatisticsMembershipUsageByCategory()).thenReturn(List.of());
 
         // when
-        List<CountMembershipUsageRes> result = adminService.findCountMembershipUsageByCategoryAndBrand();
+        List<StatisticsMembershipUsageRes> result = adminService.findStatisticsMembershipUsageByCategoryAndBrand();
 
         // then
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(historyRepository).findCountMembershipUsageByCategory();
+        verify(historyRepository).findStatisticsMembershipUsageByCategory();
     }
 }

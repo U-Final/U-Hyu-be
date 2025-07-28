@@ -1,10 +1,8 @@
 package com.ureca.uhyu.domain.admin.controller;
 
-import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountBookmarkRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountMembershipUsageRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsMembershipUsageRes;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsBookmarkRes;
-import com.ureca.uhyu.domain.admin.dto.response.CountRecommendationRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsRecommendationRes;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterByCategoryRes;
 import com.ureca.uhyu.domain.admin.service.AdminService;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
@@ -76,13 +74,13 @@ public class AdminController {
 
     @Operation(summary = "카테고리, 브랜드별 추천 받은 횟수 통계", description = "관리자가 사람들이 추천 받은 카테고리, 브랜드들을 확인 가능")
     @GetMapping("/statistics/recommendation")
-    public CommonResponse<List<CountRecommendationRes>> getCountRecommendationByCategoryAndBrand() {
-        return CommonResponse.success(adminService.findCountRecommendationByCategoryAndBrand());
+    public CommonResponse<List<StatisticsRecommendationRes>> getStatisticsRecommendationByCategoryAndBrand() {
+        return CommonResponse.success(adminService.findStatisticsRecommendationByCategoryAndBrand());
     }
 
     @Operation(summary = "카테고리, 브랜드별 멤버십 사용횟수 통계", description = "관리자가 사람들이 사용한 멤버십 브랜드 카테고리 별로 확인 가능")
     @GetMapping("/statistics/membershipUsage")
-    public CommonResponse<List<CountMembershipUsageRes>> getCountMembershipByCategoryAndBrand() {
-        return CommonResponse.success(adminService.findCountMembershipUsageByCategoryAndBrand());
+    public CommonResponse<List<StatisticsMembershipUsageRes>> getStatisticsMembershipByCategoryAndBrand() {
+        return CommonResponse.success(adminService.findStatisticsMembershipUsageByCategoryAndBrand());
     }
 }
