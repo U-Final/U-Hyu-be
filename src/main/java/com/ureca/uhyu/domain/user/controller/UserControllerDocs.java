@@ -1,12 +1,10 @@
 package com.ureca.uhyu.domain.user.controller;
 
 import com.ureca.uhyu.domain.auth.dto.UserEmailCheckRequest;
+import com.ureca.uhyu.domain.user.dto.request.ActionLogsReq;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
-import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
-import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
-import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
-import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
+import com.ureca.uhyu.domain.user.dto.response.*;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.annotation.CurrentUser;
 import com.ureca.uhyu.global.response.CommonResponse;
@@ -368,4 +366,18 @@ public interface UserControllerDocs {
                     description = "현재 로그인된 사용자 정보",
                     hidden = true
             ) @CurrentUser User user);
+
+@Operation(
+        summary = "유저 action logs 저장",
+        description = "유저가 클릭한 마커 정보를 기반으로 매장 id, 카테고리 필터링 클릭 정보를 기반으로 카테고리 id에 대한 action logs를 저장"
+)
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
+})
+CommonResponse<ActionLogsRes> actionLogs(
+        @Parameter(hidden = true) User user,
+        @Parameter(description = "액션 로그 요청 데이터") @Valid @RequestBody ActionLogsReq request
+);
 }
