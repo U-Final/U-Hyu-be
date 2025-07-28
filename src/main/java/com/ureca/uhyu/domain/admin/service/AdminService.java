@@ -92,4 +92,12 @@ public class AdminService {
     public List<StatisticsMembershipUsageRes> findStatisticsMembershipUsageByCategoryAndBrand() {
         return historyRepository.findStatisticsMembershipUsageByCategory();
     }
+
+    public StatisticsTotalRes findStatisticsTotal() {
+        Long totalBookmark = bookmarkRepository.count();
+        Long totalFiltering = actionLogsRepository.countByActionType(ActionType.FILTER_USED);
+        Long totalMembershipUsage = historyRepository.count();
+
+        return StatisticsTotalRes.of(totalBookmark, totalFiltering, totalMembershipUsage);
+    }
 }
