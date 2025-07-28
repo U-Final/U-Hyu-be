@@ -2,7 +2,7 @@ package com.ureca.uhyu.domain.recommendation.repository;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ureca.uhyu.domain.admin.dto.response.CountRecommendationRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsRecommendationRes;
 import com.ureca.uhyu.domain.admin.dto.response.RecommendationsByBrand;
 import com.ureca.uhyu.domain.brand.entity.QBrand;
 import com.ureca.uhyu.domain.brand.entity.QCategory;
@@ -38,7 +38,7 @@ public class RecommendationRepositoryCustomImpl implements RecommendationReposit
     }
 
     @Override
-    public List<CountRecommendationRes> findCountRecommendationByCategory() {
+    public List<StatisticsRecommendationRes> findStatisticsRecommendationByCategory() {
         QRecommendation recommendation = QRecommendation.recommendation;
         QBrand brand = QBrand.brand;
         QCategory category = QCategory.category;
@@ -89,7 +89,7 @@ public class RecommendationRepositoryCustomImpl implements RecommendationReposit
         }
 
         // 4. CountRecommendationRes 구성
-        List<CountRecommendationRes> result = new ArrayList<>();
+        List<StatisticsRecommendationRes> result = new ArrayList<>();
 
         for (Map.Entry<Long, List<RecommendationsByBrand>> entry : brandGroupedByCategory.entrySet()) {
             Long categoryId = entry.getKey();
@@ -99,7 +99,7 @@ public class RecommendationRepositoryCustomImpl implements RecommendationReposit
             String categoryName = categoryTuple.get(1, String.class);
             Integer categoryTotal = categoryTuple.get(2, Integer.class);
 
-            result.add(CountRecommendationRes.of(categoryId, categoryName, categoryTotal, brandList));
+            result.add(StatisticsRecommendationRes.of(categoryId, categoryName, categoryTotal, brandList));
         }
 
         return result;

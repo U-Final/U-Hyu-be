@@ -27,7 +27,7 @@ public class AdminService {
     private final RecommendationRepository recommendationRepository;
     private final HistoryRepository historyRepository;
 
-    public List<CountBookmarkRes> findBookmarksByCategoryAndBrand() {
+    public List<StatisticsBookmarkRes> findStatisticsBookmarkByCategoryAndBrand() {
         Set<UserBrandPair> userBrandSaves = bookmarkRepository.findUserBrandSaves();
         Map<Long, Tuple> brandCategoryMap = bookmarkRepository.findBrandToCategoryMap();
 
@@ -43,9 +43,9 @@ public class AdminService {
         return aggregateBookmarksByCategory(brandSaveCounts, brandCategoryMap);
     }
 
-    private List<CountBookmarkRes> aggregateBookmarksByCategory(Map<Long, Integer> brandSaveCounts, Map<Long, Tuple> brandCategoryMap) {
+    private List<StatisticsBookmarkRes> aggregateBookmarksByCategory(Map<Long, Integer> brandSaveCounts, Map<Long, Tuple> brandCategoryMap) {
         // 카테고리별 DTO 조립
-        Map<Long, CountBookmarkRes> categoryMap = new LinkedHashMap<>();
+        Map<Long, StatisticsBookmarkRes> categoryMap = new LinkedHashMap<>();
 
         for (Map.Entry<Long, Integer> entry : brandSaveCounts.entrySet()) {
             Long brandId = entry.getKey();
@@ -69,11 +69,11 @@ public class AdminService {
                 if (existing == null) {
                     List<BookmarksByBrand> brandList = new ArrayList<>();
                     brandList.add(brandRes);
-                    return CountBookmarkRes.of(categoryId, categoryName, count, brandList);
+                    return StatisticsBookmarkRes.of(categoryId, categoryName, count, brandList);
                 } else {
                     existing.bookmarksByBrandList().add(brandRes);
-                    int newSum = existing.sumBookmarksByCategory() + count;
-                    return CountBookmarkRes.of(categoryId, categoryName, newSum, existing.bookmarksByBrandList());
+                    int newSum = existing.sumStatisticsBookmarksByCategory() + count;
+                    return StatisticsBookmarkRes.of(categoryId, categoryName, newSum, existing.bookmarksByBrandList());
                 }
             });
         }
@@ -81,16 +81,16 @@ public class AdminService {
         return new ArrayList<>(categoryMap.values());
     }
 
-    public List<CountFilterByCategoryRes> findCountFilterByCategory() {
-        return actionLogsRepository.findCountFilterByActionType(ActionType.FILTER_USED);
+    public List<StatisticsFilterRes> findStatisticsFilterByCategory() {
+        return actionLogsRepository.findStatisticsFilterByActionType(ActionType.FILTER_USED);
     }
 
-    public List<CountRecommendationRes> findCountRecommendationByCategoryAndBrand() {
-        return recommendationRepository.findCountRecommendationByCategory();
+    public List<StatisticsRecommendationRes> findStatisticsRecommendationByCategoryAndBrand() {
+        return recommendationRepository.findStatisticsRecommendationByCategory();
     }
 
-    public List<CountMembershipUsageRes> findCountMembershipUsageByCategoryAndBrand() {
-        return historyRepository.findCountMembershipUsageByCategory();
+    public List<StatisticsMembershipUsageRes> findStatisticsMembershipUsageByCategoryAndBrand() {
+        return historyRepository.findStatisticsMembershipUsageByCategory();
     }
 
     public List<CountTotalRes> findCountTotal() {

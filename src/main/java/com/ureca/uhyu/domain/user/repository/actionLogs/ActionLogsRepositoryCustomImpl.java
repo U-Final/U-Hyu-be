@@ -2,7 +2,7 @@ package com.ureca.uhyu.domain.user.repository.actionLogs;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ureca.uhyu.domain.admin.dto.response.CountFilterByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterRes;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.QCategory;
 import com.ureca.uhyu.domain.store.entity.QStore;
@@ -39,13 +39,13 @@ public class ActionLogsRepositoryCustomImpl implements ActionLogsRepositoryCusto
     }
 
     @Override
-    public List<CountFilterByCategoryRes> findCountFilterByActionType(ActionType actionType) {
+    public List<StatisticsFilterRes> findStatisticsFilterByActionType(ActionType actionType) {
         QActionLogs actionLogs = QActionLogs.actionLogs;
         QCategory category = QCategory.category;
 
         return queryFactory
                 .select(Projections.constructor(
-                        CountFilterByCategoryRes.class,
+                        StatisticsFilterRes.class,
                         category.id,
                         category.categoryName,
                         actionLogs.count().intValue()
