@@ -3,6 +3,7 @@ package com.ureca.uhyu.domain.user.controller;
 import com.ureca.uhyu.domain.auth.dto.UserEmailCheckRequest;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.dto.request.ActionLogsReq;
+import com.ureca.uhyu.domain.user.dto.request.SaveRecentVisitReq;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
 import com.ureca.uhyu.domain.user.dto.response.*;
@@ -106,6 +107,11 @@ public class UserController implements UserControllerDocs {
     }
 
     @PostMapping("/visited")
-    public CommonResponse<S>
+    public CommonResponse<SaveUserInfoRes> visited(
+            @CurrentUser User user,
+            @Valid @RequestBody SaveRecentVisitReq request
+            ){
+        return CommonResponse.success(userService.saveVisitedBrand(user, request));
+    }
 
 }

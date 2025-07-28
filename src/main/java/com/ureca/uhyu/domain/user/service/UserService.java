@@ -6,7 +6,9 @@ import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.store.repository.StoreRepository;
 import com.ureca.uhyu.domain.user.dto.request.ActionLogsReq;
+import com.ureca.uhyu.domain.user.dto.request.SaveRecentVisitReq;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
 import com.ureca.uhyu.domain.user.dto.response.*;
@@ -20,6 +22,7 @@ import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.domain.user.repository.history.HistoryRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,7 @@ public class UserService {
     private final BookmarkRepository bookmarkRepository;
     private final HistoryRepository historyRepository;
     private final ActionLogsRepository actionLogsRepository;
+    private final StoreRepository storeRepository;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingReq request, User user) {
@@ -185,6 +189,24 @@ public class UserService {
                 .build();
 
         actionLogsRepository.save(actionLogs);
+
+        return SaveUserInfoRes.from(user);
+    }
+
+    @Transactional
+    public SaveUserInfoRes saveVisitedBrand(User user, @Valid SaveRecentVisitReq request) {
+        Store store = storeRepository.findById(request.storeId())
+                .orElseThrow(() -> new GlobalException(ResultCode.STORE_NOT_FOUND));
+
+        Brand brand = store.getBrand();
+
+        RecommendationBaseData data = RecommendationBaseData.builder()
+                .user(user)
+                .brand(brand)
+                .dataType(DataType.RECENT)
+                .build();
+
+        recommendationRepository.save(data);
 
         return SaveUserInfoRes.from(user);
     }
