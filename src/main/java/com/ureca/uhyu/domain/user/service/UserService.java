@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -194,19 +195,27 @@ public class UserService {
     }
 
     @Transactional
-    public SaveUserInfoRes saveVisitedBrand(User user, @Valid SaveRecentVisitReq request) {
+    public SaveUserInfoRes saveVisitedBrand(User user, SaveRecentVisitReq request) {
         Store store = storeRepository.findById(request.storeId())
                 .orElseThrow(() -> new GlobalException(ResultCode.STORE_NOT_FOUND));
 
-        Brand brand = store.getBrand();
+        Grade userGrade = user.getGrade();
 
-        RecommendationBaseData data = RecommendationBaseData.builder()
+        int benefitPrice = switch (userGrade) {
+            case GOOD -> 500;
+            case VIP -> 1000;
+            case VVIP -> 1500;
+            default -> 0;
+        };
+
+        History history = History.builder()
                 .user(user)
-                .brand(brand)
-                .dataType(DataType.RECENT)
+                .store(store)
+                .visitedAt(LocalDateTime.now())
+                .benefitPrice(benefitPrice)
                 .build();
 
-        recommendationRepository.save(data);
+        historyRepository.save(history);
 
         return SaveUserInfoRes.from(user);
     }
