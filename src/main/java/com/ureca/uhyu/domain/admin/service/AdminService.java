@@ -93,8 +93,11 @@ public class AdminService {
         return historyRepository.findStatisticsMembershipUsageByCategory();
     }
 
-    public List<CountTotalRes> findCountTotal() {
-        //TODO: 총 즐겨찾기 / 필터링 / 검색 / 멤버십 사용 수 가져오는 로직 작성 예정
-        return null;
+    public StatisticsTotalRes findStatisticsTotal() {
+        Long totalBookmark = bookmarkRepository.count();
+        Long totalFiltering = actionLogsRepository.countByActionType(ActionType.FILTER_USED);
+        Long totalMemberShipUsage = historyRepository.count();
+
+        return StatisticsTotalRes.of(totalBookmark, totalFiltering, totalMemberShipUsage);
     }
 }

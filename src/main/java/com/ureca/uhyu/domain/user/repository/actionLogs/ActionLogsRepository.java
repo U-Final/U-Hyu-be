@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ActionLogsRepository extends JpaRepository<ActionLogs, Long>
         , ActionLogsRepositoryCustom{
+    long countByActionType(ActionType actionType);
 }
