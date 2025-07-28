@@ -96,11 +96,11 @@ public class UserController implements UserControllerDocs {
         return CommonResponse.success(userService.findUserStatistics(user));
     }
 
-    @Operation(summary = "action logs 저장", description = "유저의 action logs 저장")
+
     @PostMapping("/action-logs")
     public CommonResponse<ActionLogsRes> actionLogs(
         @CurrentUser User user,
-        @RequestBody ActionLogsReq request
+        @Valid @RequestBody ActionLogsReq request
     ){
         return CommonResponse.success(userService.saveActionLogs(user, request));
     }
