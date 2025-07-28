@@ -5,17 +5,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 @Schema(description = "카테고리별 즐겨찾기 통계 응답 DTO")
-public record CountBookmarkRes(
+public record StatisticsBookmarkRes(
         Long categoryId,
         String categoryName,
-        Integer sumBookmarksByCategory,
+        Integer sumStatisticsBookmarksByCategory,
         List<BookmarksByBrand> bookmarksByBrandList
 ){
-    public static CountBookmarkRes of(Long categoryId, String categoryName, Integer sumBookmarksByCategory, List<BookmarksByBrand> bookmarksByBrandList){
-        return new CountBookmarkRes(
+    public static StatisticsBookmarkRes of(Long categoryId, String categoryName, Integer sumStatisticsBookmarksByCategory, List<BookmarksByBrand> bookmarksByBrandList){
+        return new StatisticsBookmarkRes(
                 categoryId,
                 categoryName,
-                sumBookmarksByCategory,
+                sumStatisticsBookmarksByCategory,
                 bookmarksByBrandList
         );
     }
