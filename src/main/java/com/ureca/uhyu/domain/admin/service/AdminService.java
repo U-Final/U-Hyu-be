@@ -81,7 +81,7 @@ public class AdminService {
         return new ArrayList<>(categoryMap.values());
     }
 
-    public List<StatisticsFilterByCategoryRes> findStatisticsFilterByCategory() {
+    public List<StatisticsFilterRes> findStatisticsFilterByCategory() {
         return actionLogsRepository.findStatisticsFilterByActionType(ActionType.FILTER_USED);
     }
 

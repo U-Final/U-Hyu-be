@@ -1,7 +1,7 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.user.enums.ActionType;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
@@ -108,25 +108,25 @@ class AdminServiceTest {
     @Test
     void findStatisticsFilterByCategory() {
         // given
-        StatisticsFilterByCategoryRes res1 = new StatisticsFilterByCategoryRes(1L, "카페", 15);
-        StatisticsFilterByCategoryRes res2 = new StatisticsFilterByCategoryRes(2L, "패션", 8);
-        List<StatisticsFilterByCategoryRes> mockResult = List.of(res1, res2);
+        StatisticsFilterRes res1 = new StatisticsFilterRes(1L, "카페", 15);
+        StatisticsFilterRes res2 = new StatisticsFilterRes(2L, "패션", 8);
+        List<StatisticsFilterRes> mockResult = List.of(res1, res2);
 
         when(actionLogsRepository.findStatisticsFilterByActionType(ActionType.FILTER_USED))
                 .thenReturn(mockResult);
 
         // when
-        List<StatisticsFilterByCategoryRes> result = adminService.findStatisticsFilterByCategory();
+        List<StatisticsFilterRes> result = adminService.findStatisticsFilterByCategory();
 
         // then
         assertEquals(2, result.size());
 
-        StatisticsFilterByCategoryRes first = result.get(0);
+        StatisticsFilterRes first = result.get(0);
         assertEquals(1L, first.categoryId());
         assertEquals("카페", first.categoryName());
         assertEquals(15, first.sumStatisticsFilterByCategory());
 
-        StatisticsFilterByCategoryRes second = result.get(1);
+        StatisticsFilterRes second = result.get(1);
         assertEquals(2L, second.categoryId());
         assertEquals("패션", second.categoryName());
         assertEquals(8, second.sumStatisticsFilterByCategory());

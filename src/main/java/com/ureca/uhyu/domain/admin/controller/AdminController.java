@@ -3,7 +3,7 @@ package com.ureca.uhyu.domain.admin.controller;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsMembershipUsageRes;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsBookmarkRes;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsRecommendationRes;
-import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterRes;
 import com.ureca.uhyu.domain.admin.service.AdminService;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
@@ -68,7 +68,7 @@ public class AdminController {
 
     @Operation(summary = "카테고리별 필터링 수 통계", description = "관리자가 필터링 된 횟수에 대한 카테고리별 통계 확인 가능")
     @GetMapping("/statistics/filter")
-    public CommonResponse<List<StatisticsFilterByCategoryRes>> getStatisticsFilterByCategory() {
+    public CommonResponse<List<StatisticsFilterRes>> getStatisticsFilterByCategory() {
         return CommonResponse.success(adminService.findStatisticsFilterByCategory());
     }
 
