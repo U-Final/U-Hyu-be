@@ -96,8 +96,8 @@ public class AdminService {
     public StatisticsTotalRes findStatisticsTotal() {
         Long totalBookmark = bookmarkRepository.count();
         Long totalFiltering = actionLogsRepository.countByActionType(ActionType.FILTER_USED);
-        Long totalMemberShipUsage = historyRepository.count();
+        Long totalMembershipUsage = historyRepository.count();
 
-        return StatisticsTotalRes.of(totalBookmark, totalFiltering, totalMemberShipUsage);
+        return StatisticsTotalRes.of(totalBookmark, totalFiltering, totalMembershipUsage);
     }
 }
