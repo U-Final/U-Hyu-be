@@ -235,4 +235,50 @@ class AdminServiceTest {
         assertTrue(result.isEmpty());
         verify(historyRepository).findStatisticsMembershipUsageByCategory();
     }
+
+    @DisplayName("전체 통계 조회 - 성공")
+    @Test
+    void findStatisticsTotal_success() {
+        // given
+        Long bookmarkCount = 100L;
+        Long filterCount = 25L;
+        Long historyCount = 55L;
+
+        when(bookmarkRepository.count()).thenReturn(bookmarkCount);
+        when(actionLogsRepository.countByActionType(ActionType.FILTER_USED)).thenReturn(filterCount);
+        when(historyRepository.count()).thenReturn(historyCount);
+
+        // when
+        StatisticsTotalRes result = adminService.findStatisticsTotal();
+
+        // then
+        assertEquals(bookmarkCount, result.totalBookmark());
+        assertEquals(filterCount, result.totalFiltering());
+        assertEquals(historyCount, result.totalMembershipUsage());
+
+        verify(bookmarkRepository).count();
+        verify(actionLogsRepository).countByActionType(ActionType.FILTER_USED);
+        verify(historyRepository).count();
+    }
+
+    @DisplayName("전체 통계 조회 - db에 값이 든게 없을경우")
+    @Test
+    void findStatisticsTotal_emptyDataset() {
+        // given
+        when(bookmarkRepository.count()).thenReturn(0L);
+        when(actionLogsRepository.countByActionType(ActionType.FILTER_USED)).thenReturn(0L);
+        when(historyRepository.count()).thenReturn(0L);
+
+        // when
+        StatisticsTotalRes result = adminService.findStatisticsTotal();
+
+        // then
+        assertEquals(0L, result.totalBookmark());
+        assertEquals(0L, result.totalFiltering());
+        assertEquals(0L, result.totalMembershipUsage());
+
+        verify(bookmarkRepository).count();
+        verify(actionLogsRepository).countByActionType(ActionType.FILTER_USED);
+        verify(historyRepository).count();
+    }
 }
