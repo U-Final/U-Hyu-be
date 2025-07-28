@@ -16,7 +16,6 @@ public record GetUserInfoRes(
         Integer age,
         Gender gender,
         Grade grade,
-        Long markerId,
         LocalDateTime updatedAt
 ) {
     public static GetUserInfoRes from(User user){
@@ -28,7 +27,6 @@ public record GetUserInfoRes(
                 user.getAge(),
                 user.getGender(),
                 user.getGrade(),
-                user.getMarkerId(),
                 user.getUpdatedAt()
         );
     }
