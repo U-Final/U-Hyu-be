@@ -31,7 +31,7 @@ public class S3Uploader {
 
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif");
 
-    public String upload(MultipartFile file, String folderName) {
+    public String uploadBarcode(MultipartFile file, String folderName) {
         String originalName = file.getOriginalFilename();
         validateFileExtension(originalName);
 

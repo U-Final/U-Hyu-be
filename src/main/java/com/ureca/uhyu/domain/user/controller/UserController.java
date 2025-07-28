@@ -3,6 +3,7 @@ package com.ureca.uhyu.domain.user.controller;
 import com.ureca.uhyu.domain.auth.dto.UserEmailCheckRequest;
 import com.ureca.uhyu.domain.auth.service.TokenService;
 import com.ureca.uhyu.domain.user.dto.request.ActionLogsReq;
+import com.ureca.uhyu.domain.user.dto.request.SaveRecentVisitReq;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
 import com.ureca.uhyu.domain.user.dto.response.*;
@@ -18,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.queue.PredicatedQueue;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -96,13 +98,20 @@ public class UserController implements UserControllerDocs {
         return CommonResponse.success(userService.findUserStatistics(user));
     }
 
-
     @PostMapping("/action-logs")
-    public CommonResponse<ActionLogsRes> actionLogs(
+    public CommonResponse<SaveUserInfoRes> actionLogs(
         @CurrentUser User user,
         @Valid @RequestBody ActionLogsReq request
     ){
         return CommonResponse.success(userService.saveActionLogs(user, request));
+    }
+
+    @PostMapping("/visited")
+    public CommonResponse<SaveUserInfoRes> visited(
+            @CurrentUser User user,
+            @Valid @RequestBody SaveRecentVisitReq request
+            ){
+        return CommonResponse.success(userService.saveVisitedBrand(user, request));
     }
 
 }
