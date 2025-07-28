@@ -6,7 +6,9 @@ import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.store.repository.StoreRepository;
 import com.ureca.uhyu.domain.user.dto.request.ActionLogsReq;
+import com.ureca.uhyu.domain.user.dto.request.SaveRecentVisitReq;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
 import com.ureca.uhyu.domain.user.dto.response.*;
@@ -20,11 +22,13 @@ import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.domain.user.repository.history.HistoryRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -39,6 +43,7 @@ public class UserService {
     private final BookmarkRepository bookmarkRepository;
     private final HistoryRepository historyRepository;
     private final ActionLogsRepository actionLogsRepository;
+    private final StoreRepository storeRepository;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingReq request, User user) {
@@ -172,7 +177,7 @@ public class UserService {
     }
 
     @Transactional
-    public ActionLogsRes saveActionLogs(User user, ActionLogsReq request) {
+    public SaveUserInfoRes saveActionLogs(User user, ActionLogsReq request) {
         if (request.storeId() == null && request.categoryId() == null) {
             throw new GlobalException(ResultCode.INVALID_INPUT);
         }
@@ -186,6 +191,32 @@ public class UserService {
 
         actionLogsRepository.save(actionLogs);
 
-        return ActionLogsRes.from(user);
+        return SaveUserInfoRes.from(user);
+    }
+
+    @Transactional
+    public SaveUserInfoRes saveVisitedBrand(User user, SaveRecentVisitReq request) {
+        Store store = storeRepository.findById(request.storeId())
+                .orElseThrow(() -> new GlobalException(ResultCode.STORE_NOT_FOUND));
+
+        Grade userGrade = user.getGrade();
+
+        int benefitPrice = switch (userGrade) {
+            case GOOD -> 500;
+            case VIP -> 1000;
+            case VVIP -> 1500;
+            default -> 0;
+        };
+
+        History history = History.builder()
+                .user(user)
+                .store(store)
+                .visitedAt(LocalDateTime.now())
+                .benefitPrice(benefitPrice)
+                .build();
+
+        historyRepository.save(history);
+
+        return SaveUserInfoRes.from(user);
     }
 }
