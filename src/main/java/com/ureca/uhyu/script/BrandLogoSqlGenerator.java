@@ -41,10 +41,18 @@ public class BrandLogoSqlGenerator implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        List<S3Object> objects = s3Client.listObjectsV2(ListObjectsV2Request.builder()
-                .bucket(BUCKET_NAME)
-                .prefix(FOLDER_PREFIX)
-                .build()).contents();
+
+
+        List<S3Object> objects;
+
+        try {
+            objects= s3Client.listObjectsV2(ListObjectsV2Request.builder()
+                    .bucket(BUCKET_NAME)
+                    .prefix(FOLDER_PREFIX)
+                    .build()).contents();
+        }catch (Exception e){
+            throw new RuntimeException("S3 객체 목록 조회 중 오류 발생", e);
+        }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_FILE, StandardCharsets.UTF_8))) {
             for (S3Object obj : objects) {
