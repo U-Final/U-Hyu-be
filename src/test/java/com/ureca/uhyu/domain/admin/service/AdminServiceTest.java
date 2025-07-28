@@ -4,7 +4,7 @@ import com.querydsl.core.Tuple;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrandRes;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
-import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
+import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
