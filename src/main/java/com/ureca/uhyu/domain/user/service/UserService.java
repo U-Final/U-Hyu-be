@@ -22,7 +22,6 @@ import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.domain.user.repository.history.HistoryRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,8 @@ public class UserService {
         persistedUser.setUserRole(UserRole.USER); // TMP_USER → USER 변경
         userRepository.save(persistedUser);
 
-        saveUserBrandData(persistedUser, request.recentBrands(), DataType.RECENT);
+        saveRecentBrandsToHistory(persistedUser, request.recentBrands());
+
         saveUserBrandData(persistedUser, request.interestedBrands(), DataType.INTEREST);
 
         //온보딩 시 해당 user에 대한 즐겨찾기 List도 생성
@@ -70,6 +70,38 @@ public class UserService {
         }
 
         return persistedUser.getId();
+    }
+
+    private void saveHistory(User user, Brand brand, Store store) {
+        int benefitPrice = switch (user.getGrade()) {
+            case GOOD -> 500;
+            case VIP -> 1000;
+            case VVIP -> 1500;
+            default -> 0;
+        };
+
+        History history = History.builder()
+                .user(user)
+                .brand(brand)
+                .store(store)
+                .benefitPrice(benefitPrice)
+                .visitedAt(LocalDateTime.now())
+                .build();
+
+        historyRepository.save(history);
+    }
+
+    private void saveRecentBrandsToHistory(User user, List<Long> brandIds) {
+        for (Long brandId : brandIds) {
+            Brand brand = brandRepository.findById(brandId)
+                    .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
+
+            List<Store> stores = storeRepository.findAllByBrand(brand);
+
+            for (Store store : stores) {
+                saveHistory(user, brand, store);
+            }
+        }
     }
 
     public GetUserInfoRes findUserInfo(User user) {
@@ -87,10 +119,7 @@ public class UserService {
         Grade grade = (request.updatedGrade() != null)?
                 request.updatedGrade():user.getGrade();
 
-        Long markerId = (request.markerId() != null)?
-                request.markerId():user.getMarkerId();
-
-        user.updateUser(image, nickname, grade, markerId);
+        user.updateUser(image, nickname, grade);
 
         if (request.updatedBrandIdList() != null && !request.updatedBrandIdList().isEmpty()) {
             recommendationRepository.deleteByUserAndDataType(user, DataType.INTEREST);
@@ -199,23 +228,7 @@ public class UserService {
         Store store = storeRepository.findById(request.storeId())
                 .orElseThrow(() -> new GlobalException(ResultCode.STORE_NOT_FOUND));
 
-        Grade userGrade = user.getGrade();
-
-        int benefitPrice = switch (userGrade) {
-            case GOOD -> 500;
-            case VIP -> 1000;
-            case VVIP -> 1500;
-            default -> 0;
-        };
-
-        History history = History.builder()
-                .user(user)
-                .store(store)
-                .visitedAt(LocalDateTime.now())
-                .benefitPrice(benefitPrice)
-                .build();
-
-        historyRepository.save(history);
+        saveHistory(user, store.getBrand(), store);
 
         return SaveUserInfoRes.from(user);
     }
