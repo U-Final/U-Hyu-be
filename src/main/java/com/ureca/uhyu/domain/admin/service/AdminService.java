@@ -1,11 +1,13 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrandRes;
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrand;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsBookmarkRes;
+import com.ureca.uhyu.domain.admin.dto.response.CountRecommendationRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
+import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.domain.user.enums.ActionType;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +27,9 @@ public class AdminService {
 
     private final BookmarkRepository bookmarkRepository;
     private final ActionLogsRepository actionLogsRepository;
+    private final RecommendationRepository recommendationRepository;
 
-    public List<BookmarksByCategoryRes> findBookmarksByCategoryAndBrand() {
+    public List<StatisticsBookmarkRes> findStatisticsBookmarkByCategoryAndBrand() {
         Set<UserBrandPair> userBrandSaves = bookmarkRepository.findUserBrandSaves();
         Map<Long, Tuple> brandCategoryMap = bookmarkRepository.findBrandToCategoryMap();
 
@@ -42,9 +45,9 @@ public class AdminService {
         return aggregateBookmarksByCategory(brandSaveCounts, brandCategoryMap);
     }
 
-    private List<BookmarksByCategoryRes> aggregateBookmarksByCategory(Map<Long, Integer> brandSaveCounts, Map<Long, Tuple> brandCategoryMap) {
+    private List<StatisticsBookmarkRes> aggregateBookmarksByCategory(Map<Long, Integer> brandSaveCounts, Map<Long, Tuple> brandCategoryMap) {
         // 카테고리별 DTO 조립
-        Map<Long, BookmarksByCategoryRes> categoryMap = new LinkedHashMap<>();
+        Map<Long, StatisticsBookmarkRes> categoryMap = new LinkedHashMap<>();
 
         for (Map.Entry<Long, Integer> entry : brandSaveCounts.entrySet()) {
             Long brandId = entry.getKey();
@@ -62,17 +65,17 @@ public class AdminService {
                 continue;
             }
 
-            BookmarksByBrandRes brandRes = BookmarksByBrandRes.of(brandName, count);
+            BookmarksByBrand brandRes = BookmarksByBrand.of(brandName, count);
 
             categoryMap.compute(categoryId, (key, existing) -> {
                 if (existing == null) {
-                    List<BookmarksByBrandRes> brandList = new ArrayList<>();
+                    List<BookmarksByBrand> brandList = new ArrayList<>();
                     brandList.add(brandRes);
-                    return BookmarksByCategoryRes.of(categoryId, categoryName, count, brandList);
+                    return StatisticsBookmarkRes.of(categoryId, categoryName, count, brandList);
                 } else {
                     existing.bookmarksByBrandList().add(brandRes);
-                    int newSum = existing.sumBookmarksByCategory() + count;
-                    return BookmarksByCategoryRes.of(categoryId, categoryName, newSum, existing.bookmarksByBrandList());
+                    int newSum = existing.sumStatisticsBookmarksByCategory() + count;
+                    return StatisticsBookmarkRes.of(categoryId, categoryName, newSum, existing.bookmarksByBrandList());
                 }
             });
         }
@@ -82,5 +85,9 @@ public class AdminService {
 
     public List<StatisticsFilterByCategoryRes> findStatisticsFilterByCategory() {
         return actionLogsRepository.findStatisticsFilterByActionType(ActionType.FILTER_USED);
+    }
+
+    public List<CountRecommendationRes> findCountRecommendationByCategoryAndBrand() {
+        return recommendationRepository.findCountRecommendationByCategory();
     }
 }
