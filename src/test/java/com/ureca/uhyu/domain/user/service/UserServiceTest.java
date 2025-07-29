@@ -5,6 +5,7 @@ import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
@@ -76,6 +77,18 @@ class UserServiceTest {
         LocalDateTime timeValue = LocalDateTime.now();
         setUpdatedAt(user, timeValue);
 
+        Brand brand1 = createBrand("브랜드1", "logo1.png");
+        Brand brand2 = createBrand("브랜드2", "logo2.png");
+        setId(brand1, 10L);
+        setId(brand2, 11L);
+
+        RecommendationBaseData rec1 = createRecommendationBaseData(user, brand1);
+        RecommendationBaseData rec2 = createRecommendationBaseData(user, brand2);
+
+        List<RecommendationBaseData> recommendations = List.of(rec1, rec2);
+
+        when(recommendationRepository.findByUser(user)).thenReturn(recommendations);
+
         // when
         GetUserInfoRes getUserInfoRes = userService.findUserInfo(user);
 
@@ -89,6 +102,11 @@ class UserServiceTest {
         assertEquals(timeValue, getUserInfoRes.updatedAt());
         assertEquals(Grade.GOOD, getUserInfoRes.grade());
         assertEquals(UserRole.TMP_USER, getUserInfoRes.role());
+        assertEquals(2, getUserInfoRes.interestedBrandList().size());
+        assertTrue(getUserInfoRes.interestedBrandList().stream().anyMatch(b -> b.equals(10L)));
+        assertTrue(getUserInfoRes.interestedBrandList().stream().anyMatch(b -> b.equals(11L)));
+
+        verify(recommendationRepository).findByUser(user);
     }
 
     @DisplayName("개인정보 수정 - 성공")
@@ -399,6 +417,14 @@ class UserServiceTest {
                 .benefits(List.of(benefit))
                 .build();
         return brand;
+    }
+
+    private RecommendationBaseData createRecommendationBaseData(User user, Brand brand1) {
+        return RecommendationBaseData.builder()
+                .user(user)
+                .brand(brand1)
+                .dataType(DataType.INTEREST)
+                .build();
     }
 
     private Store createStore(Brand brand, String name, String address) {
