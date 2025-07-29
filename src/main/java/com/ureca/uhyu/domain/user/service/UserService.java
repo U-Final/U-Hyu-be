@@ -61,7 +61,7 @@ public class UserService {
             Brand brand = brandRepository.findById(brandId)
                     .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
 
-            saveHistory(persistedUser, brand, null);
+            saveHistory(persistedUser, brand, null, true);
         }
 
         // 관심 브랜드는 recommendation_base_data 테이블에 저장
@@ -81,13 +81,15 @@ public class UserService {
         return persistedUser.getId();
     }
 
-    private void saveHistory(User user, Brand brand, Store store) {
-        int benefitPrice = switch (user.getGrade()) {
-            case GOOD -> 500;
-            case VIP -> 1000;
-            case VVIP -> 1500;
-            default -> 0;
-        };
+    private void saveHistory(User user, Brand brand, Store store, Boolean isOnboarding) {
+        int benefitPrice = (isOnboarding != null && isOnboarding)
+                ? 0
+                : switch (user.getGrade()) {
+                    case GOOD -> 500;
+                    case VIP -> 1000;
+                    case VVIP -> 1500;
+                    default -> 0;
+                };
 
         History history = History.builder()
                 .user(user)
@@ -224,7 +226,7 @@ public class UserService {
         Store store = storeRepository.findById(request.storeId())
                 .orElseThrow(() -> new GlobalException(ResultCode.STORE_NOT_FOUND));
 
-        saveHistory(user, store.getBrand(), store);
+        saveHistory(user, store.getBrand(), store, false);
 
         return SaveUserInfoRes.from(user);
     }
