@@ -88,6 +88,7 @@ class UserServiceTest {
         assertEquals(Gender.MALE, getUserInfoRes.gender());
         assertEquals(timeValue, getUserInfoRes.updatedAt());
         assertEquals(Grade.GOOD, getUserInfoRes.grade());
+        assertEquals(UserRole.TMP_USER, getUserInfoRes.role());
     }
 
     @DisplayName("개인정보 수정 - 성공")
@@ -125,7 +126,6 @@ class UserServiceTest {
         assertEquals("asdsad2.png", user.getProfileImage());
         assertEquals("nick2", user.getNickname());
         assertEquals(Grade.VIP, user.getGrade());
-        assertEquals(markerId2, user.getMarkerId());
 
         Mockito.verify(recommendationRepository).deleteByUserAndDataType(user, DataType.INTEREST);
         Mockito.verify(recommendationRepository, Mockito.times(3)).save(Mockito.any());
@@ -367,7 +367,6 @@ class UserServiceTest {
                 .grade(Grade.GOOD)
                 .profileImage("asdsad.png")
                 .nickname("nick")
-                .markerId(markerId)
                 .build();
 
         return user;

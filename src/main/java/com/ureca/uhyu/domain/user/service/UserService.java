@@ -103,8 +103,8 @@ public class UserService {
     }
 
     public GetUserInfoRes findUserInfo(User user) {
-        //todo:recommendationRepository 수정 후 마저 구현
-        List<Brand> brandList = recommendationRepository.findbyuserid(user);
+        List<RecommendationBaseData> recommendationBaseDataList = recommendationRepository.findByUser(user);
+        List<Brand> brandList = recommendationBaseDataList.stream().map(RecommendationBaseData::getBrand).toList();
         return GetUserInfoRes.from(user, brandList);
     }
 
