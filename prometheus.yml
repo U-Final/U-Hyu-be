@@ -5,8 +5,8 @@ scrape_configs:
   - job_name: 'spring'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8080']  # EC2에서 Docker → EC2 host
+      - targets: ['10.0.1.222:8080']
 
   - job_name: 'pgexporter'
     static_configs:
-      - targets: ['postgres-exporter:9187']
+      - targets: ['10.0.1.222:9187']
