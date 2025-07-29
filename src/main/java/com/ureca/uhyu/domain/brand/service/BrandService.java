@@ -148,4 +148,11 @@ public class BrandService {
                 .orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
         brandRepository.delete(brand);
     }
+
+    public List<InterestBrandRes> findInterestBrandList() {
+        // 각 카테고리를 대표하는 브랜드들의 id 입력, 베포 db 기준이라 로컬에서는 에러가 날 수도
+        List<Long> recommendIdList = List.of(95L, 2L, 10L, 15L, 25L, 30L, 35L, 39L, 55L, 71L, 83L, 101L, 110L, 118L);
+        List<Brand> brandList = brandRepository.findByIdIn(recommendIdList);
+        return brandList.stream().map(InterestBrandRes::from).toList();
+    }
 }

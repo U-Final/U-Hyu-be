@@ -11,4 +11,6 @@ public interface BrandRepository extends JpaRepository<Brand, Long>
         , BrandRepositoryCustom{
     boolean existsByBrandName(String brandName);
     List<Brand> findByCategory(Category category);
+
+    List<Brand> findByIdIn(List<Long> ids);
 }
