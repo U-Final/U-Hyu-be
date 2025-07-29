@@ -61,7 +61,7 @@ public class UserService {
             Brand brand = brandRepository.findById(brandId)
                     .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
 
-            saveHistory(user, brand, null);
+            saveHistory(persistedUser, brand, null);
         }
 
         // 관심 브랜드는 recommendation_base_data 테이블에 저장
@@ -98,21 +98,6 @@ public class UserService {
                 .build();
 
         historyRepository.save(history);
-    }
-
-    private void saveRecentBrandsToHistory(User user, List<Long> brandIds) {
-        for (Long brandId : brandIds) {
-            Brand brand = brandRepository.findById(brandId)
-                    .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
-
-//            List<Store> stores = storeRepository.findAllByBrand(brand);
-//
-//            for (Store store : stores) {
-//                saveHistory(user, brand, store);
-//            }
-
-            saveHistory(user, brand, null); // 온보딩에서는
-        }
     }
 
     public GetUserInfoRes findUserInfo(User user) {
