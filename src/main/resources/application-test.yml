@@ -1,0 +1,31 @@
+jwt:
+  secret: MySuperSecureJwtSecretKeyForTestEnv123456
+  access-token-expiration-time: 3600000
+  refresh-token-expiration-days: 7
+
+cloud:
+  aws:
+    credentials:
+      access-key: test-access-key
+      secret-key: test-secret-key
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: test-bucket
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: test-kakao-client-id
+
+domain:
+  base-url: http://localhost:3000
+
+app:
+  frontend:
+    url:
+      local: http://localhost:3000
+      prod: http://localhost:3000
