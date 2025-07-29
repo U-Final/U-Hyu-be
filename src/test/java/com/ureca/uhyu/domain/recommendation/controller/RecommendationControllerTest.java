@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @ExtendWith(MockitoExtension.class)
 class RecommendationControllerTest {
 
-    private static final String RECOMMEND_URL = "/users/user/recommendation";
+    private static final String RECOMMEND_URL = "/recommendation";
 
     private MockMvc mockMvc;
 
