@@ -7,6 +7,10 @@ import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * 사용자가 온보딩에서 입력하거나 마이페이지에서 수정한 관심 브랜드
+ */
+
 @Entity
 @Table(name = "recommendation_base_data")
 @Getter
