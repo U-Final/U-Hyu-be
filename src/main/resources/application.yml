@@ -19,3 +19,12 @@ app:
     url:
       local: http://localhost:5173
       prod: https://www.u-hyu.site
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  metrics:
+    tags:
+      application: uhyu-server
