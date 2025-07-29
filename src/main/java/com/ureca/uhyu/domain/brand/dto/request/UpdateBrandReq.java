@@ -7,7 +7,6 @@ import com.ureca.uhyu.domain.user.enums.Grade;
 import java.util.List;
 
 public record UpdateBrandReq(
-        Long brandId,
         String brandName,
         String brandImg,
         List<BenefitDto> data, // grade, benefit 리스트
