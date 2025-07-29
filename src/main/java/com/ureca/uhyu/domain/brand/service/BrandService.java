@@ -137,7 +137,9 @@ public class BrandService {
                         .build())
                 .toList();
 
-        brand.setBenefits(updateBenefits);
+//        brand.setBenefits(updateBenefits);
+        brand.getBenefits().clear();
+        brand.getBenefits().addAll(updateBenefits);
 
         return new CreateUpdateBrandRes(brand.getId());
     }

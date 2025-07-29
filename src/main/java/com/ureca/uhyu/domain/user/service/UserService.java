@@ -103,7 +103,9 @@ public class UserService {
     }
 
     public GetUserInfoRes findUserInfo(User user) {
-        return GetUserInfoRes.from(user);
+        List<RecommendationBaseData> recommendationBaseDataList = recommendationRepository.findByUser(user);
+        List<Brand> brandList = recommendationBaseDataList.stream().map(RecommendationBaseData::getBrand).toList();
+        return GetUserInfoRes.from(user, brandList);
     }
 
     @Transactional
