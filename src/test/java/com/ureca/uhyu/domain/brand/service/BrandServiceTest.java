@@ -1,9 +1,6 @@
 package com.ureca.uhyu.domain.brand.service;
 
-import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
-import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
-import com.ureca.uhyu.domain.brand.dto.response.BrandNameRes;
-import com.ureca.uhyu.domain.brand.dto.response.BrandPageResult;
+import com.ureca.uhyu.domain.brand.dto.response.*;
 import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
@@ -21,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -223,6 +221,74 @@ class BrandServiceTest {
         verify(brandRepository, never()).findByCategory(any());
     }
 
+    @DisplayName("브랜드 삭제 성공")
+    @Test
+    void deleteBrand_success() {
+        // given
+        Long categoryId = 1L;
+        Category category = createCategory("패션");
+        setId(category, categoryId);
+
+        Brand brand = createBrand("이디야", "img.png", category);
+        setId(brand, 5L);
+        when(brandRepository.findByIdAndDeletedFalse(5L)).thenReturn(Optional.of(brand));
+
+        // when
+        brandService.deleteBrand(5L);
+
+        // then
+        assertTrue(brand.getDeleted()); // soft delete 확인
+    }
+
+    @DisplayName("선호 브랜드 목록 조회 - 성공")
+    @Test
+    void findInterestBrandList_success() {
+        // given
+        List<Long> recommendIdList = List.of(95L, 2L, 10L, 15L, 25L, 30L, 35L, 39L, 55L, 71L, 83L, 101L, 110L, 118L);
+
+        Category category = createCategory("category1");
+        setId(category, 1L);
+
+        List<Brand> mockBrands = recommendIdList.stream()
+                .map(id -> {
+                    Brand brand = createBrand("브랜드" + id, "logo" + id + ".png", category);
+                    setId(brand, id);
+                    return brand;
+                })
+                .toList();
+
+        when(brandRepository.findByIdIn(recommendIdList)).thenReturn(mockBrands);
+
+        // when
+        List<InterestBrandRes> result = brandService.findInterestBrandList();
+
+        // then
+        assertEquals(recommendIdList.size(), result.size());
+        for (int i = 0; i < result.size(); i++) {
+            assertEquals("브랜드" + recommendIdList.get(i), result.get(i).brandName());
+        }
+
+        verify(brandRepository).findByIdIn(recommendIdList);
+    }
+
+    @DisplayName("카테고리별 대표 관심 브랜드 리스트 조회 - 빈 결과")
+    @Test
+    void findInterestBrandList_emptyResult() {
+        // given
+        List<Long> recommendIdList = List.of(95L, 2L, 10L, 15L, 25L, 30L, 35L, 39L, 55L, 71L, 83L, 101L, 110L, 118L);
+
+        when(brandRepository.findByIdIn(recommendIdList)).thenReturn(Collections.emptyList());
+
+        // when
+        List<InterestBrandRes> result = brandService.findInterestBrandList();
+
+        // then
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(brandRepository).findByIdIn(recommendIdList);
+    }
+
     private Category createCategory(String name) {
         return Category.builder()
                 .categoryName(name)
@@ -256,24 +322,5 @@ class BrandServiceTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @DisplayName("브랜드 삭제 성공")
-    @Test
-    void deleteBrand_success() {
-        // given
-        Long categoryId = 1L;
-        Category category = createCategory("패션");
-        setId(category, categoryId);
-
-        Brand brand = createBrand("이디야", "img.png", category);
-        setId(brand, 5L);
-        when(brandRepository.findByIdAndDeletedFalse(5L)).thenReturn(Optional.of(brand));
-
-        // when
-        brandService.deleteBrand(5L);
-
-        // then
-        assertTrue(brand.getDeleted()); // soft delete 확인
     }
 }
