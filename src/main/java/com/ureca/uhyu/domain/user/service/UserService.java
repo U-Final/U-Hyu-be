@@ -54,8 +54,17 @@ public class UserService {
         persistedUser.setUserRole(UserRole.USER); // TMP_USER → USER 변경
         userRepository.save(persistedUser);
 
-        saveRecentBrandsToHistory(persistedUser, request.recentBrands());
+        // 방문 브랜드는 history 테이블에 저장 - store_id는 null
+        List<Long> brandIds = request.recentBrands();
 
+        for (Long brandId : brandIds) {
+            Brand brand = brandRepository.findById(brandId)
+                    .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
+
+            saveHistory(user, brand, null);
+        }
+
+        // 관심 브랜드는 recommendation_base_data 테이블에 저장
         saveUserBrandData(persistedUser, request.interestedBrands(), DataType.INTEREST);
 
         //온보딩 시 해당 user에 대한 즐겨찾기 List도 생성
@@ -96,11 +105,13 @@ public class UserService {
             Brand brand = brandRepository.findById(brandId)
                     .orElseThrow(() -> new GlobalException(ResultCode.INVALID_INPUT));
 
-            List<Store> stores = storeRepository.findAllByBrand(brand);
+//            List<Store> stores = storeRepository.findAllByBrand(brand);
+//
+//            for (Store store : stores) {
+//                saveHistory(user, brand, store);
+//            }
 
-            for (Store store : stores) {
-                saveHistory(user, brand, store);
-            }
+            saveHistory(user, brand, null); // 온보딩에서는
         }
     }
 
