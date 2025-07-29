@@ -81,8 +81,6 @@ public class BrandService {
                 .usageLimit(request.usageLimit())
                 .storeType(request.storeType())
                 .category(category)
-//                .stores() // 매장 정보는 없음
-                .deleted(false)
                 .build();
 
         List<Benefit> benefits = request.data().stream()
@@ -146,8 +144,8 @@ public class BrandService {
 
     @Transactional
     public void deleteBrand(Long brandId) {
-        Brand brand = brandRepository.findByIdAndDeletedFalse(brandId)
+        Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
-        brand.markDeleted();
+        brandRepository.delete(brand);
     }
 }
