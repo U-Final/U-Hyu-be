@@ -23,7 +23,7 @@ public record MapRes(
         String benefit,
 
         @Schema(description = "로고 이미지")
-        String logo_image,
+        String logoImage,
 
         @Schema(description = "브랜드 이름")
         String brandName,

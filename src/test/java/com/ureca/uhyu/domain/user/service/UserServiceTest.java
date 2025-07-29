@@ -8,19 +8,15 @@ import com.ureca.uhyu.domain.brand.repository.BrandRepository;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.user.dto.request.ActionLogsReq;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
-import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
-import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
-import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
-import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
+import com.ureca.uhyu.domain.user.dto.response.*;
+import com.ureca.uhyu.domain.user.entity.ActionLogs;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.User;
-import com.ureca.uhyu.domain.user.enums.Gender;
-import com.ureca.uhyu.domain.user.enums.UserRole;
-import com.ureca.uhyu.domain.user.enums.Status;
+import com.ureca.uhyu.domain.user.enums.*;
 import com.ureca.uhyu.domain.user.repository.*;
-import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
@@ -30,6 +26,7 @@ import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -441,5 +438,70 @@ class UserServiceTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    @DisplayName("사용자 액션 로그 저장 - storeId가 있을 경우 로그 저장")
+    void save_whenStoreIdExists() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+        ActionLogsReq req = new ActionLogsReq(ActionType.MARKER_CLICK, 10L, null);
+
+        // when
+        SaveUserInfoRes res = userService.saveActionLogs(user, req);
+
+        // then
+        ArgumentCaptor<ActionLogs> captor = ArgumentCaptor.forClass(ActionLogs.class);
+        verify(actionLogsRepository).save(captor.capture());
+
+        ActionLogs saved = captor.getValue();
+        assertEquals(1L, saved.getUser().getId());
+        assertEquals(10L, saved.getStoreId());
+        assertNull(saved.getCategoryId());
+        assertEquals(ActionType.MARKER_CLICK, saved.getActionType());
+
+        assertEquals(1L, res.userId());
+    }
+
+    @Test
+    @DisplayName("categoryId가 있을 경우 로그 저장")
+    void save_whenCategoryIdExists() {
+        // given
+        User user = createUser();
+        setId(user, 2L);
+        ActionLogsReq req = new ActionLogsReq(ActionType.FILTER_USED, null, 5L);
+
+        // when
+        SaveUserInfoRes res = userService.saveActionLogs(user, req);
+
+        // then
+        ArgumentCaptor<ActionLogs> captor = ArgumentCaptor.forClass(ActionLogs.class);
+        verify(actionLogsRepository).save(captor.capture());
+
+        ActionLogs saved = captor.getValue();
+        assertEquals(2L, saved.getUser().getId());
+        assertEquals(5L, saved.getCategoryId());
+        assertNull(saved.getStoreId());
+        assertEquals(ActionType.FILTER_USED, saved.getActionType());
+
+        assertEquals(2L, res.userId());
+    }
+
+    @Test
+    @DisplayName("storeId와 categoryId가 모두 null이면 예외 발생")
+    void throwException_whenBothNull() {
+        // given
+        User user = createUser();
+        setId(user, 3L);
+        ActionLogsReq req = new ActionLogsReq(null, null, null);
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            userService.saveActionLogs(user, req);
+        });
+
+        assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
+        verify(actionLogsRepository, never()).save(any());
     }
 }

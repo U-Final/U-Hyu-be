@@ -1,12 +1,11 @@
 package com.ureca.uhyu.domain.user.controller;
 
 import com.ureca.uhyu.domain.auth.dto.UserEmailCheckRequest;
+import com.ureca.uhyu.domain.user.dto.request.ActionLogsReq;
+import com.ureca.uhyu.domain.user.dto.request.SaveRecentVisitReq;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
-import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
-import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
-import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
-import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
-import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
+import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
+import com.ureca.uhyu.domain.user.dto.response.*;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.annotation.CurrentUser;
 import com.ureca.uhyu.global.response.CommonResponse;
@@ -81,7 +80,7 @@ public interface UserControllerDocs {
             @Parameter(
                     description = "온보딩 정보",
                     required = true
-            ) @Valid @RequestBody UserOnboardingRequest request,
+            ) @Valid @RequestBody UserOnboardingReq request,
             @Parameter(hidden = true) HttpServletResponse response,
             @Parameter(
                     description = "현재 로그인된 사용자 정보",
@@ -368,4 +367,66 @@ public interface UserControllerDocs {
                     description = "현재 로그인된 사용자 정보",
                     hidden = true
             ) @CurrentUser User user);
+
+    @Operation(
+            summary = "유저 action logs 저장",
+            description = "유저가 클릭한 마커 정보를 기반으로 매장 id, 카테고리 필터링 클릭 정보를 기반으로 카테고리 id에 대한 action logs를 저장"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    CommonResponse<SaveUserInfoRes> actionLogs(
+            @Parameter(hidden = true) User user,
+            @Parameter(description = "액션 로그 요청 데이터") @Valid @RequestBody ActionLogsReq request
+    );
+
+    @Operation(
+            summary = "유저 방문 브랜드 저장",
+            description = """
+                    사용자가 특정 매장을 방문했다고 체크했을 때,
+                    해당 매장의 브랜드를 찾아 RecommendationBaseData에 저장합니다.
+
+                    **처리 내용:**
+                    - 매장 ID를 기반으로 브랜드를 조회
+                    - DataType.RECENT으로 저장
+
+                    **인증 필요:** JWT Bearer Token
+                    """,
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "방문 브랜드 저장 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(
+                                    name = "방문 브랜드 저장 성공 예시",
+                                    value = """
+                                            {
+                                              "statusCode": 0,
+                                              "message": "정상 처리 되었습니다.",
+                                              "data": null
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 매장을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CommonResponse.class)
+                    )
+            )
+    })
+    @PostMapping("/visited")
+    CommonResponse<SaveUserInfoRes> visited(
+            @Parameter(hidden = true) @CurrentUser User user,
+            @Parameter(description = "방문한 매장 ID 요청") @Valid @RequestBody SaveRecentVisitReq request
+    );
 }

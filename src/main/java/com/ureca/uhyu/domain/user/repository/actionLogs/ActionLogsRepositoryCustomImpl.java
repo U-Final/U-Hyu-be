@@ -1,7 +1,10 @@
 package com.ureca.uhyu.domain.user.repository.actionLogs;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterRes;
 import com.ureca.uhyu.domain.brand.entity.Brand;
+import com.ureca.uhyu.domain.brand.entity.QCategory;
 import com.ureca.uhyu.domain.store.entity.QStore;
 import com.ureca.uhyu.domain.user.entity.QActionLogs;
 import com.ureca.uhyu.domain.user.entity.User;
@@ -32,6 +35,27 @@ public class ActionLogsRepositoryCustomImpl implements ActionLogsRepositoryCusto
                 .groupBy(store.brand)
                 .orderBy(actionLogs.count().desc())
                 .limit(3)
+                .fetch();
+    }
+
+    @Override
+    public List<StatisticsFilterRes> findStatisticsFilterByActionType(ActionType actionType) {
+        QActionLogs actionLogs = QActionLogs.actionLogs;
+        QCategory category = QCategory.category;
+
+        return queryFactory
+                .select(Projections.constructor(
+                        StatisticsFilterRes.class,
+                        category.id,
+                        category.categoryName,
+                        actionLogs.count().intValue()
+                ))
+                .from(actionLogs)
+                .join(category)
+                .on(actionLogs.categoryId.eq(category.id))
+                .where(actionLogs.actionType.eq(actionType))
+                .groupBy(category.id, category.categoryName)
+                .orderBy(actionLogs.count().desc())
                 .fetch();
     }
 }

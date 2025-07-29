@@ -23,7 +23,7 @@ public class BarcodeServiceImpl implements BarcodeService {
     @Override
     @Transactional
     public String upload(User user, MultipartFile image) {
-        String key = s3Uploader.upload(image, FOLDER);
+        String key = s3Uploader.uploadBarcode(image, FOLDER);
 
         Barcode barcode = Barcode.builder()
                 .user(user)
@@ -43,7 +43,7 @@ public class BarcodeServiceImpl implements BarcodeService {
 
         s3Uploader.delete(barcode.getImageURL());
 
-        String newUrl = s3Uploader.upload(image, FOLDER);
+        String newUrl = s3Uploader.uploadBarcode(image, FOLDER);
 
         barcode.updateImageUrl(newUrl);
         return s3Uploader.generatePresignedUrl(newUrl);

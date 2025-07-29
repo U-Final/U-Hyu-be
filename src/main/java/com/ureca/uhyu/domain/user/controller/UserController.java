@@ -2,22 +2,24 @@ package com.ureca.uhyu.domain.user.controller;
 
 import com.ureca.uhyu.domain.auth.dto.UserEmailCheckRequest;
 import com.ureca.uhyu.domain.auth.service.TokenService;
+import com.ureca.uhyu.domain.user.dto.request.ActionLogsReq;
+import com.ureca.uhyu.domain.user.dto.request.SaveRecentVisitReq;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
-import com.ureca.uhyu.domain.user.dto.request.UserOnboardingRequest;
-import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
-import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
-import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
-import com.ureca.uhyu.domain.user.dto.response.UserStatisticsRes;
+import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
+import com.ureca.uhyu.domain.user.dto.response.*;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.domain.user.service.UserService;
 import com.ureca.uhyu.global.annotation.CurrentUser;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.queue.PredicatedQueue;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public class UserController implements UserControllerDocs {
 
     @PostMapping("/extra-info")
     public CommonResponse<ResultCode> onboarding(
-            @Valid @RequestBody UserOnboardingRequest request,
+            @Valid @RequestBody UserOnboardingReq request,
             HttpServletResponse response,
             @CurrentUser User user
     ) {
@@ -95,4 +97,21 @@ public class UserController implements UserControllerDocs {
     ) {
         return CommonResponse.success(userService.findUserStatistics(user));
     }
+
+    @PostMapping("/action-logs")
+    public CommonResponse<SaveUserInfoRes> actionLogs(
+        @CurrentUser User user,
+        @Valid @RequestBody ActionLogsReq request
+    ){
+        return CommonResponse.success(userService.saveActionLogs(user, request));
+    }
+
+    @PostMapping("/visited")
+    public CommonResponse<SaveUserInfoRes> visited(
+            @CurrentUser User user,
+            @Valid @RequestBody SaveRecentVisitReq request
+            ){
+        return CommonResponse.success(userService.saveVisitedBrand(user, request));
+    }
+
 }

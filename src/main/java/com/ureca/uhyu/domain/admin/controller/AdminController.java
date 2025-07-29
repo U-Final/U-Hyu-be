@@ -1,6 +1,6 @@
 package com.ureca.uhyu.domain.admin.controller;
 
-import com.ureca.uhyu.domain.admin.dto.response.BookmarksByCategoryRes;
+import com.ureca.uhyu.domain.admin.dto.response.*;
 import com.ureca.uhyu.domain.admin.service.AdminService;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
@@ -57,9 +57,33 @@ public class AdminController {
         return CommonResponse.success(categoryService.getAllCategories());
     }
 
-    @Operation(summary = "카테고리, 브랜드별 즐겨찾기 수 비교", description = "관리자가 즐겨찾기 수에 대한 카테고리별, 브랜드 별 통계 확인 가능")
+    @Operation(summary = "카테고리, 브랜드별 즐겨찾기 수 통계", description = "관리자가 즐겨찾기 수에 대한 카테고리별, 브랜드 별 통계 확인 가능")
     @GetMapping("/statistics/bookmark")
-    public CommonResponse<List<BookmarksByCategoryRes>> getBookmarksByCategoryAndBrand() {
-        return CommonResponse.success(adminService.findBookmarksByCategoryAndBrand());
+    public CommonResponse<List<StatisticsBookmarkRes>> getStatisticsBookmarkByCategoryAndBrand() {
+        return CommonResponse.success(adminService.findStatisticsBookmarkByCategoryAndBrand());
+    }
+
+    @Operation(summary = "카테고리별 필터링 수 통계", description = "관리자가 필터링 된 횟수에 대한 카테고리별 통계 확인 가능")
+    @GetMapping("/statistics/filter")
+    public CommonResponse<List<StatisticsFilterRes>> getStatisticsFilterByCategory() {
+        return CommonResponse.success(adminService.findStatisticsFilterByCategory());
+    }
+
+    @Operation(summary = "카테고리, 브랜드별 추천 받은 횟수 통계", description = "관리자가 사람들이 추천 받은 카테고리, 브랜드들을 확인 가능")
+    @GetMapping("/statistics/recommendation")
+    public CommonResponse<List<StatisticsRecommendationRes>> getStatisticsRecommendationByCategoryAndBrand() {
+        return CommonResponse.success(adminService.findStatisticsRecommendationByCategoryAndBrand());
+    }
+
+    @Operation(summary = "카테고리, 브랜드별 멤버십 사용횟수 통계", description = "관리자가 사람들이 사용한 멤버십 브랜드 카테고리 별로 확인 가능")
+    @GetMapping("/statistics/membershipUsage")
+    public CommonResponse<List<StatisticsMembershipUsageRes>> getStatisticsMembershipByCategoryAndBrand() {
+        return CommonResponse.success(adminService.findStatisticsMembershipUsageByCategoryAndBrand());
+    }
+
+    @Operation(summary = "전체 통계", description = "관리자가 총 즐겨찾기, 총 필터링 횟수, 총 멤버십 사용 수 확인가능")
+    @GetMapping("/statistics/total")
+    public CommonResponse<StatisticsTotalRes> getStatisticsTotal() {
+        return CommonResponse.success(adminService.findStatisticsTotal());
     }
 }

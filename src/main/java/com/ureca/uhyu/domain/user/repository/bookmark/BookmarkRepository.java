@@ -4,7 +4,6 @@ import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.User;
-import com.ureca.uhyu.domain.user.repository.BookmarkRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
