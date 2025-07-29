@@ -533,7 +533,6 @@ class MyMapServiceTest {
                 .grade(Grade.GOOD)
                 .profileImage("asdsad.png")
                 .nickname("nick")
-                .markerId(markerId)
                 .build();
 
         return user;
