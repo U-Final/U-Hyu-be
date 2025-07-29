@@ -4,10 +4,12 @@ services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
+    restart: unless-stopped
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus:/prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -16,10 +18,15 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
+    restart: unless-stopped
     ports:
       - "3000:3000"
     depends_on:
       - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-changeme}
+    volumes:
+      - ./data/grafana:/var/lib/grafana
     networks:
       - monitor-net
 
