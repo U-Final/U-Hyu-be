@@ -276,7 +276,7 @@ class MyMapServiceTest {
 
     @DisplayName("uuid 기반 My Map 지도 조회 - 성공")
     @Test
-    void findMyMap() {
+    void findMyMapByUuid() {
         // given
         User user = createUser();
         setId(user, 1L);
@@ -306,7 +306,7 @@ class MyMapServiceTest {
         when(myMapRepository.findByMyMapList(myMapList)).thenReturn(myMaps);
 
         // when
-        MyMapRes result = myMapService.findMyMap(user, uuid);
+        MyMapRes result = myMapService.findMyMapByUuid(user, uuid);
 
         // then
         assertNotNull(result);

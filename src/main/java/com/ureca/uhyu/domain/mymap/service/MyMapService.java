@@ -92,7 +92,7 @@ public class MyMapService {
         myMapListRepository.delete(myMapList);
     }
 
-    public MyMapRes findMyMap(User user, String uuid) {
+    public MyMapRes findMyMapByUuid(User user, String uuid) {
         MyMapList myMapList = myMapListRepository.findByUuid(uuid).orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
         List<MyMap> myMaps = myMapRepository.findByMyMapList(myMapList);
 
@@ -100,7 +100,10 @@ public class MyMapService {
                 .map(myMap -> MapRes.from(myMap.getStore()))
                 .toList();
 
-        boolean isMine = myMapList.getUser().getId().equals(user.getId());
+        boolean isMine = false;
+        if(user.getId() != null) {
+            isMine = myMapList.getUser().getId().equals(user.getId());
+        }
 
         return MyMapRes.from(myMapList, storeList, isMine);
     }

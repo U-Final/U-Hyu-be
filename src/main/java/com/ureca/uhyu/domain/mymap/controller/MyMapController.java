@@ -1,6 +1,5 @@
 package com.ureca.uhyu.domain.mymap.controller;
 
-import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.*;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
@@ -286,7 +285,7 @@ public class MyMapController {
     }
 
     @Operation(
-            summary = "UUID 기반 My Map 지도 조회",
+            summary = "UUID 기반 My Map 지도 조회(회원)",
             description = """
                     UUID를 기반으로 특정 My Map의 상세 정보를 조회합니다.
                     
@@ -359,7 +358,17 @@ public class MyMapController {
                     description = "My Map UUID",
                     example = "550e8400-e29b-41d4-a716-446655440000"
             ) @PathVariable String uuid) {
-        return CommonResponse.success(myMapService.findMyMap(user, uuid));
+        return CommonResponse.success(myMapService.findMyMapByUuid(user, uuid));
+    }
+
+    @Operation(summary = "uuid 기반 My Map 조회(비회원)", description = "비회원의 My Map 조회")
+    @GetMapping("/guest/{uuid}")
+    public CommonResponse<MyMapRes> getMyMapByUuidWithGuest(
+            @Parameter(
+                    description = "My Map UUID",
+                    example = "550e8400-e29b-41d4-a716-446655440000"
+            ) @PathVariable String uuid) {
+        return CommonResponse.success(myMapService.findMyMapByUuid(User.builder().build(), uuid));
     }
 
     @Operation(summary = "My Map 매장 등록 유무 조회", description = "My Map에 매장 추가 시 해당 My Map에 등록 유무를 조회")
