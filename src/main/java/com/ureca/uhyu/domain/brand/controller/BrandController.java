@@ -194,6 +194,7 @@ public class BrandController {
         return CommonResponse.success(brandService.findBrandInfo(brandId));
     }
 
+    @Operation(summary = "선호 브랜드 목록 조회", description = "온보딩, 개인정보 수정 시 고를 브랜드 목록 조회 (카테고리당 1개)")
     @GetMapping("/brand-list/interest")
     public CommonResponse<List<InterestBrandRes>> getInterestBrandList(){
         return CommonResponse.success(brandService.findInterestBrandList());
