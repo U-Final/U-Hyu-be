@@ -258,22 +258,22 @@ class BrandServiceTest {
         }
     }
 
-//    @DisplayName("브랜드 삭제 성공")
-//    @Test
-//    void deleteBrand_success() {
-//        // given
-//        Long categoryId = 1L;
-//        Category category = createCategory("패션");
-//        setId(category, categoryId);
-//
-//        Brand brand = createBrand("이디야", "img.png", category);
-//        setId(brand, 5L);
-//        when(brandRepository.findByIdAndDeletedFalse(5L)).thenReturn(Optional.of(brand));
-//
-//        // when
-//        brandService.deleteBrand(5L);
-//
-//        // then
-//        assertTrue(brand.getDeleted()); // soft delete 확인
-//    }
+    @DisplayName("브랜드 삭제 성공")
+    @Test
+    void deleteBrand_success() {
+        // given
+        Long categoryId = 1L;
+        Category category = createCategory("패션");
+        setId(category, categoryId);
+
+        Brand brand = createBrand("이디야", "img.png", category);
+        setId(brand, 5L);
+        when(brandRepository.findById(5L)).thenReturn(Optional.of(brand));
+
+        // when
+        brandService.deleteBrand(5L);
+
+        // then
+        verify(brandRepository).delete(brand);
+    }
 }
