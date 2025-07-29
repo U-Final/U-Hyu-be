@@ -148,4 +148,8 @@ public class BrandService {
                 .orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
         brand.markDeleted();
     }
+
+    public List<InterestBrandRes> findInterestBrandList() {
+
+    }
 }

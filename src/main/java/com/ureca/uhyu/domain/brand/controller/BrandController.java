@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.brand.controller;
 
+import com.ureca.uhyu.domain.brand.dto.response.InterestBrandRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
 import com.ureca.uhyu.domain.brand.service.BrandService;
@@ -191,5 +192,10 @@ public class BrandController {
                     example = "1"
             ) @PathVariable(name = "brand_id") Long brandId){
         return CommonResponse.success(brandService.findBrandInfo(brandId));
+    }
+
+    @GetMapping("/brand-list/interest")
+    public CommonResponse<List<InterestBrandRes>> getInterestBrandList(){
+        return CommonResponse.success(brandService.findInterestBrandList());
     }
 }
