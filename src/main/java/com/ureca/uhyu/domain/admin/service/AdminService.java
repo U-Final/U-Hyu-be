@@ -28,57 +28,7 @@ public class AdminService {
     private final HistoryRepository historyRepository;
 
     public List<StatisticsBookmarkRes> findStatisticsBookmarkByCategoryAndBrand() {
-        Set<UserBrandPair> userBrandSaves = bookmarkRepository.findUserBrandSaves();
-        Map<Long, Tuple> brandCategoryMap = bookmarkRepository.findBrandToCategoryMap();
-
-        log.debug("Retrieved {} user-brand pairs and {} brand-category mappings",
-                userBrandSaves.size(), brandCategoryMap.size());
-
-        // 브랜드별 저장 수
-        Map<Long, Integer> brandSaveCounts = userBrandSaves.stream()
-                .collect(Collectors.groupingBy(
-                        UserBrandPair::brandId,
-                        Collectors.collectingAndThen(Collectors.counting(), Long::intValue)
-                ));
-        return aggregateBookmarksByCategory(brandSaveCounts, brandCategoryMap);
-    }
-
-    private List<StatisticsBookmarkRes> aggregateBookmarksByCategory(Map<Long, Integer> brandSaveCounts, Map<Long, Tuple> brandCategoryMap) {
-        // 카테고리별 DTO 조립
-        Map<Long, StatisticsBookmarkRes> categoryMap = new LinkedHashMap<>();
-
-        for (Map.Entry<Long, Integer> entry : brandSaveCounts.entrySet()) {
-            Long brandId = entry.getKey();
-            int count = entry.getValue();
-
-            Tuple t = brandCategoryMap.get(brandId);
-            if (t == null) continue;
-
-            Long categoryId = t.get(CATEGORY_ID_INDEX, Long.class);
-            String categoryName = t.get(CATEGORY_NAME_INDEX, String.class);
-            String brandName = t.get(BRAND_NAME_INDEX, String.class);
-
-            if (categoryId == null || categoryName == null || brandName == null) {
-                log.warn("Invalid data in tuple for brandId: {}", brandId);
-                continue;
-            }
-
-            BookmarksByBrand brandRes = BookmarksByBrand.of(brandName, count);
-
-            categoryMap.compute(categoryId, (key, existing) -> {
-                if (existing == null) {
-                    List<BookmarksByBrand> brandList = new ArrayList<>();
-                    brandList.add(brandRes);
-                    return StatisticsBookmarkRes.of(categoryId, categoryName, count, brandList);
-                } else {
-                    existing.bookmarksByBrandList().add(brandRes);
-                    int newSum = existing.sumStatisticsBookmarksByCategory() + count;
-                    return StatisticsBookmarkRes.of(categoryId, categoryName, newSum, existing.bookmarksByBrandList());
-                }
-            });
-        }
-
-        return new ArrayList<>(categoryMap.values());
+        return bookmarkRepository.findStatisticsBookmarkByCategoryAndBrand();
     }
 
     public List<StatisticsFilterRes> findStatisticsFilterByCategory() {
