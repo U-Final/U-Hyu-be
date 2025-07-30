@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
+import com.ureca.uhyu.domain.guest.service.GuestService;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.*;
@@ -65,6 +66,9 @@ class MyMapServiceTest {
 
     @InjectMocks
     private MyMapService myMapService;
+
+    @InjectMocks
+    private GuestService guestService;
 
     @DisplayName("mymap 목록 조회 - 성공")
     @Test
@@ -351,7 +355,7 @@ class MyMapServiceTest {
         when(myMapRepository.findByMyMapList(myMapList)).thenReturn(myMaps);
 
         // when
-        MyMapRes result = myMapService.findMyMapByUUIDWithGuest(uuid);
+        MyMapRes result = guestService.findMyMapByUUIDWithGuest(uuid);
 
         // then
         assertNotNull(result);

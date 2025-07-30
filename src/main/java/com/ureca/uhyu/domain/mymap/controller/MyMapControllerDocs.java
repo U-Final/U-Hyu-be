@@ -341,68 +341,6 @@ public interface MyMapControllerDocs {
             ) @PathVariable String uuid
     );
 
-    @Operation(
-            summary = "UUID 기반 My Map 조회(비회원)",
-            description = """
-                    비회원이 UUID를 통해 공유된 My Map의 상세 정보를 조회합니다.
-                 
-                   **특징:**
-                    - 인증 불필요 (토큰 없이 접근 가능)
-                    - 회원용 조회와 동일한 데이터 반환
-                    - 공유 목적으로 사용됨
-                   
-                    **인증 불필요:** 별도 토큰 없이 접근 가능
-                   """
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "My Map 조회 성공",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = CommonResponse.class),
-                            examples = @ExampleObject(
-                                    name = "비회원 My Map 조회 성공 예시",
-                                    value = """
-                                           {
-                                              "statusCode": 0,
-                                              "message": "정상 처리 되었습니다.",
-                                              "data": {
-                                                "myMapListId": 1,
-                                                "title": "영화관 투어",
-                                                "markerColor": "RED",
-                                                "uuid": "550e8400-e29b-41d4-a716-446655440000",
-                                                "isMine": false,
-                                                "stores": [
-                                                  {
-                                                    "storeId": 1,
-                                                    "storeName": "CGV 동대문",
-                                                    "address": "서울특별시 중구 장충단로13길 20",
-                                                    "latitude": 37.5687346,
-                                                    "longitude": 127.0076665
-                                                  }
-                                                ]
-                                              }
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "My Map을 찾을 수 없음",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = CommonResponse.class)
-                    )
-            )
-    })
-    public CommonResponse<MyMapRes> getMyMapByUUIDWithGuest(
-            @Parameter(
-                    description = "My Map UUID",
-                    example = "550e8400-e29b-41d4-a716-446655440000"
-            ) @PathVariable String uuid
-    );
 
     @Operation(
             summary = "My Map 매장 등록 유무 조회",

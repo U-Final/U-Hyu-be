@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.recommendation.dto.response;
+package com.ureca.uhyu.domain.guest.dto.response;
 
 public record GuestRecommendationRes (
         Long brandId,

@@ -62,12 +62,6 @@ public class MyMapController implements MyMapControllerDocs {
     }
 
 
-    @GetMapping("/guest/{uuid}")
-    public CommonResponse<MyMapRes> getMyMapByUUIDWithGuest(@PathVariable String uuid) {
-        return CommonResponse.success(myMapService.findMyMapByUUIDWithGuest(uuid));
-    }
-
-
     @GetMapping("/list/{store_id}")
     public CommonResponse<BookmarkedMyMapRes> getMyMapListWithIsBookmarked(
             @CurrentUser User user,

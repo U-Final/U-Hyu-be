@@ -1,7 +1,8 @@
 package com.ureca.uhyu.domain.recommendation.service;
 
 import com.ureca.uhyu.domain.brand.entity.Brand;
-import com.ureca.uhyu.domain.recommendation.dto.response.GuestRecommendationRes;
+import com.ureca.uhyu.domain.guest.dto.response.GuestRecommendationRes;
+import com.ureca.uhyu.domain.guest.service.GuestService;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
@@ -26,7 +27,7 @@ class RecommendationServiceTest {
     private RecommendationRepository recommendationRepository;
 
     @InjectMocks
-    private RecommendationService recommendationService;
+    private GuestService guestService;
 
     @DisplayName("비로그인 추천 - 인기 브랜드 1~3개 반환")
     @Test
@@ -41,7 +42,7 @@ class RecommendationServiceTest {
         when(recommendationRepository.findTop3BrandByVisitCountFromHistory()).thenReturn(brands);
 
         // when
-        List<GuestRecommendationRes> result = recommendationService.getTop3PopularBrandsForGuest();
+        List<GuestRecommendationRes> result = guestService.getTop3PopularBrandsForGuest();
 
         // then
         assertEquals(2, result.size());
@@ -57,7 +58,7 @@ class RecommendationServiceTest {
 
         // when & then
         GlobalException exception = assertThrows(GlobalException.class, () -> {
-            recommendationService.getTop3PopularBrandsForGuest();
+            guestService.getTop3PopularBrandsForGuest();
         });
 
         assertEquals(ResultCode.RECOMMENDATION_IS_NULL, exception.getResultCode());
