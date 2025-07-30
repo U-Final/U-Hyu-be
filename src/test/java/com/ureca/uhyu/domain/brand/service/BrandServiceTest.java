@@ -231,13 +231,13 @@ class BrandServiceTest {
 
         Brand brand = createBrand("이디야", "img.png", category);
         setId(brand, 5L);
-        when(brandRepository.findByIdAndDeletedFalse(5L)).thenReturn(Optional.of(brand));
+        when(brandRepository.findById(5L)).thenReturn(Optional.of(brand));
 
         // when
         brandService.deleteBrand(5L);
 
         // then
-        assertTrue(brand.getDeleted()); // soft delete 확인
+        verify(brandRepository).delete(brand);
     }
 
     @DisplayName("선호 브랜드 목록 조회 - 성공")
