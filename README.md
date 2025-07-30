@@ -125,6 +125,8 @@ https://www.u-hyu.site/
 | 배포 | Docker, GitHub Actions (CI/CD) |
 | 인증 | Kakao OAuth2 + Spring Security + JWT |
 
+<img width="923" height="572" alt="Image" src="https://github.com/user-attachments/assets/ea9f1110-ac7f-4016-95ca-62aaac0576bc" />
+
 ---
 
 ## ERD
