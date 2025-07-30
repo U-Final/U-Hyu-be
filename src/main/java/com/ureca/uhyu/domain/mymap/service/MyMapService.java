@@ -92,7 +92,7 @@ public class MyMapService {
         myMapListRepository.delete(myMapList);
     }
 
-    public MyMapRes findMyMapByUuid(User user, String uuid) {
+    public MyMapRes findMyMapByUUID(User user, String uuid) {
         MyMapList myMapList = myMapListRepository.findByUuid(uuid).orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
         List<MyMap> myMaps = myMapRepository.findByMyMapList(myMapList);
 
