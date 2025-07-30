@@ -71,7 +71,7 @@ https://www.u-hyu.site/
 - **입력 요소**
   - `user_features`: 관심 브랜드, 최근 방문 브랜드, 즐겨찾기 브랜드, 성별, 연령대
   - `item_features`: 브랜드 id, 카테고리 id
-  - `interactions`: 클릭 매장 및 카테고리에 대한 클릭 로그(action_lgos)
+  - `interactions`: 클릭 매장 및 카테고리에 대한 클릭 로그(action_logs)
 
 - **Cold Start 대응 전략**
   - 회원가입 시 **선호 브랜드 및 방문 브랜드 설문 수집**
