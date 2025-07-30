@@ -1,5 +1,7 @@
 package com.ureca.uhyu.domain.recommendation.service;
 
+import com.ureca.uhyu.domain.brand.entity.Brand;
+import com.ureca.uhyu.domain.recommendation.dto.response.GuestRecommendationRes;
 import com.ureca.uhyu.domain.recommendation.dto.response.RecommendationRes;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.user.entity.User;
@@ -32,6 +34,22 @@ public class RecommendationService {
                             r.getRank()
                     );
                 })
+                .toList();
+    }
+
+    public List<GuestRecommendationRes> getTop3PopularBrandsForGuest() {
+        List<Brand> brands = recommendationRepository.findTop3BrandByVisitCountFromHistory();
+
+        if (brands == null || brands.isEmpty()) {
+            throw new GlobalException((ResultCode.RECOMMENDATION_IS_NULL));
+        }
+        return recommendationRepository.findTop3BrandByVisitCountFromHistory()
+                .stream()
+                .map(brand -> GuestRecommendationRes.from(
+                        brand.getId(),
+                        brand.getBrandName(),
+                        brand.getLogoImage()
+                ))
                 .toList();
     }
 }

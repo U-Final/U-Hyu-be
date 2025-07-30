@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.recommendation.controller;
 
+import com.ureca.uhyu.domain.recommendation.dto.response.GuestRecommendationRes;
 import com.ureca.uhyu.domain.recommendation.dto.response.RecommendationRes;
 import com.ureca.uhyu.domain.recommendation.service.RecommendationService;
 import com.ureca.uhyu.domain.user.entity.User;
@@ -99,4 +100,7 @@ public class RecommendationController {
     }
 
     @GetMapping("/guest/top3")
+    public CommonResponse<List<GuestRecommendationRes>> guestTop3Recommendation(){
+        return CommonResponse.success(recommendationService.getTop3PopularBrandsForGuest());
+    }
 }
