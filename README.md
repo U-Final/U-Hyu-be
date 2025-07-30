@@ -116,7 +116,7 @@ https://www.u-hyu.site/
 
 ## 기술스택
 
-<img width="494" height="679" alt="Image" src="https://github.com/user-attachments/assets/c8058fa8-734b-4453-8c8a-f5f20bd942b4" />
+<img width="755" height="703" alt="Image" src="https://github.com/user-attachments/assets/821c2e99-a95a-4276-a05e-201e0254d80f" />
 
 ---
 
