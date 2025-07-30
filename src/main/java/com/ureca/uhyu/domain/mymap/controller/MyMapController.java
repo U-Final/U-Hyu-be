@@ -64,7 +64,7 @@ public class MyMapController implements MyMapControllerDocs {
 
     @GetMapping("/guest/{uuid}")
     public CommonResponse<MyMapRes> getMyMapByUUIDWithGuest(@PathVariable String uuid) {
-        return CommonResponse.success(myMapService.findMyMapByUUID(User.builder().build(), uuid));
+        return CommonResponse.success(myMapService.findMyMapByUUIDWithGuest(uuid));
     }
 
 

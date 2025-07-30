@@ -100,12 +100,20 @@ public class MyMapService {
                 .map(myMap -> MapRes.from(myMap.getStore()))
                 .toList();
 
-        boolean isMine = false;
-        if(user.getId() != null) {
-            isMine = myMapList.getUser().getId().equals(user.getId());
-        }
+        boolean isMine = myMapList.getUser().getId().equals(user.getId());
 
         return MyMapRes.from(myMapList, storeList, isMine);
+    }
+
+    public MyMapRes findMyMapByUUIDWithGuest(String uuid) {
+        MyMapList myMapList = myMapListRepository.findByUuid(uuid).orElseThrow(() -> new GlobalException(ResultCode.MY_MAP_LIST_NOT_FOUND));
+        List<MyMap> myMaps = myMapRepository.findByMyMapList(myMapList);
+
+        List<MapRes> storeList = myMaps.stream()
+                .map(myMap -> MapRes.from(myMap.getStore()))
+                .toList();
+
+        return MyMapRes.from(myMapList, storeList, false);
     }
 
     public BookmarkedMyMapRes findMyMapListWithIsBookmarked(User user, Long storeId) {
