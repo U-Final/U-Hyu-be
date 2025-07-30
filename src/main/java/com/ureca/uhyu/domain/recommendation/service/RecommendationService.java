@@ -41,10 +41,9 @@ public class RecommendationService {
         List<Brand> brands = recommendationRepository.findTop3BrandByVisitCountFromHistory();
 
         if (brands == null || brands.isEmpty()) {
-            throw new GlobalException((ResultCode.RECOMMENDATION_IS_NULL));
+            throw new GlobalException((ResultCode.BRAND_ID_IS_NULL));
         }
-        return recommendationRepository.findTop3BrandByVisitCountFromHistory()
-                .stream()
+        return brands.stream()
                 .map(brand -> GuestRecommendationRes.from(
                         brand.getId(),
                         brand.getBrandName(),

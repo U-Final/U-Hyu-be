@@ -34,6 +34,7 @@ public class RecommendationController implements RecommendationControllerDocs {
         return CommonResponse.success(recommendationService.getLatestTop3Recommendations(user));
     }
 
+    @Override
     @GetMapping("/guest/top3")
     public CommonResponse<List<GuestRecommendationRes>> guestTop3Recommendation(){
         return CommonResponse.success(recommendationService.getTop3PopularBrandsForGuest());

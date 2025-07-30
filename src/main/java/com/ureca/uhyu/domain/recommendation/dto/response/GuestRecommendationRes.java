@@ -5,7 +5,7 @@ public record GuestRecommendationRes (
         String brandName,
         String logoImg
 ){
-    public static GuestRecommendationRes from(Long brandId, String BrandName, String logoImg){
-        return new GuestRecommendationRes(brandId, BrandName, logoImg);
+    public static GuestRecommendationRes from(Long brandId, String brandName, String logoImg){
+        return new GuestRecommendationRes(brandId, brandName, logoImg);
     }
 }
