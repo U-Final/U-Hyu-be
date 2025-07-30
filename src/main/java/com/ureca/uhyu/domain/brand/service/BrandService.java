@@ -81,8 +81,6 @@ public class BrandService {
                 .usageLimit(request.usageLimit())
                 .storeType(request.storeType())
                 .category(category)
-//                .stores() // 매장 정보는 없음
-                .deleted(false)
                 .build();
 
         List<Benefit> benefits = request.data().stream()
@@ -146,8 +144,15 @@ public class BrandService {
 
     @Transactional
     public void deleteBrand(Long brandId) {
-        Brand brand = brandRepository.findByIdAndDeletedFalse(brandId)
+        Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
-        brand.markDeleted();
+        brandRepository.delete(brand);
+    }
+
+    public List<InterestBrandRes> findInterestBrandList() {
+        // 각 카테고리를 대표하는 브랜드들의 id 입력, 베포 db 기준이라 로컬에서는 에러가 날 수도
+        List<Long> recommendIdList = List.of(95L, 2L, 10L, 15L, 25L, 30L, 35L, 39L, 55L, 71L, 83L, 101L, 110L, 118L);
+        List<Brand> brandList = brandRepository.findByIdIn(recommendIdList);
+        return brandList.stream().map(InterestBrandRes::from).toList();
     }
 }

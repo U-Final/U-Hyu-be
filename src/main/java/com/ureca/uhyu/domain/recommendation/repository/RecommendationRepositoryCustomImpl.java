@@ -4,10 +4,12 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsRecommendationRes;
 import com.ureca.uhyu.domain.admin.dto.response.RecommendationsByBrand;
+import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.QBrand;
 import com.ureca.uhyu.domain.brand.entity.QCategory;
 import com.ureca.uhyu.domain.recommendation.entity.QRecommendation;
 import com.ureca.uhyu.domain.recommendation.entity.Recommendation;
+import com.ureca.uhyu.domain.user.entity.QHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -103,5 +105,20 @@ public class RecommendationRepositoryCustomImpl implements RecommendationReposit
         }
 
         return result;
+    }
+
+    @Override
+    public List<Brand> findTop3BrandByVisitCountFromHistory() {
+        QHistory history = QHistory.history;
+        QBrand brand = QBrand.brand;
+
+        return queryFactory
+                .select(history.brand)
+                .from(history)
+                .where(history.brand.isNotNull())
+                .groupBy(history.brand)
+                .orderBy(history.count().desc())
+                .limit(3)
+                .fetch();
     }
 }

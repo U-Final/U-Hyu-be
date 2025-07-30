@@ -13,7 +13,9 @@ public enum PermitAllURI {
     DOCS("/v3/api-docs"),
     ROOT("/"),
     BRAND_LIST("/brand-list"),
-    PROMETHEUS("/actuator/prometheus");
+    PROMETHEUS("/actuator/prometheus"),
+    PGEXPORTER("/metrics"),
+    MYMAP_GUEST("/mymap/guest");
 
     private final String uri;
 

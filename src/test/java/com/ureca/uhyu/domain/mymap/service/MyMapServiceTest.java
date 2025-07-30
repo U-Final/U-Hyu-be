@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
+import com.ureca.uhyu.domain.guest.service.GuestService;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.*;
@@ -12,6 +13,7 @@ import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
 import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
+import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.store.repository.StoreRepository;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
@@ -21,6 +23,7 @@ import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -63,8 +66,14 @@ class MyMapServiceTest {
     @Mock
     private StoreRepository storeRepository;
 
+    @Mock
+    private RecommendationRepository recommendationRepository;
+
     @InjectMocks
     private MyMapService myMapService;
+
+    @InjectMocks
+    private GuestService guestService;
 
     @DisplayName("mymap 목록 조회 - 성공")
     @Test
@@ -276,7 +285,7 @@ class MyMapServiceTest {
 
     @DisplayName("uuid 기반 My Map 지도 조회 - 성공")
     @Test
-    void findMyMap() {
+    void findMyMapByUUID() {
         // given
         User user = createUser();
         setId(user, 1L);
@@ -306,7 +315,7 @@ class MyMapServiceTest {
         when(myMapRepository.findByMyMapList(myMapList)).thenReturn(myMaps);
 
         // when
-        MyMapRes result = myMapService.findMyMap(user, uuid);
+        MyMapRes result = myMapService.findMyMapByUUID(user, uuid);
 
         // then
         assertNotNull(result);
@@ -315,6 +324,51 @@ class MyMapServiceTest {
         assertEquals(myMapList.getId(), result.myMapListId());
         assertEquals(myMapList.getUuid(), result.uuid());
         assertTrue(result.isMine());
+        verify(myMapListRepository).findByUuid(uuid);
+        verify(myMapRepository).findByMyMapList(myMapList);
+    }
+
+    @DisplayName("uuid 기반 My Map 지도 조회(비회원) - 성공")
+    @Test
+    void findMyMapByUUIDWithGuest_success() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        String uuid = "test-uuid";
+
+        Brand brand = createBrand("test_brand", "brand.img");
+        setId(brand, 50L);
+
+        Store store1 = createStore("test_store1", "test_addr", brand);
+        setId(store1, 70L);
+        Store store2 = createStore("test_store2", "test_addr2", brand);
+        setId(store2, 90L);
+
+        MyMapList myMapList = createMyMapList(user, "MyMap 1", MarkerColor.GREEN, "uuid1");
+        setId(myMapList, 100L);
+
+        MyMap myMap1 = createMyMap(myMapList, store1);
+        setId(myMap1, 400L);
+        MyMap myMap2 = createMyMap(myMapList, store2);
+        setId(myMap2, 401L);
+
+        List<MyMap> myMaps = List.of(myMap1, myMap2);
+
+        // mock
+        when(myMapListRepository.findByUuid(uuid)).thenReturn(Optional.of(myMapList));
+        when(myMapRepository.findByMyMapList(myMapList)).thenReturn(myMaps);
+
+        // when
+        MyMapRes result = guestService.findMyMapByUUIDWithGuest(uuid);
+
+        // then
+        assertNotNull(result);
+        assertEquals(myMapList.getMarkerColor(), result.markerColor());
+        assertEquals(myMapList.getTitle(), result.title());
+        assertEquals(myMapList.getId(), result.myMapListId());
+        assertEquals(myMapList.getUuid(), result.uuid());
+        assertFalse(result.isMine());
         verify(myMapListRepository).findByUuid(uuid);
         verify(myMapRepository).findByMyMapList(myMapList);
     }
