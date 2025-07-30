@@ -78,7 +78,7 @@ public class SecurityConfig {
                                 "/", "/login", "/oauth2/**",
                                 "/swagger-ui/**", "/v3/api-docs/**",
                                 "/brand-list/**",
-                                "/map/stores","/actuator/prometheus","/metrics", "/mymap/guest/**"
+                                "/map/stores","/actuator/prometheus","/metrics", "/mymap/guest/**", "/guest/**"
                         ).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

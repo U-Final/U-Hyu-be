@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
+import com.ureca.uhyu.domain.guest.service.GuestService;
 import com.ureca.uhyu.domain.mymap.dto.request.CreateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.dto.response.*;
@@ -12,6 +13,7 @@ import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
 import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
+import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.store.repository.StoreRepository;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
@@ -21,6 +23,7 @@ import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
@@ -63,8 +66,14 @@ class MyMapServiceTest {
     @Mock
     private StoreRepository storeRepository;
 
+    @Mock
+    private RecommendationRepository recommendationRepository;
+
     @InjectMocks
     private MyMapService myMapService;
+
+    @InjectMocks
+    private GuestService guestService;
 
     @DisplayName("mymap 목록 조회 - 성공")
     @Test
@@ -351,7 +360,7 @@ class MyMapServiceTest {
         when(myMapRepository.findByMyMapList(myMapList)).thenReturn(myMaps);
 
         // when
-        MyMapRes result = myMapService.findMyMapByUUIDWithGuest(uuid);
+        MyMapRes result = guestService.findMyMapByUUIDWithGuest(uuid);
 
         // then
         assertNotNull(result);
