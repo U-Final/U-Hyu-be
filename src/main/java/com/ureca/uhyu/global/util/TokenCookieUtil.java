@@ -28,6 +28,7 @@ public final class TokenCookieUtil {
         expiredCookie.setSecure(true); // HTTPS 환경에서만 전달될 수 있도록
         expiredCookie.setPath("/");
         expiredCookie.setMaxAge(0); // 즉시 만료
+        expiredCookie.setDomain(".u-hyu.site/");
         response.addCookie(expiredCookie);
     }
 }
