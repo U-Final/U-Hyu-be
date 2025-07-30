@@ -1,11 +1,10 @@
 package com.ureca.uhyu.domain.recommendation.controller;
 
-import com.ureca.uhyu.domain.recommendation.dto.RecommendationResponse;
+import com.ureca.uhyu.domain.recommendation.dto.response.RecommendationRes;
 import com.ureca.uhyu.domain.recommendation.service.RecommendationService;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.annotation.CurrentUser;
 import com.ureca.uhyu.global.response.CommonResponse;
-import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -90,7 +89,7 @@ public class RecommendationController {
             )
     })
     @GetMapping
-    public CommonResponse<List<RecommendationResponse>> recommendation(
+    public CommonResponse<List<RecommendationRes>> recommendation(
             @Parameter(
                     description = "현재 로그인된 사용자 정보",
                     hidden = true
@@ -98,4 +97,6 @@ public class RecommendationController {
     ) {
         return CommonResponse.success(recommendationService.getLatestTop3Recommendations(user));
     }
+
+    @GetMapping("/guest/top3")
 }

@@ -1,6 +1,6 @@
 package com.ureca.uhyu.domain.recommendation.controller;
 
-import com.ureca.uhyu.domain.recommendation.dto.RecommendationResponse;
+import com.ureca.uhyu.domain.recommendation.dto.response.RecommendationRes;
 import com.ureca.uhyu.domain.recommendation.service.RecommendationService;
 import com.ureca.uhyu.domain.user.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,10 +55,10 @@ class RecommendationControllerTest {
     @DisplayName("가장 최신 추천 결과 Top3 브랜드를 반환한다")
     void it_returns_top3_recommendations() throws Exception {
         // given
-        List<RecommendationResponse> mockResponse = List.of(
-                new RecommendationResponse(1L, "스타벅스", 1),
-                new RecommendationResponse(2L, "이디야", 2),
-                new RecommendationResponse(3L, "투썸플레이스", 3)
+        List<RecommendationRes> mockResponse = List.of(
+                new RecommendationRes(1L, "스타벅스", 1),
+                new RecommendationRes(2L, "이디야", 2),
+                new RecommendationRes(3L, "투썸플레이스", 3)
         );
 
         given(recommendationService.getLatestTop3Recommendations(any(User.class)))
