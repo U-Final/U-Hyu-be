@@ -44,64 +44,57 @@ class AdminServiceTest {
     @Test
     void findStatisticsBookmarkByCategoryAndBrand() {
         // given
-        UserBrandPair pair1 = new UserBrandPair(1L, 101L); // 유저1, 브랜드101
-        UserBrandPair pair2 = new UserBrandPair(2L, 101L); // 유저2, 브랜드101
-        UserBrandPair pair3 = new UserBrandPair(3L, 102L); // 유저3, 브랜드102
+        List<StatisticsBookmarkRes> mockResList = List.of(
+                StatisticsBookmarkRes.of(
+                        1L,
+                        "카테고리A",
+                        30,
+                        new ArrayList<>(List.of(
+                                BookmarksByBrand.of("브랜드1", 10),
+                                BookmarksByBrand.of("브랜드2", 20)
+                        ))
+                ),
+                StatisticsBookmarkRes.of(
+                        2L,
+                        "카테고리B",
+                        15,
+                        new ArrayList<>(List.of(
+                                BookmarksByBrand.of("브랜드3", 15)
+                        ))
+                )
+        );
 
-        Set<UserBrandPair> userBrandSaves = Set.of(pair1, pair2, pair3);
-
-        // Mock 튜플 (brandId → categoryId, categoryName, brandName)
-        Tuple tuple1 = mock(Tuple.class);
-        when(tuple1.get(1, Long.class)).thenReturn(10L);              // categoryId
-        when(tuple1.get(2, String.class)).thenReturn("카테고리A");     // categoryName
-        when(tuple1.get(3, String.class)).thenReturn("브랜드101");     // brandName
-
-        Tuple tuple2 = mock(Tuple.class);
-        when(tuple2.get(1, Long.class)).thenReturn(10L);
-        when(tuple2.get(2, String.class)).thenReturn("카테고리A");
-        when(tuple2.get(3, String.class)).thenReturn("브랜드102");
-
-        Map<Long, Tuple> brandCategoryMap = new HashMap<>();
-        brandCategoryMap.put(101L, tuple1);
-        brandCategoryMap.put(102L, tuple2);
-
-        when(bookmarkRepository.findUserBrandSaves()).thenReturn(userBrandSaves);
-        when(bookmarkRepository.findBrandToCategoryMap()).thenReturn(brandCategoryMap);
+        when(bookmarkRepository.findStatisticsBookmarkByCategoryAndBrand()).thenReturn(mockResList);
 
         // when
         List<StatisticsBookmarkRes> result = adminService.findStatisticsBookmarkByCategoryAndBrand();
 
         // then
-        assertEquals(1, result.size());
-        StatisticsBookmarkRes categoryRes = result.get(0);
-        assertEquals(10L, categoryRes.categoryId());
-        assertEquals("카테고리A", categoryRes.categoryName());
-        assertEquals(3, categoryRes.sumStatisticsBookmarksByCategory()); // 2 + 1
+        assertEquals(2, result.size());
+        assertEquals("카테고리A", result.get(0).categoryName());
+        assertEquals(30, result.get(0).sumStatisticsBookmarksByCategory());
+        assertEquals(2, result.get(0).bookmarksByBrandList().size());
+        assertEquals("브랜드1", result.get(0).bookmarksByBrandList().get(0).brandName());
 
-        List<BookmarksByBrand> brandList = categoryRes.bookmarksByBrandList();
-        assertEquals(2, brandList.size());
-
-        Map<String, Integer> brandCountMap = brandList.stream()
-                .collect(Collectors.toMap(BookmarksByBrand::brandName, BookmarksByBrand::sumBookmarksByBrand));
-        assertEquals(2, brandCountMap.get("브랜드101"));
-        assertEquals(1, brandCountMap.get("브랜드102"));
-
-        verify(bookmarkRepository).findUserBrandSaves();
-        verify(bookmarkRepository).findBrandToCategoryMap();
+        assertEquals("카테고리B", result.get(1).categoryName());
+        assertEquals(15, result.get(1).sumStatisticsBookmarksByCategory());
+        assertEquals(1, result.get(1).bookmarksByBrandList().size());
+        assertEquals("브랜드3", result.get(1).bookmarksByBrandList().get(0).brandName());
+        verify(bookmarkRepository).findStatisticsBookmarkByCategoryAndBrand();
     }
     
     @DisplayName("카테고리, 브랜드 별 즐겨찾기 갯수 통계 조회 - 빈 리스트")
     @Test
     void findStatisticsBookmarkByCategoryAndBrand_EmptyDataset() {
         // given
-        when(bookmarkRepository.findUserBrandSaves()).thenReturn(Set.of());
-        when(bookmarkRepository.findBrandToCategoryMap()).thenReturn(Map.of());
+        when(bookmarkRepository.findStatisticsBookmarkByCategoryAndBrand()).thenReturn(List.of());
 
         // when
         List<StatisticsBookmarkRes> result = adminService.findStatisticsBookmarkByCategoryAndBrand();
 
         // then
         assertTrue(result.isEmpty());
+        verify(bookmarkRepository).findStatisticsBookmarkByCategoryAndBrand();
     }
 
     @DisplayName("카테고리별 필터링 횟수 통계 조회 - 성공")
