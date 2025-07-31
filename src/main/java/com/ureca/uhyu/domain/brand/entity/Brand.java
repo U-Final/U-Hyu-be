@@ -2,10 +2,10 @@ package com.ureca.uhyu.domain.brand.entity;
 
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Where;
 
 import java.util.List;
 
@@ -49,5 +49,18 @@ public class Brand extends BaseEntity {
         this.usageMethod = usageMethod;
         this.usageLimit = usageLimit;
         this.storeType = storeType;
+    }
+
+    public String getBenefitDescriptionByGradeOrDefault(Grade grade) {
+        return this.benefits.stream()
+                .filter(b -> b.getGrade() == grade)
+                .findFirst()
+                .orElseGet(() ->
+                        this.benefits.stream()
+                                .filter(b -> b.getGrade() == Grade.GOOD)
+                                .findFirst()
+                                .get()
+                )
+                .getDescription();
     }
 }
