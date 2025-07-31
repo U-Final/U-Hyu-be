@@ -13,10 +13,6 @@ spring:
               - profile_nickname
               - profile_image
               - account_email
-              - name
-              - gender
-              - age_range
-              - birthyear
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
