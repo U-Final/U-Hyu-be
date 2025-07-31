@@ -86,7 +86,7 @@ https://www.u-hyu.site/
 
 추천 결과 예시
 
-<img width="1052" height="170" alt="Image" src="https://github.com/user-attachments/assets/7b4c0a91-4867-45e1-bab4-b8988bc1fb75" />
+<img width="1490" height="951" alt="Image" src="https://github.com/user-attachments/assets/d4d3a9e5-0065-4f70-a9e5-41e5c346ecf9" />
 
 #### 🔍 추천 방식 안내
 
