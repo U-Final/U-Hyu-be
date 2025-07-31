@@ -58,23 +58,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String profileImage = profile.getOrDefault("profile_image_url", null) != null
                 ? profile.get("profile_image_url").toString() : null;
         String email = kakaoAccount.getOrDefault("email", "temp_kakao_" + kakaoId + "@example.com").toString();
-        String name = kakaoAccount.getOrDefault("name", "익명").toString();
-        String genderStr = kakaoAccount.get("gender") != null ? kakaoAccount.get("gender").toString() : null;
-        Gender gender = parseGender(genderStr);
-        String age_range = kakaoAccount.get("age_range") != null ? kakaoAccount.get("age_range").toString() : null;
-        String birthyear = kakaoAccount.get("birthyear") != null ? kakaoAccount.get("birthyear").toString() : null;
 
-        return new KakaoUserInfoResponse(kakaoId, nickname, email, name, profileImage, gender, age_range, birthyear);
-    }
-
-    private Gender parseGender(String genderStr) {
-        if ("male".equalsIgnoreCase(genderStr)) return Gender.MALE;
-        if ("female".equalsIgnoreCase(genderStr)) return Gender.FEMALE;
-        return null;
+        return new KakaoUserInfoResponse(kakaoId, nickname, email, profileImage);
     }
 
     private User createNewUser(KakaoUserInfoResponse userInfo) {
-        return userRepository.save(UserInfoMapper.toUserEntity(userInfo));
+        User user = User.builder()
+                .kakaoId(userInfo.kakaoId())
+                .email(userInfo.email())
+                .profileImage(userInfo.profileImage())
+                .status(Status.ACTIVE)
+                .role(UserRole.TMP_USER)
+                .build();
+
+        return userRepository.save(user);
     }
 }
 
