@@ -2,14 +2,10 @@ package com.ureca.uhyu.domain.auth.service;
 
 import com.ureca.uhyu.domain.auth.dto.CustomOAuth2User;
 import com.ureca.uhyu.domain.auth.dto.KakaoUserInfoResponse;
-import com.ureca.uhyu.domain.auth.mapper.UserInfoMapper;
-import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.UserRole;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +63,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .kakaoId(userInfo.kakaoId())
                 .email(userInfo.email())
                 .profileImage(userInfo.profileImage())
+                .userName(userInfo.nickname())
+                .nickname(userInfo.nickname())
                 .status(Status.ACTIVE)
                 .role(UserRole.TMP_USER)
                 .build();

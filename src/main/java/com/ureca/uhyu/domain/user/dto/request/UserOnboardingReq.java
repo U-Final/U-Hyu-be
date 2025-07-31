@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.user.dto.request;
 
+import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
@@ -9,6 +10,33 @@ import java.util.List;
 
 @Schema(description = "신규 사용자 온보딩 정보 요청 DTO")
 public record UserOnboardingReq(
+
+//        @Schema(
+//                description = "사용자 이름",
+//                example = "NAME",
+//                allowableValues = "String",
+//                requiredMode = Schema.RequiredMode.REQUIRED
+//        )
+//        @NotNull(message = "이름은 필수입니다.")
+//        String userName,
+
+        @Schema(
+                description = "사용자 나이",
+                example = "26",
+                allowableValues = "Integer",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        @NotNull(message = "성별은 필수입니다.")
+        Integer age,
+
+        @Schema(
+                description = "사용자 성별",
+                example = "FEMALE",
+                allowableValues = {"MALE", "FEMALE", "OTHER"},
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        @NotNull(message = "성별은 필수입니다.")
+        Gender gender,
 
         @Schema(
                 description = "사용자 등급",

@@ -50,8 +50,13 @@ public class UserService {
         User persistedUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
+//        persistedUser.setUserName(request.userName());
         persistedUser.setUserGrade(request.grade());
         persistedUser.setUserRole(UserRole.USER); // TMP_USER → USER 변경
+        persistedUser.setAge(request.age());
+        persistedUser.setGender(request.gender());
+        String ageRange = getAgeRange(request.age());
+        persistedUser.setAgeRange(ageRange);
         userRepository.save(persistedUser);
 
         // 방문 브랜드는 history 테이블에 저장 - store_id는 null
@@ -79,6 +84,17 @@ public class UserService {
         }
 
         return persistedUser.getId();
+    }
+
+    public String getAgeRange(Integer age) {
+        String ageRange = "";
+
+        if (age != null) {
+            int lowerBound = (age / 10) * 10;
+            int upperBound = lowerBound + 9;
+            ageRange = lowerBound + "~" + upperBound;
+        }
+        return ageRange;
     }
 
     private void saveHistory(User user, Brand brand, Store store, Boolean isOnboarding) {

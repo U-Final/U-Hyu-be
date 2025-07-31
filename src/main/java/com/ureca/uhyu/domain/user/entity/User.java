@@ -6,6 +6,7 @@ import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -16,6 +17,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class User extends BaseEntity {
+
+    @Column(length = 20, nullable = false)
+    private String userName;
 
     @Column(length = 20)
     private String nickname;
@@ -69,6 +73,8 @@ public class User extends BaseEntity {
         this.grade = grade;
     }
 
+//    public void setUserName( String userName ) { this.userName = userName; }
+
     public void setUserGrade(Grade grade) {
         this.grade = grade;
     }
@@ -76,4 +82,10 @@ public class User extends BaseEntity {
     public void setUserRole(UserRole role) {
         this.role = role;
     }
+
+    public void setAge(Integer age) { this.age = age; }
+
+    public void setGender(Gender gender) { this.gender = gender; }
+
+    public void setAgeRange(String ageRange) { this.age_range = ageRange; }
 }
