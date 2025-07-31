@@ -50,13 +50,15 @@ public class UserService {
         User persistedUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_USER));
 
-//        persistedUser.setUserName(request.userName());
-        persistedUser.setUserGrade(request.grade());
-        persistedUser.setUserRole(UserRole.USER); // TMP_USER → USER 변경
-        persistedUser.setAge(request.age());
-        persistedUser.setGender(request.gender());
         String ageRange = getAgeRange(request.age());
-        persistedUser.setAgeRange(ageRange);
+
+        persistedUser.updateUserInfo(
+                request.age(),
+                request.gender(),
+                ageRange,
+                request.grade(),
+                UserRole.USER
+        );
         userRepository.save(persistedUser);
 
         // 방문 브랜드는 history 테이블에 저장 - store_id는 null

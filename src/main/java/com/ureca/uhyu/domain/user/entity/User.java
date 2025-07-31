@@ -73,19 +73,12 @@ public class User extends BaseEntity {
         this.grade = grade;
     }
 
-//    public void setUserName( String userName ) { this.userName = userName; }
-
-    public void setUserGrade(Grade grade) {
+    public void updateUserInfo(Integer age, Gender gender, String ageRange, Grade grade, UserRole role) {
+        this.age = age;
+        this.gender = gender;
+        this.age_range = ageRange;
         this.grade = grade;
-    }
-
-    public void setUserRole(UserRole role) {
         this.role = role;
+        this.updatedAt = LocalDateTime.now(); // update timestamp
     }
-
-    public void setAge(Integer age) { this.age = age; }
-
-    public void setGender(Gender gender) { this.gender = gender; }
-
-    public void setAgeRange(String ageRange) { this.age_range = ageRange; }
 }
