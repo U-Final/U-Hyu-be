@@ -119,11 +119,18 @@ https://www.u-hyu.site/
 
 ### ☁️ 인프라 구성
 
-| 항목 | 기술 |
-|------|------|
-| 클라우드 | AWS EC2 (Spring, Python), RDS (PostgreSQL + PostGIS), S3 |
-| 배포 | Docker, GitHub Actions (CI/CD) |
-| 인증 | Kakao OAuth2 + Spring Security + JWT |
+#### 🔧 기술 스택 정리
+
+| 항목         | 기술                                                                 |
+|--------------|----------------------------------------------------------------------|
+| **클라우드**   | AWS EC2 (Spring, Prometheus, Grafana, LightFM), RDS (PostgreSQL + PostGIS), S3 |
+| **배포**       | Docker, GitHub Actions (CI/CD), Vercel (Frontend)                  |
+| **인증**       | ACM + Route 53 (도메인 인증 및 HTTPS), Kakao OAuth2 + Spring Security + JWT |
+| **모니터링**   | Prometheus + Grafana                                                |
+| **추천 엔진**  | Python + LightFM                                                    |
+| **프론트엔드** | Vercel (GitHub 연동 자동 배포)                                       |
+
+<br>
 
 <img width="891" height="551" alt="image" src="https://github.com/user-attachments/assets/d8e93731-92a6-4de9-b986-a113497ea794" />
 
