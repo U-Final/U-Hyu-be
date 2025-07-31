@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  uhyu-backend:
+    build: .   # 이 줄을 추가해야 docker build 수행
+    image: your-image-name:latest  # GitHub Actions에서 빌드 후 사용할 이미지명
+    container_name: uhyu-backend
+    ports:
+      - "80:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      ACCESS_TOKEN_EXP: ${ACCESS_TOKEN_EXP}
+      REFRESH_TOKEN_EXP: ${REFRESH_TOKEN_EXP}
+      KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY}
+      FRONT_BASE_URL: ${FRONT_BASE_URL}
+    env_file:
+      - .env
+    restart: always

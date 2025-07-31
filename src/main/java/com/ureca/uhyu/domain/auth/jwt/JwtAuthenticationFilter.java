@@ -38,51 +38,69 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        return PermitAllURI.isPermit(uri);
+        boolean result = PermitAllURI.isPermit(uri);
+
+        log.debug("현재 URI : {}, isPermit 여부 : {}", uri, result);
+        return result;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
-        String uri = request.getRequestURI();
-        if (uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs")) {
-            filterChain.doFilter(request, response); // 토큰 검사 생략
-            return;
-        }
+        log.debug("JWT필터 진입");
 
         try {
             String accessToken = extractAccessTokenFromCookie(request);
 
-            if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+            if (accessToken == null || accessToken.trim().isEmpty()) {
+                log.debug("access_token이 비어있음");
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            if (jwtTokenProvider.validateToken(accessToken)) {
+                log.debug("토큰 존재 && 토큰 validate");
 
                 String userId = jwtTokenProvider.getUserIdFromToken(accessToken);
                 String role = jwtTokenProvider.getRoleFromToken(accessToken);
+
+                log.debug("현재 로그인 회원ID: {}", userId);
 
                 if (role == null) {
                     throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
                 }
 
                 setAuthenticationContext(request, userId, role);
+
                 filterChain.doFilter(request, response);
+
                 return;
             }
+
+            log.debug("토큰 존재 하지 않음 || 토큰 validate하지 않음");
 
             String expiredAccessToken = extractAccessTokenFromCookie(request);
 
             String userId = jwtTokenProvider.getUserIdFromExpiredToken(expiredAccessToken);
 
-            String refreshToken = tokenRepository.findTokenByUserId(Long.parseLong(userId))
-                .map(token -> token.getRefreshToken())
-                .orElse(null);
+            log.debug("만료된 access token의 userId : " + userId);
+
+            String refreshToken = tokenRepository.findByUserId(Long.parseLong(userId))
+                    .map(token -> token.getRefreshToken())
+                    .orElse(null);
+
+            log.debug("리프레시 토큰 : " + refreshToken);
+            log.debug("jwtTokenProvider.validateToken(refreshToken) 결과 : " + jwtTokenProvider.validateToken(refreshToken));
 
             if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-                String roleString = jwtTokenProvider.getRoleFromToken(refreshToken);
-                if (roleString == null) {
+                log.debug("리프레시 토큰 존재 || 리프레시 토큰 validate");
+
+                String userRoleString = jwtTokenProvider.getRoleFromToken(refreshToken);
+                if (userRoleString == null) {
                     throw new GlobalException(ResultCode.INVALID_ROLE_IN_TOKEN);
                 }
+                UserRole userRole = UserRole.valueOf(userRoleString);
 
-                UserRole userRole = UserRole.valueOf(roleString);
                 String newAccessToken = jwtTokenProvider.generateToken(userId, userRole);
 
                 Cookie newAccessTokenCookie = new Cookie("access_token", newAccessToken);
@@ -91,13 +109,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 newAccessTokenCookie.setMaxAge((int) ACCESS_TOKEN_EXP);
                 response.addCookie(newAccessTokenCookie);
 
-                setAuthenticationContext(request, userId, roleString);
+                setAuthenticationContext(request, userId, userRoleString);
                 filterChain.doFilter(request, response);
                 return;
             }
 
+            log.debug("리프레시 토큰 존재 안함 || 리프레시 토큰 validate 안함");
+
             response.sendRedirect("/login");
-            return;
 
         } catch (ExpiredJwtException e) {
             log.warn("❌ 토큰 만료 예외 발생: {}", e.getMessage());

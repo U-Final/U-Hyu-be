@@ -41,7 +41,39 @@ public enum ResultCode {
     EMAIL_DUPLICATED(HttpStatus.BAD_REQUEST, 4003, "이미 사용중인 이메일입니다."),
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, 4004, "즐겨찾기 정보를 찾을 수 없습니다."),
     BOOKMARK_DELETE_SUCCESS(HttpStatus.OK, 4005, "즐겨찾기 삭제가 완료되었습니다."),
-    BOOKMARK_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, 4006, "즐겨찾기 리스트가 없습니다.");
+    BOOKMARK_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, 4006, "즐겨찾기 리스트가 없습니다."),
+    BOOKMARK_LIST_ALREADY_EXISTS(HttpStatus.CONFLICT, 4007, "즐겨찾기 리스트가 이미 존재합니다."),
+    MY_MAP_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, 4008, "My Map 리스트가 없습니다."),
+    MY_MAP_LIST_DELETE_SUCCESS(HttpStatus.OK, 4009, "My Map 리스트 삭제가 완료되었습니다."),
+    NOT_FOUND_RECOMMENDATION_FOR_USER(HttpStatus.NOT_FOUND, 4010, "추천 결과가 존재하지 않습니다"),
+    BRAND_ID_IS_NULL(HttpStatus.NOT_FOUND, 4011, "brand id가 존재하지 않습니다."),
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, 4012, "store 정보를 찾을 수 없습니다."),
+
+    /**
+     * 4100번대(바코드 관련)
+     */
+    BARCODE_UPLOAD_SUCCESS(HttpStatus.OK,4102, "바코드 이미지가 저장되었습니다."),
+    BARCODE_NOT_FOUND(HttpStatus.NOT_FOUND,4103,"바코드가 존재하지 않습니다"),
+    BARCODE_UPDATE_SUCCESS(HttpStatus.OK,4104, "바코드 이미지가 수정되었습니다."),
+    S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR,4105, "S3 이미지 업로드에 실패했습니다."),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST,4106, "허용되지 않은 파일 확장자입니다."),
+
+    /**
+     * 5000번대 (제휴처 관련)
+     */
+    BRAND_NOT_FOUND(HttpStatus.NOT_FOUND, 5001, "제휴처 정보를 찾을 수 없습니다."),
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 5002, "카테고리 정보를 찾을 수 없습니다."),
+    RECOMMENDATION_IS_NULL(HttpStatus.NOT_FOUND, 5003, "추천할 브랜드 정보가 없습니다"),
+
+    /**
+     * 6000번대 (어드민 관련)
+     */
+    CREATE_BRAND_SUCCESS(HttpStatus.CREATED, 6001, "제휴처 브랜드 정보가 성공적으로 저장되었습니다."),
+    UPDATE_BRAND_SUCCESS(HttpStatus.OK, 6002, "제휴처 브랜드 정보가 성공적으로 수정되었습니다."),
+    DELETE_BRAND_SUCCESS(HttpStatus.OK, 6003, "제휴처 브랜드 정보가 성공적으로 삭제되었습니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 6005, "관련된 카테고리가 없습니다."),
+    BRAND_NAME_DUPLICATED(HttpStatus.BAD_REQUEST, 6006, "브랜드 이름이 중복됩니다."),
+    INVALID_STORE_TYPE(HttpStatus.BAD_REQUEST, 6007, "매장 타입은 OFFLINE, ONLINE만 가능합니다.");
 
     private final HttpStatus status;
     private final int code;

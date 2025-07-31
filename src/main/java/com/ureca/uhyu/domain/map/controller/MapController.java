@@ -9,19 +9,20 @@ import com.ureca.uhyu.global.annotation.CurrentUser;
 import com.ureca.uhyu.global.response.CommonResponse;
 import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "지도", description = "지도 기반 매장 검색 및 즐겨찾기 관련 API")
 @RestController
 @RequestMapping("/map")
 @RequiredArgsConstructor
-public class MapController {
+public class MapController implements MapControllerDocs{
 
     private final MapService mapService;
 
-    @Operation(summary = "지도 매장 겁색", description = "브랜드명 검색, 필터링, 기본 조회 API")
     @GetMapping("/stores")
     public CommonResponse<List<MapRes>> getFilteredStores(
             @RequestParam Double lat,
@@ -33,21 +34,30 @@ public class MapController {
         return CommonResponse.success(ResultCode.SUCCESS, mapService.getFilteredStores(lat, lon, radius, category, brand));
     }
 
-    @Operation(summary = "매장 상세정보 조회", description = "지도 마커를 클릭하면 등급별 혜택/제공 횟수/이용방법을 반환")
-    @GetMapping("/{storeId}")
+    @GetMapping("/detail/stores/{storeId}")
     public CommonResponse<StoreDetailRes> getStoreDetail(
             @PathVariable Long storeId,
             @CurrentUser User user
     ){
-        return CommonResponse.success(ResultCode.SUCCESS, mapService.getStoreDetail(storeId,user));
+        return CommonResponse.success(mapService.getStoreDetail(storeId,user));
     }
 
-    @Operation(summary = "매장 즐겨찾기 토글", description = "매장 상세정보에서 즐겨찾기 토글 버튼 API")
     @PostMapping("/{storeId}")
     public CommonResponse<MapBookmarkRes> toggleBookmark(
             @PathVariable Long storeId,
             @CurrentUser User user
     ) {
-        return CommonResponse.success(ResultCode.SUCCESS, mapService.toggleBookmark(user, storeId));
+        return CommonResponse.success(mapService.toggleBookmark(user, storeId));
+    }
+
+    @Operation(summary = "추천 매장 조회", description = "사용자의 추천 브랜드에 해당하는 근처 매장 조회")
+    @GetMapping("/recommendation/stores")
+    public CommonResponse<List<MapRes>> getRecommendedStores(
+            @RequestParam Double lat,
+            @RequestParam Double lon,
+            @RequestParam Double radius,
+            @CurrentUser User user
+    ) {
+        return CommonResponse.success(mapService.findRecommendedStores(lat, lon, radius, user));
     }
 }

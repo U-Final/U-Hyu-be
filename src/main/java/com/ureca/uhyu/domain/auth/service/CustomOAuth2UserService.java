@@ -2,6 +2,7 @@ package com.ureca.uhyu.domain.auth.service;
 
 import com.ureca.uhyu.domain.auth.dto.CustomOAuth2User;
 import com.ureca.uhyu.domain.auth.dto.KakaoUserInfoResponse;
+import com.ureca.uhyu.domain.auth.mapper.UserInfoMapper;
 import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.repository.UserRepository;
@@ -61,8 +62,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String genderStr = kakaoAccount.get("gender") != null ? kakaoAccount.get("gender").toString() : null;
         Gender gender = parseGender(genderStr);
         String age_range = kakaoAccount.get("age_range") != null ? kakaoAccount.get("age_range").toString() : null;
+        String birthyear = kakaoAccount.get("birthyear") != null ? kakaoAccount.get("birthyear").toString() : null;
 
-        return new KakaoUserInfoResponse(kakaoId, nickname, email, name, profileImage, gender, age_range);
+        return new KakaoUserInfoResponse(kakaoId, nickname, email, name, profileImage, gender, age_range, birthyear);
     }
 
     private Gender parseGender(String genderStr) {
@@ -72,15 +74,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User createNewUser(KakaoUserInfoResponse userInfo) {
-        return userRepository.save(User.builder()
-                .kakaoId(userInfo.kakaoId())
-                .userName(userInfo.nickname())
-                .email(userInfo.email())
-                .profileImage(userInfo.profileImage())
-                .gender(userInfo.gender())
-                .status(Status.ACTIVE)
-                .role(UserRole.TMP_USER)
-                .build());
+        return userRepository.save(UserInfoMapper.toUserEntity(userInfo));
     }
 }
 

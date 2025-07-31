@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'spring'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['43.203.223.179:8080']
+
+  - job_name: 'pgexporter'
+    static_configs:
+      - targets: ['43.203.223.179:9187']

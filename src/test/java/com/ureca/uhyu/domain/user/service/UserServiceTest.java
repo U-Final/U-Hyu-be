@@ -5,30 +5,29 @@ import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.user.dto.request.ActionLogsReq;
 import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
-import com.ureca.uhyu.domain.user.dto.response.BookmarkRes;
-import com.ureca.uhyu.domain.user.dto.response.GetUserInfoRes;
-import com.ureca.uhyu.domain.user.dto.response.UpdateUserRes;
+import com.ureca.uhyu.domain.user.dto.response.*;
+import com.ureca.uhyu.domain.user.entity.ActionLogs;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
-import com.ureca.uhyu.domain.user.entity.Marker;
 import com.ureca.uhyu.domain.user.entity.User;
-import com.ureca.uhyu.domain.user.enums.Gender;
-import com.ureca.uhyu.domain.user.enums.UserRole;
-import com.ureca.uhyu.domain.user.enums.Status;
-import com.ureca.uhyu.domain.user.repository.BookmarkListRepository;
-import com.ureca.uhyu.domain.user.repository.BookmarkRepository;
-import com.ureca.uhyu.domain.user.repository.MarkerRepository;
-import com.ureca.uhyu.domain.user.repository.UserRepository;
-import com.ureca.uhyu.domain.user.enums.Grade;
+import com.ureca.uhyu.domain.user.enums.*;
+import com.ureca.uhyu.domain.user.repository.*;
+import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
+import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
+import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
+import com.ureca.uhyu.domain.user.repository.history.HistoryRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -49,9 +48,6 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private MarkerRepository markerRepository;
-
-    @Mock
     private BrandRepository brandRepository;
 
     @Mock
@@ -62,6 +58,12 @@ class UserServiceTest {
 
     @Mock
     private BookmarkRepository bookmarkRepository;
+
+    @Mock
+    private HistoryRepository historyRepository;
+
+    @Mock
+    private ActionLogsRepository actionLogsRepository;
 
     @InjectMocks
     private UserService userService;
@@ -75,6 +77,18 @@ class UserServiceTest {
         LocalDateTime timeValue = LocalDateTime.now();
         setUpdatedAt(user, timeValue);
 
+        Brand brand1 = createBrand("브랜드1", "logo1.png");
+        Brand brand2 = createBrand("브랜드2", "logo2.png");
+        setId(brand1, 10L);
+        setId(brand2, 11L);
+
+        RecommendationBaseData rec1 = createRecommendationBaseData(user, brand1);
+        RecommendationBaseData rec2 = createRecommendationBaseData(user, brand2);
+
+        List<RecommendationBaseData> recommendations = List.of(rec1, rec2);
+
+        when(recommendationRepository.findByUser(user)).thenReturn(recommendations);
+
         // when
         GetUserInfoRes getUserInfoRes = userService.findUserInfo(user);
 
@@ -83,10 +97,16 @@ class UserServiceTest {
         assertEquals("asdsad.png", getUserInfoRes.profileImage());
         assertEquals("nick", getUserInfoRes.nickName());
         assertEquals("asdad@kakao.com", getUserInfoRes.email());
-        assertEquals((byte) 32, getUserInfoRes.age());
+        assertEquals(32, getUserInfoRes.age());
         assertEquals(Gender.MALE, getUserInfoRes.gender());
         assertEquals(timeValue, getUserInfoRes.updatedAt());
         assertEquals(Grade.GOOD, getUserInfoRes.grade());
+        assertEquals(UserRole.TMP_USER, getUserInfoRes.role());
+        assertEquals(2, getUserInfoRes.interestedBrandList().size());
+        assertTrue(getUserInfoRes.interestedBrandList().stream().anyMatch(b -> b.equals(10L)));
+        assertTrue(getUserInfoRes.interestedBrandList().stream().anyMatch(b -> b.equals(11L)));
+
+        verify(recommendationRepository).findByUser(user);
     }
 
     @DisplayName("개인정보 수정 - 성공")
@@ -96,20 +116,17 @@ class UserServiceTest {
         User user = createUser();
         setId(user, 1L);
 
-        Marker marker2 = Marker.builder().markerImage("marker2.jpg").build();
-        setId(marker2, 2L);
+        Long markerId2 = 2L;
 
         UpdateUserReq request = new UpdateUserReq(
                 "asdsad2.png",
                 "nick2",
                 Grade.VIP,
                 List.of(1L, 2L, 3L),
-                2L
+                markerId2
         );
 
         // mock
-        when(markerRepository.findById(2L)).thenReturn(Optional.of(marker2));
-
         for (Long brandId : request.updatedBrandIdList()) {
             Brand brand = Brand.builder().brandName("브랜드" + brandId).build();
             setId(brand, brandId);
@@ -127,37 +144,9 @@ class UserServiceTest {
         assertEquals("asdsad2.png", user.getProfileImage());
         assertEquals("nick2", user.getNickname());
         assertEquals(Grade.VIP, user.getGrade());
-        assertEquals(marker2, user.getMarker());
 
         Mockito.verify(recommendationRepository).deleteByUserAndDataType(user, DataType.INTEREST);
         Mockito.verify(recommendationRepository, Mockito.times(3)).save(Mockito.any());
-    }
-
-    @DisplayName("개인정보 수정 - 존재하지 않는 마커 ID로 실패")
-    @Test
-    void updateUserInfoFail_InvalidMarker() {
-        // given
-        User user = createUser();
-        setId(user, 1L);
-        Long invalidMarkerId = 999L;
-
-        UpdateUserReq request = new UpdateUserReq(
-                null,
-                null,
-                null,
-                null,
-                invalidMarkerId
-        );
-
-        // mock
-        when(markerRepository.findById(invalidMarkerId)).thenReturn(Optional.empty());
-
-        // when & then
-        GlobalException exception = assertThrows(GlobalException.class, () -> {
-            userService.updateUserInfo(user, request);
-        });
-
-        assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
     }
 
     @DisplayName("개인정보 수정 - 존재하지 않는 브랜드 ID로 실패")
@@ -197,10 +186,10 @@ class UserServiceTest {
         BookmarkList bookmarkList = createBookmarkList(user);
         setId(bookmarkList, 10L);
 
-        Brand brand = createBrand();
+        Brand brand = createBrand("브랜드A", "logo.png");
         setId(brand, 20L);
 
-        Store store = createStore(brand);
+        Store store = createStore(brand, "스토어A", "서울시 마포구");
         setId(store, 30L);
 
         Bookmark bookmark = createBookmark(bookmarkList, store);
@@ -237,10 +226,10 @@ class UserServiceTest {
         BookmarkList bookmarkList = createBookmarkList(user);
         setId(bookmarkList, 10L);
 
-        Brand brand = createBrand();
+        Brand brand = createBrand("브랜드A", "logo.png");
         setId(brand, 20L);
 
-        Store store = createStore(brand);
+        Store store = createStore(brand, "매장 A", "경기도 고양시");
         setId(store, 30L);
 
         Bookmark bookmark = createBookmark(bookmarkList, store);
@@ -269,10 +258,10 @@ class UserServiceTest {
         BookmarkList bookmarkList = createBookmarkList(owner);
         setId(bookmarkList, 10L);
 
-        Brand brand = createBrand();
+        Brand brand = createBrand("브랜드A", "logo.png");
         setId(brand, 20L);
 
-        Store store = createStore(brand);
+        Store store = createStore(brand, "매장A", "경기도 고양시");
         setId(store, 30L);
 
         Bookmark bookmark = createBookmark(bookmarkList, store);
@@ -309,22 +298,93 @@ class UserServiceTest {
         verify(bookmarkRepository, never()).delete(any());
     }
 
+    @DisplayName("사용자 활동 내역 조회")
+    @Test
+    void findUserStatistics() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+
+        Integer discountMoney = 12345;
+
+        // 가장 많이 조회한 브랜드
+        Brand brand1 = createBrand("브랜드A", "logo1.png");
+        Brand brand2 = createBrand("브랜드B", "logo2.png");
+        Brand brand3 = createBrand("브랜드C", "logo3.png");
+        Brand brand4 = createBrand("브랜드D", "logo4.png");
+        setId(brand1, 1L);
+        setId(brand2, 2L);
+        setId(brand3, 3L);
+        setId(brand4, 4L);
+
+        List<Brand> topBrands = List.of(brand2, brand4, brand1);
+
+        // 가장 최근 방문 매장
+        Store store1 = createStore(brand1, "스토어1", "서울시 강남구");
+        Store store2 = createStore(brand2, "스토어2", "서울시 마포구");
+        Store store3 = createStore(brand3, "스토어3", "서울시 종로구");
+        setId(store1, 11L);
+        setId(store2, 12L);
+        setId(store3, 13L);
+
+        List<Store> recentStores = List.of(store1, store2, store3);
+
+        // mock
+        when(historyRepository.findDiscountMoneyThisMonth(user)).thenReturn(discountMoney);
+        when(actionLogsRepository.findTop3ClickedBrands(user)).thenReturn(topBrands);
+        when(historyRepository.findRecentStoreInMonth(user)).thenReturn(recentStores);
+
+        // when
+        UserStatisticsRes result = userService.findUserStatistics(user);
+
+        // then
+        assertEquals(discountMoney, result.discountMoney());
+
+        // 가장 많이 조회한 브랜드
+        assertEquals(3, result.bestBrandList().size());
+
+        assertEquals(2, result.bestBrandList().get(0).bestBrandId());
+        assertEquals("브랜드B", result.bestBrandList().get(0).bestBrandName());
+        assertEquals("logo2.png", result.bestBrandList().get(0).bestBrandImage());
+
+        assertEquals(4, result.bestBrandList().get(1).bestBrandId());
+        assertEquals("브랜드D", result.bestBrandList().get(1).bestBrandName());
+        assertEquals("logo4.png", result.bestBrandList().get(1).bestBrandImage());
+
+        assertEquals(1, result.bestBrandList().get(2).bestBrandId());
+        assertEquals("브랜드A", result.bestBrandList().get(2).bestBrandName());
+        assertEquals("logo1.png", result.bestBrandList().get(2).bestBrandImage());
+
+        // 가장 최근 방문 매장
+        assertEquals(3, result.recentStoreList().size());
+
+        assertEquals(11L, result.recentStoreList().get(0).recentStoreId());
+        assertEquals("스토어1", result.recentStoreList().get(0).recentStoreName());
+        assertEquals("logo1.png", result.recentStoreList().get(0).recentBrandImage());
+
+        assertEquals(12L, result.recentStoreList().get(1).recentStoreId());
+        assertEquals("스토어2", result.recentStoreList().get(1).recentStoreName());
+        assertEquals("logo2.png", result.recentStoreList().get(1).recentBrandImage());
+
+        assertEquals(13L, result.recentStoreList().get(2).recentStoreId());
+        assertEquals("스토어3", result.recentStoreList().get(2).recentStoreName());
+        assertEquals("logo3.png", result.recentStoreList().get(2).recentBrandImage());
+    }
+
     private User createUser() {
-        Marker marker = Marker.builder().markerImage("marker.jpg").build();
-        setId(marker, 1L);
+        Long markerId = 1L;
 
         User user = User.builder()
                 .userName("홍길동")
                 .kakaoId(456465L)
                 .email("asdad@kakao.com")
-                .age((byte) 32)
+                .age((Integer) 32)
                 .gender(Gender.MALE)
                 .role(UserRole.TMP_USER)
                 .status(Status.ACTIVE)
                 .grade(Grade.GOOD)
                 .profileImage("asdsad.png")
                 .nickname("nick")
-                .marker(marker)
                 .build();
 
         return user;
@@ -336,7 +396,7 @@ class UserServiceTest {
                 .build();
     }
 
-    private Brand createBrand() {
+    private Brand createBrand(String name, String image) {
         Category category = Category.builder()
                 .categoryName("카테고리A")
                 .build();
@@ -349,8 +409,8 @@ class UserServiceTest {
 
         Brand brand = Brand.builder()
                 .category(category)
-                .brandName("브랜드A")
-                .logoImage("logo.png")
+                .brandName(name)
+                .logoImage(image)
                 .usageMethod("모바일 바코드 제시")
                 .usageLimit("1일 1회")
                 .storeType(StoreType.OFFLINE)
@@ -359,10 +419,18 @@ class UserServiceTest {
         return brand;
     }
 
-    private Store createStore(Brand brand) {
+    private RecommendationBaseData createRecommendationBaseData(User user, Brand brand1) {
+        return RecommendationBaseData.builder()
+                .user(user)
+                .brand(brand1)
+                .dataType(DataType.INTEREST)
+                .build();
+    }
+
+    private Store createStore(Brand brand, String name, String address) {
         Store store = Store.builder()
-                .name("스토어A")
-                .addrDetail("서울시 마포구")
+                .name(name)
+                .addrDetail(address)
                 .geom(null)  // 필요시 값 넣어두기
                 .brand(brand)
                 .build();
@@ -395,5 +463,70 @@ class UserServiceTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    @DisplayName("사용자 액션 로그 저장 - storeId가 있을 경우 로그 저장")
+    void save_whenStoreIdExists() {
+        // given
+        User user = createUser();
+        setId(user, 1L);
+        ActionLogsReq req = new ActionLogsReq(ActionType.MARKER_CLICK, 10L, null);
+
+        // when
+        SaveUserInfoRes res = userService.saveActionLogs(user, req);
+
+        // then
+        ArgumentCaptor<ActionLogs> captor = ArgumentCaptor.forClass(ActionLogs.class);
+        verify(actionLogsRepository).save(captor.capture());
+
+        ActionLogs saved = captor.getValue();
+        assertEquals(1L, saved.getUser().getId());
+        assertEquals(10L, saved.getStoreId());
+        assertNull(saved.getCategoryId());
+        assertEquals(ActionType.MARKER_CLICK, saved.getActionType());
+
+        assertEquals(1L, res.userId());
+    }
+
+    @Test
+    @DisplayName("categoryId가 있을 경우 로그 저장")
+    void save_whenCategoryIdExists() {
+        // given
+        User user = createUser();
+        setId(user, 2L);
+        ActionLogsReq req = new ActionLogsReq(ActionType.FILTER_USED, null, 5L);
+
+        // when
+        SaveUserInfoRes res = userService.saveActionLogs(user, req);
+
+        // then
+        ArgumentCaptor<ActionLogs> captor = ArgumentCaptor.forClass(ActionLogs.class);
+        verify(actionLogsRepository).save(captor.capture());
+
+        ActionLogs saved = captor.getValue();
+        assertEquals(2L, saved.getUser().getId());
+        assertEquals(5L, saved.getCategoryId());
+        assertNull(saved.getStoreId());
+        assertEquals(ActionType.FILTER_USED, saved.getActionType());
+
+        assertEquals(2L, res.userId());
+    }
+
+    @Test
+    @DisplayName("storeId와 categoryId가 모두 null이면 예외 발생")
+    void throwException_whenBothNull() {
+        // given
+        User user = createUser();
+        setId(user, 3L);
+        ActionLogsReq req = new ActionLogsReq(null, null, null);
+
+        // when & then
+        GlobalException exception = assertThrows(GlobalException.class, () -> {
+            userService.saveActionLogs(user, req);
+        });
+
+        assertEquals(ResultCode.INVALID_INPUT, exception.getResultCode());
+        verify(actionLogsRepository, never()).save(any());
     }
 }
