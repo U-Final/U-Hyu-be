@@ -111,7 +111,7 @@ https://www.u-hyu.site/
 
 ## 기술스택
 
-<img width="755" height="703" alt="Image" src="https://github.com/user-attachments/assets/821c2e99-a95a-4276-a05e-201e0254d80f" />
+<img width="1256" height="1408" alt="image" src="https://github.com/user-attachments/assets/1bdf5490-8f6d-4105-9e2e-95e136a80636" />
 
 ---
 
@@ -125,7 +125,7 @@ https://www.u-hyu.site/
 | 배포 | Docker, GitHub Actions (CI/CD) |
 | 인증 | Kakao OAuth2 + Spring Security + JWT |
 
-<img width="923" height="572" alt="Image" src="https://github.com/user-attachments/assets/ea9f1110-ac7f-4016-95ca-62aaac0576bc" />
+<img width="891" height="551" alt="image" src="https://github.com/user-attachments/assets/d8e93731-92a6-4de9-b986-a113497ea794" />
 
 ---
 
