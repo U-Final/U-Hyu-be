@@ -109,17 +109,13 @@ https://www.u-hyu.site/
 
 ---
 
-## 기술스택
+## 🔧 기술스택
 
 <img width="1256" height="1408" alt="image" src="https://github.com/user-attachments/assets/1bdf5490-8f6d-4105-9e2e-95e136a80636" />
 
----
+<br>
 
-## 아키텍쳐
-
-### ☁️ 인프라 구성
-
-#### 🔧 기술 스택 정리
+### 기술 스택 정리
 
 | 항목         | 기술                                                                 |
 |--------------|----------------------------------------------------------------------|
@@ -130,7 +126,9 @@ https://www.u-hyu.site/
 | **추천 엔진**  | Python + LightFM                                                    |
 | **프론트엔드** | Vercel (GitHub 연동 자동 배포)                                       |
 
-<br>
+---
+
+## 아키텍쳐
 
 <img width="891" height="551" alt="image" src="https://github.com/user-attachments/assets/d8e93731-92a6-4de9-b986-a113497ea794" />
 
