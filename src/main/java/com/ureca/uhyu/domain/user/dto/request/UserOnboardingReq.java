@@ -11,22 +11,13 @@ import java.util.List;
 @Schema(description = "신규 사용자 온보딩 정보 요청 DTO")
 public record UserOnboardingReq(
 
-//        @Schema(
-//                description = "사용자 이름",
-//                example = "NAME",
-//                allowableValues = "String",
-//                requiredMode = Schema.RequiredMode.REQUIRED
-//        )
-//        @NotNull(message = "이름은 필수입니다.")
-//        String userName,
-
         @Schema(
                 description = "사용자 나이",
                 example = "26",
                 allowableValues = "Integer",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotNull(message = "성별은 필수입니다.")
+        @NotNull(message = "나이는 필수입니다.")
         Integer age,
 
         @Schema(
