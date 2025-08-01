@@ -246,7 +246,6 @@ public interface MapControllerDocs {
     public CommonResponse<List<MapRes>> getRecommendedStores(
             @RequestParam Double lat,
             @RequestParam Double lon,
-            @RequestParam Double radius,
             @CurrentUser User user
     );
 }

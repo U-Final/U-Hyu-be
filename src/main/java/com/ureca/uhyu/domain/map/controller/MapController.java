@@ -62,9 +62,8 @@ public class MapController implements MapControllerDocs{
     public CommonResponse<List<MapRes>> getRecommendedStores(
             @RequestParam Double lat,
             @RequestParam Double lon,
-            @RequestParam Double radius,
             @CurrentUser User user
     ) {
-        return CommonResponse.success(mapService.findRecommendedStores(lat, lon, radius, user));
+        return CommonResponse.success(mapService.findRecommendedStores(lat, lon, user));
     }
 }

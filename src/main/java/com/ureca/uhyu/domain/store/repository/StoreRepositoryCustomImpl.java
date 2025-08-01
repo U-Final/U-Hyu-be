@@ -3,6 +3,7 @@ package com.ureca.uhyu.domain.store.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.uhyu.domain.brand.entity.QBenefit;
@@ -13,6 +14,7 @@ import com.ureca.uhyu.domain.store.entity.Store;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -65,19 +67,31 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
     }
 
     @Override
-    public List<Store> findStoresByBrandAndRadius(Double lat, Double lon, Double radius, List<Long> brandIds) {
-        if (brandIds == null || brandIds.isEmpty()) return List.of();
+    public List<Store> findNearestStores(Double lat, Double lon, List<Long> brandIds) {
+        if (brandIds == null || brandIds.isEmpty()) {
+            return List.of();
+        }
 
-        BooleanBuilder builder = new BooleanBuilder();
+        NumberTemplate<Double> distanceExpr = Expressions.numberTemplate(Double.class,
+                "ST_Distance(ST_Transform({0}, 3857), ST_Transform(ST_SetSRID(ST_MakePoint({1}, {2}), 4326), 3857))",
+                store.geom, lon, lat
+        );
 
-        // 위치 필터
-        builder.and(withinRadius(lat, lon, radius));
+        List<Store> result = new ArrayList<>();
 
-        // 추천 브랜드 필터
-        builder.and(brand.id.in(brandIds));
+        for (Long brandId : brandIds) {
+            Store nearest = queryFactory
+                    .selectFrom(store)
+                    .where(store.brand.id.eq(brandId))
+                    .orderBy(distanceExpr.asc())
+                    .limit(1)
+                    .fetchOne();
 
-        return baseStoreQuery()
-                .where(builder)
-                .fetch();
+            if (nearest != null) {
+                result.add(nearest);
+            }
+        }
+
+        return result;
     }
 }

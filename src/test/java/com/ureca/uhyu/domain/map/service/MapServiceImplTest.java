@@ -187,11 +187,11 @@ class MapServiceImplTest {
         // mock
         when(recommendationRepository.findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId()))
                 .thenReturn(recommendations);
-        when(storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, List.of(10L, 11L)))
+        when(storeRepositoryCustom.findNearestStores(lat, lon, List.of(10L, 11L)))
                 .thenReturn(stores);
 
         // when
-        List<MapRes> result = mapService.findRecommendedStores(lat, lon, radius, user);
+        List<MapRes> result = mapService.findRecommendedStores(lat, lon, user);
 
         // then
         assertEquals(2, result.size());
@@ -199,7 +199,7 @@ class MapServiceImplTest {
         assertEquals("스토어B", result.get(1).storeName());
 
         verify(recommendationRepository).findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId());
-        verify(storeRepositoryCustom).findStoresByBrandAndRadius(lat, lon, radius, List.of(10L, 11L));
+        verify(storeRepositoryCustom).findNearestStores(lat, lon, List.of(10L, 11L));
     }
 
     @DisplayName("근처 추천 매장 목록 조회 - 브랜드가 null일 경우 예외 발생")
@@ -224,7 +224,7 @@ class MapServiceImplTest {
 
         // when & then
         GlobalException ex = assertThrows(GlobalException.class, () ->
-                mapService.findRecommendedStores(lat, lon, radius, user)
+                mapService.findRecommendedStores(lat, lon, user)
         );
 
         assertEquals(ResultCode.BRAND_ID_IS_NULL, ex.getResultCode());
