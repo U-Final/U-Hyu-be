@@ -50,7 +50,7 @@ public class MapServiceImpl implements MapService {
 
         return bookmarks.stream()
                 .map(Bookmark::getStore)
-                .map(MapRes::from)
+                .map(store -> MapRes.from(store, user))
                 .toList();
     }
 
@@ -127,7 +127,7 @@ public class MapServiceImpl implements MapService {
         List<Store> stores = storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, brandIds);
 
         return stores.stream()
-                .map(MapRes::from)
+                .map(store -> MapRes.from(store,user))
                 .toList();
     }
 }
