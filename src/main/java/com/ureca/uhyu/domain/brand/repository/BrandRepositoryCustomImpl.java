@@ -2,7 +2,7 @@ package com.ureca.uhyu.domain.brand.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ureca.uhyu.domain.brand.dto.response.BrandPageResult;
+import com.ureca.uhyu.domain.brand.dto.BrandPageResult;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.QBenefit;
 import com.ureca.uhyu.domain.brand.entity.QBrand;
