@@ -1,5 +1,8 @@
 package com.ureca.uhyu.domain.brand.service;
 
+import com.ureca.uhyu.domain.admin.dto.response.AdminBrandListRes;
+import com.ureca.uhyu.domain.admin.dto.response.AdminBrandRes;
+import com.ureca.uhyu.domain.brand.dto.BrandPageResult;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.response.*;
@@ -41,6 +44,23 @@ public class BrandService {
         boolean hasNext = page + 1 < totalPages;
 
         return BrandListRes.from(brandList, hasNext, totalPages, page);
+    }
+
+    public AdminBrandListRes findBrandsForAdmin(String category, List<String> storeType, List<String> benefitType,
+                                                String brandName, int page, int size) {
+        BrandPageResult result = brandRepository.findByCategoryOrNameOrTypes(
+                category, storeType, benefitType, brandName, page, size
+        );
+
+        List<AdminBrandRes> brandList = result.brandList().stream()
+                .map(AdminBrandRes::from)
+                .toList();
+
+        long totalCount = result.totalCount();
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+        boolean hasNext = page + 1 < totalPages;
+
+        return AdminBrandListRes.from(brandList, hasNext, totalPages, page);
     }
 
     public BrandInfoRes findBrandInfo(Long brandId) {
