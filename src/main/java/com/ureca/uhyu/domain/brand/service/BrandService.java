@@ -1,7 +1,7 @@
 package com.ureca.uhyu.domain.brand.service;
 
 import com.ureca.uhyu.domain.admin.dto.response.AdminBrandListRes;
-import com.ureca.uhyu.domain.admin.dto.response.ReadBrandRes;
+import com.ureca.uhyu.domain.admin.dto.response.AdminBrandRes;
 import com.ureca.uhyu.domain.brand.dto.BrandPageResult;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
 import com.ureca.uhyu.domain.brand.dto.request.UpdateBrandReq;
@@ -52,8 +52,8 @@ public class BrandService {
                 category, storeType, benefitType, brandName, page, size
         );
 
-        List<ReadBrandRes> brandList = result.brandList().stream()
-                .map(ReadBrandRes::from)
+        List<AdminBrandRes> brandList = result.brandList().stream()
+                .map(AdminBrandRes::from)
                 .toList();
 
         long totalCount = result.totalCount();

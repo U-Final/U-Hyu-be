@@ -1,6 +1,5 @@
 package com.ureca.uhyu.domain.admin.controller;
 
-import com.ureca.uhyu.domain.admin.dto.response.ReadBrandRes;
 import com.ureca.uhyu.domain.admin.dto.response.*;
 import com.ureca.uhyu.domain.admin.service.AdminService;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;

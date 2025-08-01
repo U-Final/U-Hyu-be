@@ -6,7 +6,7 @@ import com.ureca.uhyu.domain.brand.enums.StoreType;
 
 import java.util.List;
 
-public record ReadBrandRes (
+public record AdminBrandRes(
         String brandName,
         String brandImg,
         List<BenefitDto> data,
@@ -15,9 +15,9 @@ public record ReadBrandRes (
         String usageMethod,
         StoreType storeType
 ){
-    public static ReadBrandRes from(Brand brand
+    public static AdminBrandRes from(Brand brand
     ) {
-        return new ReadBrandRes(
+        return new AdminBrandRes(
                 brand.getBrandName(),
                 brand.getLogoImage(),
                 brand.getBenefits().stream().map(BenefitDto::from).toList(),
