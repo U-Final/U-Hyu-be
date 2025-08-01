@@ -34,6 +34,13 @@ public class MapController implements MapControllerDocs{
         return CommonResponse.success(ResultCode.SUCCESS, mapService.getFilteredStores(lat, lon, radius, category, brand));
     }
 
+    @GetMapping("/stores/bookmark")
+    public CommonResponse<List<MapRes>> GetBookmarkedStores(
+            @CurrentUser User user
+    ){
+        return CommonResponse.success(ResultCode.SUCCESS, mapService.getBookmarkedStores(user));
+    }
+
     @GetMapping("/detail/stores/{storeId}")
     public CommonResponse<StoreDetailRes> getStoreDetail(
             @PathVariable Long storeId,

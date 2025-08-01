@@ -3,7 +3,10 @@ package com.ureca.uhyu.domain.map.dto.response;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.user.entity.User;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
 
 @Schema(description = "지도 제휴매장 정보 응답 DTO")
 public record MapRes(
@@ -34,12 +37,16 @@ public record MapRes(
         @Schema(description = "경도")
         Double longitude
 ) {
-        public static MapRes from(Store store) {
+        public static MapRes from(Store store){
+                return from(store,null);
+        }
+
+        public static MapRes from(Store store, @Nullable User user) {
                 Brand brand = store.getBrand();
                 Category category = brand.getCategory();
 
-                // TODO : 헤택(Benefit) 회원 등급별로 표시되는건지 확인 후 로직 수정
-                String benefit = null;
+                Grade grade = (user != null) ? user.getGrade() : Grade.GOOD;
+                String benefit = brand.getBenefitDescriptionByGradeOrDefault(grade);
 
                 return new MapRes(
                         store.getId(),
