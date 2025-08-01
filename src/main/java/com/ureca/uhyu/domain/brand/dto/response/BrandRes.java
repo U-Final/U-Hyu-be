@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,9 +22,10 @@ public record BrandRes (
         @Schema(description = "브랜드 설명 (등급별 혜택 정보 포함)", example = "VVIP : 학생 할인 15%, VIP : 학생 할인 10%, 우수 : 기본 할인 5%")
         String description
 ){
-    public static BrandRes from(Brand brand){
+    public static BrandRes from(Brand brand) {
         List<BenefitRes> benefitRes = brand.getBenefits().stream()
                 .map(BenefitRes::from)
+                .sorted(Comparator.comparingInt(b -> gradePriority(b.grade())))
                 .toList();
 
         String description = benefitRes.stream()
@@ -39,5 +41,14 @@ public record BrandRes (
                 brand.getLogoImage(),
                 description
         );
+    }
+
+    private static int gradePriority(Grade grade) {
+        return switch (grade) {
+            case VVIP -> 0;
+            case VIP -> 1;
+            case GOOD -> 2;
+            default -> 99; // 예외 상황을 대비한 기본값
+        };
     }
 }
