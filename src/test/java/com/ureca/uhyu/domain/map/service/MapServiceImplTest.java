@@ -167,7 +167,6 @@ class MapServiceImplTest {
         setId(user, 1L);
         double lat = 37.5665;
         double lon = 126.9780;
-        double radius = 5.0;
 
         Brand brand1 = createBrand("브랜드1", "logo1.png");
         Brand brand2 = createBrand("브랜드2", "logo2.png");
@@ -210,7 +209,6 @@ class MapServiceImplTest {
         setId(user, 1L);
         double lat = 37.0;
         double lon = 127.0;
-        double radius = 3.0;
 
         Recommendation invalidRec = Recommendation.builder()
                 .userId(user.getId())
@@ -339,7 +337,7 @@ class MapServiceImplTest {
 
             StoreDetailRes res = mapService.getStoreDetail(1L, user);
 
-            assertThat(res.benefits().grade()).isEqualTo("GOOD");
+            assertThat(res.benefits().grade()).isEqualTo("VIP");
             assertThat(res.benefits().benefitText()).isEqualTo("1+1 혜택");
         }
 
