@@ -64,6 +64,7 @@ public enum ResultCode {
     BRAND_NOT_FOUND(HttpStatus.NOT_FOUND, 5001, "제휴처 정보를 찾을 수 없습니다."),
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 5002, "카테고리 정보를 찾을 수 없습니다."),
     RECOMMENDATION_IS_NULL(HttpStatus.NOT_FOUND, 5003, "추천할 브랜드 정보가 없습니다"),
+    GRADE_GOOD_NOT_FOUND(HttpStatus.NOT_FOUND,5004,"우수 회원의 혜택 정보가 없습니다."),
 
     /**
      * 6000번대 (어드민 관련)

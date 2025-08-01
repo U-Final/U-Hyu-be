@@ -4,6 +4,8 @@ import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.global.entity.BaseEntity;
+import com.ureca.uhyu.global.exception.GlobalException;
+import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -55,12 +57,10 @@ public class Brand extends BaseEntity {
         return this.benefits.stream()
                 .filter(b -> b.getGrade() == grade)
                 .findFirst()
-                .orElseGet(() ->
-                        this.benefits.stream()
-                                .filter(b -> b.getGrade() == Grade.GOOD)
-                                .findFirst()
-                                .get()
-                )
-                .getDescription();
+                .or(() -> this.benefits.stream()
+                        .filter(b -> b.getGrade() == Grade.GOOD)
+                        .findFirst())
+                .map(Benefit::getDescription)
+                .orElseThrow(() -> new GlobalException(ResultCode.GRADE_GOOD_NOT_FOUND));
     }
 }
