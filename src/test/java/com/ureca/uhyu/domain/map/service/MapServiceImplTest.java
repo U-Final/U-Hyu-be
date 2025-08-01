@@ -3,6 +3,7 @@ package com.ureca.uhyu.domain.map.service;
 import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
+import com.ureca.uhyu.domain.brand.enums.BenefitType;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
@@ -71,10 +72,29 @@ class MapServiceImplTest {
             .categoryName("카페")
             .build();
 
+    private final Benefit benefit1 = Benefit.builder()
+            .description("50원 할인")
+            .grade(Grade.GOOD)
+            .benefitType(BenefitType.DISCOUNT)
+            .build();
+
+    private final Benefit benefit2 = Benefit.builder()
+            .description("100원 할인")
+            .grade(Grade.VIP)
+            .benefitType(BenefitType.DISCOUNT)
+            .build();
+
+    private final Benefit benefit3 = Benefit.builder()
+            .description("150원 할인")
+            .grade(Grade.VVIP)
+            .benefitType(BenefitType.DISCOUNT)
+            .build();
+
     private final Brand brand = Brand.builder()
             .brandName("이디야")
             .category(category)
             .logoImage("logo.jpg")
+            .benefits(List.of(benefit1, benefit2, benefit3))
             .usageLimit("1일 1회")
             .usageMethod("매장 제시")
             .build();
@@ -112,11 +132,6 @@ class MapServiceImplTest {
                 .build();
         setId(category, 1L);
 
-        Benefit benefit = Benefit.builder()
-                .description("혜택1")
-                .build();
-        setId(benefit, 2L);
-
         Brand brand = Brand.builder()
                 .category(category)
                 .brandName(name)
@@ -124,7 +139,7 @@ class MapServiceImplTest {
                 .usageMethod("모바일 바코드 제시")
                 .usageLimit("1일 1회")
                 .storeType(StoreType.OFFLINE)
-                .benefits(List.of(benefit))
+                .benefits(List.of(benefit1, benefit2, benefit3))
                 .build();
         return brand;
     }
@@ -342,16 +357,17 @@ class MapServiceImplTest {
         }
 
         @Test
-        void shouldReturnNullIfNoBenefitExists() {
+        void shouldThrowExceptionIfNoBenefitExists() {
+            // given
             User user = mock(User.class);
             when(user.getGrade()).thenReturn(Grade.VIP);
 
-            brand.setBenefits(List.of());
+            brand.setBenefits(List.of()); // 빈 리스트 설정
             when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
+            when(user.getGrade()).thenReturn(Grade.VIP);
 
-            StoreDetailRes res = mapService.getStoreDetail(1L, user);
-
-            assertThat(res.benefits()).isNull();
+            // when & then
+            assertThrows(GlobalException.class, () -> mapService.getStoreDetail(1L, user));
         }
 
         @Test
