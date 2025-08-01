@@ -73,7 +73,7 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
         }
 
         NumberTemplate<Double> distanceExpr = Expressions.numberTemplate(Double.class,
-                "ST_Distance(ST_Transform({0}, 3857), ST_Transform(ST_SetSRID(ST_MakePoint({1}, {2}), 4326), 3857))",
+                "ST_DistanceSphere({0}, ST_SetSRID(ST_MakePoint({1}, {2}), 4326))",
                 store.geom, lon, lat
         );
 
