@@ -6,6 +6,7 @@ import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -72,11 +73,12 @@ public class User extends BaseEntity {
         this.grade = grade;
     }
 
-    public void setUserGrade(Grade grade) {
+    public void updateUserInfo(Integer age, Gender gender, String ageRange, Grade grade, UserRole role) {
+        this.age = age;
+        this.gender = gender;
+        this.age_range = ageRange;
         this.grade = grade;
-    }
-
-    public void setUserRole(UserRole role) {
         this.role = role;
+        this.updatedAt = LocalDateTime.now(); // update timestamp
     }
 }

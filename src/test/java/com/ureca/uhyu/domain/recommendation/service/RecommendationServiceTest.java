@@ -61,7 +61,7 @@ class RecommendationServiceTest {
             guestService.getTop3PopularBrandsForGuest();
         });
 
-        assertEquals(ResultCode.RECOMMENDATION_IS_NULL, exception.getResultCode());
+        assertEquals(ResultCode.NOT_FOUND_RECOMMENDATION_FOR_USER, exception.getResultCode());
     }
 
     private Brand createBrand(String name, String logoImage) {

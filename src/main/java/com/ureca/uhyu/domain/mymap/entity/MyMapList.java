@@ -6,6 +6,8 @@ import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "my_map_list")
 @Getter
@@ -23,6 +25,9 @@ public class MyMapList extends BaseEntity {
 
     @Column(name = "uuid", nullable = false, unique = true)
     private String uuid;
+
+    @OneToMany(mappedBy = "myMapList", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MyMap> myMaps;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

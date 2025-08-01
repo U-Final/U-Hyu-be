@@ -1,6 +1,5 @@
 package com.ureca.uhyu.domain.map.service;
 
-import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
@@ -43,6 +42,19 @@ public class MapServiceImpl implements MapService {
     }
 
     @Override
+    public List<MapRes> getBookmarkedStores(User user) {
+        BookmarkList bookmarkList = bookmarkListRepository.findByUser(user)
+                .orElseThrow(() -> new GlobalException(ResultCode.BOOKMARK_LIST_NOT_FOUND));
+
+        List<Bookmark> bookmarks = bookmarkRepository.findByBookmarkList(bookmarkList);
+
+        return bookmarks.stream()
+                .map(Bookmark::getStore)
+                .map(store -> MapRes.from(store, user))
+                .toList();
+    }
+
+    @Override
     public StoreDetailRes getStoreDetail(Long storeId, User user) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_STORE));
@@ -50,27 +62,13 @@ public class MapServiceImpl implements MapService {
         Brand brand = store.getBrand();
         Grade userGrade = user.getGrade();
 
-        // 등급별 혜택 조회
-        Optional<Benefit> matchingBenefit = brand.getBenefits().stream()
-                .filter(b -> b.getGrade() == userGrade)
-                .findFirst();
+        String benefitDescription = brand.getBenefitDescriptionByGradeOrDefault(userGrade);
 
-        Benefit selected = matchingBenefit.orElseGet(() ->
-                brand.getBenefits().stream()
-                        .filter(b -> b.getGrade() == Grade.GOOD)
-                        .findFirst()
-                        .orElse(null)
+        StoreDetailRes.BenefitDetail benefitDetail = new StoreDetailRes.BenefitDetail(
+                userGrade.name(),
+                benefitDescription
         );
 
-        StoreDetailRes.BenefitDetail benefitDetail = null;
-        if (selected != null) {
-            benefitDetail = new StoreDetailRes.BenefitDetail(
-                    selected.getGrade().name(),
-                    selected.getDescription()
-            );
-        }
-
-        // 🔽 즐겨찾기 관련 정보 조회
         boolean isFavorite = bookmarkRepository.existsByBookmarkListUserAndStore(user, store);
         int favoriteCount = bookmarkRepository.countByStore(store);
 
@@ -129,7 +127,7 @@ public class MapServiceImpl implements MapService {
         List<Store> stores = storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, brandIds);
 
         return stores.stream()
-                .map(MapRes::from)
+                .map(store -> MapRes.from(store,user))
                 .toList();
     }
 }

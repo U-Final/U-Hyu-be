@@ -1,13 +1,10 @@
 package com.ureca.uhyu.domain.user.repository.bookmark;
 
 
-import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsBookmarkRes;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 public interface BookmarkRepositoryCustom {
-    Set<UserBrandPair> findUserBrandSaves();
-    Map<Long, Tuple> findBrandToCategoryMap();
+    public List<StatisticsBookmarkRes> findStatisticsBookmarkByCategoryAndBrand();
 }
