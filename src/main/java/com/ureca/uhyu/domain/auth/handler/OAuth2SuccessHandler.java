@@ -83,7 +83,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // 사용자 역할에 따른 리다이렉트 경로 결정
         String finalRedirectUrl = userRole== UserRole.TMP_USER
                 ? frontBaseUrl + "/user/extra-info"
-                : frontBaseUrl;
+                : frontBaseUrl + "/auth/success";
 
         log.debug("Final redirect URL: '{}'", finalRedirectUrl);
         return finalRedirectUrl;
