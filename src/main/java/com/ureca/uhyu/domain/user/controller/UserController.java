@@ -30,7 +30,7 @@ public class UserController implements UserControllerDocs {
     private final UserService userService;
     private final TokenService tokenService;
 
-    @PostMapping("/extra-info")
+    @PostMapping("/onboarding")
     public CommonResponse<ResultCode> onboarding(
             @Valid @RequestBody UserOnboardingReq request,
             HttpServletResponse response,
