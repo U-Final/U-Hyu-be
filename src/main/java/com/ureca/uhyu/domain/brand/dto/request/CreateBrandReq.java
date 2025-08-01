@@ -12,6 +12,7 @@ public record CreateBrandReq(
         String brandName,
         String brandImg,
         List<BenefitDto> data,
+        @NotNull(message = "카테고리 지정은 필수입니다.")
         Long categoryId,
         String usageLimit,
         String usageMethod,

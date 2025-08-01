@@ -33,7 +33,7 @@ public class AdminController {
     private final CategoryService categoryService;
     private final AdminService adminService;
 
-    @Operation(summary = "관리자 제휴 브랜드 목록 조회", description = "관리자 제휴 브랜드 목록 조화 기능")
+    @Operation(summary = "관리자 제휴 브랜드 목록 조회", description = "관리자 제휴 브랜드 목록 조회 기능")
     @GetMapping("/brand")
     public CommonResponse<AdminBrandListRes> getBrandList(
             @RequestParam(required = false) String category,
