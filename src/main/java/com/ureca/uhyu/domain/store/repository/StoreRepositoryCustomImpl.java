@@ -82,6 +82,9 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
         for (Long brandId : brandIds) {
             Store nearest = queryFactory
                     .selectFrom(store)
+                    .leftJoin(store.brand, brand).fetchJoin()
+                    .leftJoin(brand.category, category).fetchJoin()
+                    .leftJoin(brand.benefits, benefit).fetchJoin()
                     .where(store.brand.id.eq(brandId))
                     .orderBy(distanceExpr.asc())
                     .limit(1)
