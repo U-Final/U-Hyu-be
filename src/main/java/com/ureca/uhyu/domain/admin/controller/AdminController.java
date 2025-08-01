@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.admin.controller;
 
+import com.ureca.uhyu.domain.admin.dto.response.ReadBrandRes;
 import com.ureca.uhyu.domain.admin.dto.response.*;
 import com.ureca.uhyu.domain.admin.service.AdminService;
 import com.ureca.uhyu.domain.brand.dto.request.CreateBrandReq;
@@ -13,6 +14,8 @@ import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +32,18 @@ public class AdminController {
     private final BrandService brandService;
     private final CategoryService categoryService;
     private final AdminService adminService;
+
+    @Operation(summary = "관리자 제휴 브랜드 목록 조회", description = "관리자 제휴 브랜드 목록 조화 기능")
+    @GetMapping("/brand")
+    public CommonResponse<AdminBrandListRes> getBrandList(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) List<String> storeType,
+            @RequestParam(required = false) List<String> benefitType,
+            @RequestParam(required = false, name = "brand_name") String brandName,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
+        return CommonResponse.success(brandService.findBrandsForAdmin(category, storeType, benefitType, brandName, page, size));
+    }
 
     @Operation(summary = "관리자 제휴 브랜드 추가", description = "관리자 유저 제휴 브랜드 추가 기능")
     @PostMapping("/brand")

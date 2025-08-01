@@ -1,6 +1,6 @@
 package com.ureca.uhyu.domain.brand.repository;
 
-import com.ureca.uhyu.domain.brand.dto.response.BrandPageResult;
+import com.ureca.uhyu.domain.brand.dto.BrandPageResult;
 
 import java.util.List;
 
