@@ -77,7 +77,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/", "/login", "/oauth2/**",
                                 "/swagger-ui/**", "/v3/api-docs/**",
-                                "/brand-list/**",
+                                "/brand-list/**","/user/onboarding",
                                 "/map/stores","/actuator/prometheus","/metrics", "/guest/**"
                         ).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")

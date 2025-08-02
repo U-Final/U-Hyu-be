@@ -15,7 +15,8 @@ public enum PermitAllURI {
     BRAND_LIST("/brand-list"),
     PROMETHEUS("/actuator/prometheus"),
     PGEXPORTER("/metrics"),
-    MYMAP_GUEST("/mymap/guest");
+    MYMAP_GUEST("/mymap/guest"),
+    ONBOARDING("/user/onboarding");
 
     private final String uri;
 
