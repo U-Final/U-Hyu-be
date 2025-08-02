@@ -1,5 +1,6 @@
 package com.ureca.uhyu.domain.recommendation.repository;
 
+import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.user.entity.User;
@@ -11,4 +12,6 @@ public interface RecommendationBaseDataRepository extends JpaRepository<Recommen
     void deleteByUserAndDataType(User user, DataType dataType);
 
     List<RecommendationBaseData> findByUser(User user);
+
+    boolean existsByUserAndBrandAndDataType(User user, Brand brand, DataType dataType);
 }

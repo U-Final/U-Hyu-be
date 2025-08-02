@@ -47,9 +47,6 @@ jwt:
     secure: true
     same-site: Lax
 
-domain:
-  base-url: https://www.u-hyu.site
-
 logging:
   level:
     com.ureca.uhyu.domain.auth.jwt: debug
@@ -61,3 +58,6 @@ logging:
 server:
   tomcat:
     use-relative-redirects: true
+
+fastapi:
+  url: ${FASTAPI_RECOMMEND_HOST}
