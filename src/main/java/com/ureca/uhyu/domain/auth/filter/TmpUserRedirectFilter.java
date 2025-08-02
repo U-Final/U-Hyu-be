@@ -19,7 +19,8 @@ public class TmpUserRedirectFilter extends OncePerRequestFilter {
 
     private static final Set<String> ALLOWED_PATHS = Set.of(
             "/user/check-email",
-            "/user/onboarding"
+            "/user/onboarding",
+            "/user/extra-info"
     );
 
     @Override
