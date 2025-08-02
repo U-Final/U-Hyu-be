@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.Map;
 
 @Slf4j
@@ -17,15 +18,18 @@ public class FastApiRecommendationClient {
     public void requestRecomputeRecommendation(Long userId) {
         try {
             webClient.post()
-                    .uri("/re-recommendation") // FastAPI 엔드포인트에 맞게 수정
+                    .uri("/re-recommendation")
                     .bodyValue(Map.of("user_id", userId))
                     .retrieve()
                     .bodyToMono(Void.class)
-                    .block(); // 동기 호출
-
-            log.info("FastAPI 재추천 요청 성공 - userId: {}", userId);
+                    .timeout(Duration.ofSeconds(10)) // ⏱ 타임아웃 설정
+                    .retry(3)                         // 🔁 최대 3회 재시도
+                    .subscribe(
+                            unused -> log.info("FastAPI 재추천 요청 성공 - userId: {}", userId),
+                            error -> log.error("FastAPI 재추천 요청 실패 - userId: {}, message: {}", userId, error.getMessage())
+                    );
         } catch (Exception e) {
-            log.error("FastAPI 재추천 요청 실패 - userId: {}, message: {}", userId, e.getMessage());
+            log.error("FastAPI 재추천 요청 설정 자체 실패 - userId: {}, message: {}", userId, e.getMessage());
         }
     }
 }
