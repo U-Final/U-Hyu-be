@@ -48,10 +48,6 @@ jwt:
     secure: false
     same-site: Lax
 
-domain:
-  base-url: https://localhost:5173
-
-
 logging:
   level:
     com.ureca.uhyu.domain.auth.jwt: debug
@@ -61,4 +57,4 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: debug
 
 fastapi:
-  url: http://fastapi-server:8000  # 또는 EC2 고정 IP
+  url: ${FASTAPI_RECOMMEND_HOST}

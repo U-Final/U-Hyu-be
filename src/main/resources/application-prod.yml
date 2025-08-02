@@ -47,9 +47,6 @@ jwt:
     secure: true
     same-site: Lax
 
-domain:
-  base-url: https://www.u-hyu.site
-
 logging:
   level:
     com.ureca.uhyu.domain.auth.jwt: debug
@@ -63,4 +60,4 @@ server:
     use-relative-redirects: true
 
 fastapi:
-  url: http://fastapi-server:8000  # 또는 EC2 고정 IP
+  url: ${FASTAPI_RECOMMEND_HOST}
