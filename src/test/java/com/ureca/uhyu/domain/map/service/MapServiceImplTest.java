@@ -3,6 +3,7 @@ package com.ureca.uhyu.domain.map.service;
 import com.ureca.uhyu.domain.brand.entity.Benefit;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
+import com.ureca.uhyu.domain.brand.enums.BenefitType;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
@@ -71,10 +72,29 @@ class MapServiceImplTest {
             .categoryName("카페")
             .build();
 
+    private final Benefit benefit1 = Benefit.builder()
+            .description("50원 할인")
+            .grade(Grade.GOOD)
+            .benefitType(BenefitType.DISCOUNT)
+            .build();
+
+    private final Benefit benefit2 = Benefit.builder()
+            .description("100원 할인")
+            .grade(Grade.VIP)
+            .benefitType(BenefitType.DISCOUNT)
+            .build();
+
+    private final Benefit benefit3 = Benefit.builder()
+            .description("150원 할인")
+            .grade(Grade.VVIP)
+            .benefitType(BenefitType.DISCOUNT)
+            .build();
+
     private final Brand brand = Brand.builder()
             .brandName("이디야")
             .category(category)
             .logoImage("logo.jpg")
+            .benefits(List.of(benefit1, benefit2, benefit3))
             .usageLimit("1일 1회")
             .usageMethod("매장 제시")
             .build();
@@ -112,11 +132,6 @@ class MapServiceImplTest {
                 .build();
         setId(category, 1L);
 
-        Benefit benefit = Benefit.builder()
-                .description("혜택1")
-                .build();
-        setId(benefit, 2L);
-
         Brand brand = Brand.builder()
                 .category(category)
                 .brandName(name)
@@ -124,7 +139,7 @@ class MapServiceImplTest {
                 .usageMethod("모바일 바코드 제시")
                 .usageLimit("1일 1회")
                 .storeType(StoreType.OFFLINE)
-                .benefits(List.of(benefit))
+                .benefits(List.of(benefit1, benefit2, benefit3))
                 .build();
         return brand;
     }
@@ -167,7 +182,6 @@ class MapServiceImplTest {
         setId(user, 1L);
         double lat = 37.5665;
         double lon = 126.9780;
-        double radius = 5.0;
 
         Brand brand1 = createBrand("브랜드1", "logo1.png");
         Brand brand2 = createBrand("브랜드2", "logo2.png");
@@ -187,11 +201,11 @@ class MapServiceImplTest {
         // mock
         when(recommendationRepository.findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId()))
                 .thenReturn(recommendations);
-        when(storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, List.of(10L, 11L)))
+        when(storeRepositoryCustom.findNearestStores(lat, lon, List.of(10L, 11L)))
                 .thenReturn(stores);
 
         // when
-        List<MapRes> result = mapService.findRecommendedStores(lat, lon, radius, user);
+        List<MapRes> result = mapService.findRecommendedStores(lat, lon, user);
 
         // then
         assertEquals(2, result.size());
@@ -199,7 +213,7 @@ class MapServiceImplTest {
         assertEquals("스토어B", result.get(1).storeName());
 
         verify(recommendationRepository).findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId());
-        verify(storeRepositoryCustom).findStoresByBrandAndRadius(lat, lon, radius, List.of(10L, 11L));
+        verify(storeRepositoryCustom).findNearestStores(lat, lon, List.of(10L, 11L));
     }
 
     @DisplayName("근처 추천 매장 목록 조회 - 브랜드가 null일 경우 예외 발생")
@@ -210,7 +224,6 @@ class MapServiceImplTest {
         setId(user, 1L);
         double lat = 37.0;
         double lon = 127.0;
-        double radius = 3.0;
 
         Recommendation invalidRec = Recommendation.builder()
                 .userId(user.getId())
@@ -224,7 +237,7 @@ class MapServiceImplTest {
 
         // when & then
         GlobalException ex = assertThrows(GlobalException.class, () ->
-                mapService.findRecommendedStores(lat, lon, radius, user)
+                mapService.findRecommendedStores(lat, lon, user)
         );
 
         assertEquals(ResultCode.BRAND_ID_IS_NULL, ex.getResultCode());
@@ -339,21 +352,22 @@ class MapServiceImplTest {
 
             StoreDetailRes res = mapService.getStoreDetail(1L, user);
 
-            assertThat(res.benefits().grade()).isEqualTo("GOOD");
+            assertThat(res.benefits().grade()).isEqualTo("VIP");
             assertThat(res.benefits().benefitText()).isEqualTo("1+1 혜택");
         }
 
         @Test
-        void shouldReturnNullIfNoBenefitExists() {
+        void shouldThrowExceptionIfNoBenefitExists() {
+            // given
             User user = mock(User.class);
             when(user.getGrade()).thenReturn(Grade.VIP);
 
-            brand.setBenefits(List.of());
+            brand.setBenefits(List.of()); // 빈 리스트 설정
             when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
+            when(user.getGrade()).thenReturn(Grade.VIP);
 
-            StoreDetailRes res = mapService.getStoreDetail(1L, user);
-
-            assertThat(res.benefits()).isNull();
+            // when & then
+            assertThrows(GlobalException.class, () -> mapService.getStoreDetail(1L, user));
         }
 
         @Test

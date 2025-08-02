@@ -1,6 +1,7 @@
 package com.ureca.uhyu.domain.map.service;
 
 import com.ureca.uhyu.domain.brand.entity.Brand;
+import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
@@ -18,11 +19,16 @@ import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MapServiceImpl implements MapService {
@@ -106,28 +112,42 @@ public class MapServiceImpl implements MapService {
     }
 
     @Override
-    public List<MapRes> findRecommendedStores(Double lat, Double lon, Double radius, User user) {
+    public List<MapRes> findRecommendedStores(Double lat, Double lon, User user) {
 
         // 가장 최근 추천 받은 브랜드들 중 top3 추천 브랜드 가져오기
-        List<Long> brandIds = recommendationRepository.findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId())
+        List<Brand> brands = recommendationRepository.findTop3ByUserOrderByCreatedAtDescRankAsc(user.getId())
                 .stream()
                 .map(r -> {
                     if (r.getBrand() == null) {
                         throw new GlobalException((ResultCode.BRAND_ID_IS_NULL));
                     }
-                    return r.getBrand().getId();
+                    return r.getBrand();
                 })
                 .toList();
 
-        if (brandIds.isEmpty()) {
+        if (brands.isEmpty()) {
             return List.of();
         }
 
-        //추천 받은 브랜드들의 매장 목록 가져오기
-        List<Store> stores = storeRepositoryCustom.findStoresByBrandAndRadius(lat, lon, radius, brandIds);
+        List<Long> brandIds = new ArrayList<>();
+        List<MapRes> mapResList = new ArrayList<>();
 
-        return stores.stream()
-                .map(store -> MapRes.from(store,user))
-                .toList();
+        //ONLINE이면 매장 못 가져오므로  브랜드 정보 dto에 저장, OFFLINE이면 id값 리스트에 저장
+        for(Brand brand : brands){
+            if(brand.getStoreType().equals(StoreType.ONLINE)){
+                mapResList.add(MapRes.from(brand));
+            }
+            else{
+                brandIds.add(brand.getId());
+            }
+        }
+
+        //추천 받은 OFFLINE 타입 브랜드들의 가장 가까운 매장 1개씩 가져오기
+        List<Store> stores = storeRepositoryCustom.findNearestStores(lat, lon, brandIds);
+
+        return Stream.concat(
+                mapResList.stream(),
+                stores.stream().map(store -> MapRes.from(store, user))
+        ).collect(Collectors.toList());
     }
 }
