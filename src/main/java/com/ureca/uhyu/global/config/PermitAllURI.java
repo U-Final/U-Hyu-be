@@ -13,6 +13,7 @@ public enum PermitAllURI {
     DOCS("/v3/api-docs"),
     ROOT("/"),
     BRAND_LIST("/brand-list"),
+    INTEREST_BRAND_LIST("/brand-list/interest"),
     PROMETHEUS("/actuator/prometheus"),
     PGEXPORTER("/metrics"),
     MYMAP_GUEST("/mymap/guest"),
