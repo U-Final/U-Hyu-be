@@ -74,7 +74,12 @@ public enum ResultCode {
     DELETE_BRAND_SUCCESS(HttpStatus.OK, 6003, "제휴처 브랜드 정보가 성공적으로 삭제되었습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 6005, "관련된 카테고리가 없습니다."),
     BRAND_NAME_DUPLICATED(HttpStatus.BAD_REQUEST, 6006, "브랜드 이름이 중복됩니다."),
-    INVALID_STORE_TYPE(HttpStatus.BAD_REQUEST, 6007, "매장 타입은 OFFLINE, ONLINE만 가능합니다.");
+    INVALID_STORE_TYPE(HttpStatus.BAD_REQUEST, 6007, "매장 타입은 OFFLINE, ONLINE만 가능합니다."),
+
+    /**
+     * 7000번대 (추천 관련)
+     */
+    RE_RECOMMENDATION_SUCCESS(HttpStatus.OK, 7000,"브랜드 재추천이 성공적으로 완료되었습니다.");
 
     private final HttpStatus status;
     private final int code;

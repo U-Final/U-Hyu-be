@@ -48,10 +48,6 @@ jwt:
     secure: false
     same-site: Lax
 
-domain:
-  base-url: https://localhost:5173
-
-
 logging:
   level:
     com.ureca.uhyu.domain.auth.jwt: debug
@@ -59,3 +55,6 @@ logging:
     com.ureca.uhyu.domain.auth.handler: debug
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: debug
+
+fastapi:
+  url: ${FASTAPI_RECOMMEND_HOST}
