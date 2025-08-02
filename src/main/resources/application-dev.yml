@@ -59,3 +59,6 @@ logging:
     com.ureca.uhyu.domain.auth.handler: debug
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: debug
+
+fastapi:
+  url: http://fastapi-server:8000  # 또는 EC2 고정 IP

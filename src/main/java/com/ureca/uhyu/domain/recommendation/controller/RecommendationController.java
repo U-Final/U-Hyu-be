@@ -8,6 +8,7 @@ import com.ureca.uhyu.domain.user.dto.response.SaveUserInfoRes;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.global.annotation.CurrentUser;
 import com.ureca.uhyu.global.response.CommonResponse;
+import com.ureca.uhyu.global.response.ResultCode;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -41,9 +42,6 @@ public class RecommendationController implements RecommendationControllerDocs {
             @CurrentUser User user,
             @RequestBody ExcludeBrandRequest request
     ) {
-        return CommonResponse.success(recommendationBaseDataService.excludeBrand(user, request));
+        return CommonResponse.success(ResultCode.RE_RECOMMENDATION_SUCCESS,recommendationBaseDataService.excludeBrand(user, request));
     }
-
-//    @GetMapping("/exclude")
-//    pub
 }

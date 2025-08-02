@@ -2,6 +2,7 @@ package com.ureca.uhyu.domain.recommendation.service;
 
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.recommendation.api.FastApiRecommendationClient;
 import com.ureca.uhyu.domain.recommendation.dto.request.ExcludeBrandRequest;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
@@ -22,6 +23,7 @@ public class RecommendationBaseDataService {
     private final UserRepository userRepository;
     private final BrandRepository brandRepository;
     private final RecommendationBaseDataRepository recommendationBaseDataRepository;
+    private final FastApiRecommendationClient fastApiRecommendationClient;
 
     @Transactional
     public SaveUserInfoRes excludeBrand(User user, ExcludeBrandRequest request) {
@@ -40,6 +42,10 @@ public class RecommendationBaseDataService {
                     .build();
             recommendationBaseDataRepository.save(data);
         }
+
+        // Fast API에 요청 재추천 로직 돌리게 하기 위해서 API 쏘기
+        fastApiRecommendationClient.requestRecomputeRecommendation(user.getId());
+
         return SaveUserInfoRes.from(user);
     }
 }

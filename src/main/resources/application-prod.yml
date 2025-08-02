@@ -61,3 +61,6 @@ logging:
 server:
   tomcat:
     use-relative-redirects: true
+
+fastapi:
+  url: http://fastapi-server:8000  # 또는 EC2 고정 IP
