@@ -18,8 +18,9 @@ import java.util.Set;
 public class TmpUserRedirectFilter extends OncePerRequestFilter {
 
     private static final Set<String> ALLOWED_PATHS = Set.of(
-            "/user/extra-info",
-            "/user/check-email"
+            "/user/check-email",
+            "/user/onboarding",
+            "/user/extra-info"
     );
 
     @Override
