@@ -227,7 +227,7 @@ class MapServiceImplTest {
 
         Recommendation invalidRec = Recommendation.builder()
                 .userId(user.getId())
-                .brand(null) // 브랜드가 null인 추천
+                .brand(null)
                 .build();
 
         List<Recommendation> invalidRecommendations = List.of(invalidRec);

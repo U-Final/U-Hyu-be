@@ -13,7 +13,6 @@ import lombok.*;
 @Builder
 public class ActionLogs extends BaseEntity {
 
-    // TODO : 일단 erd 다이어그램에 맞춰 구현 후 추천 기능 구현하며 수정 사항 있을 시 반영할 예정
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private ActionType actionType;
