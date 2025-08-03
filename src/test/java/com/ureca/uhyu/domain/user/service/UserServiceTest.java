@@ -213,7 +213,7 @@ class UserServiceTest {
         assertEquals("logo.png", res.logoImage());
         assertEquals("스토어A", res.storeName());
         assertEquals("서울시 마포구", res.addressDetail());
-        assertNull(res.benefit());  // TODO 로직 결정 후 benefit 부분 테스트 코드 수정 예정
+        assertNull(res.benefit());
     }
 
     @DisplayName("즐겨찾기 삭제 - 성공")
