@@ -23,19 +23,47 @@ public class AdminService {
     private final HistoryRepository historyRepository;
 
     public List<StatisticsBookmarkRes> findStatisticsBookmarkByCategoryAndBrand() {
-        return bookmarkRepository.findStatisticsBookmarkByCategoryAndBrand();
+
+        long start = System.nanoTime();
+        List<StatisticsBookmarkRes> statisticsBookmarkResList = bookmarkRepository.findStatisticsBookmarkByCategoryAndBrand();
+        long end = System.nanoTime();
+        double elapsedMs = (end - start) / 1_000_000.0;
+        System.out.println("Bookmark 쿼리 실행 시간: " + elapsedMs + " ms");
+
+        return statisticsBookmarkResList;
     }
 
     public List<StatisticsFilterRes> findStatisticsFilterByCategory() {
-        return actionLogsRepository.findStatisticsFilterByActionType(ActionType.FILTER_USED);
+
+        long start = System.nanoTime();
+        List<StatisticsFilterRes> statisticsFilterRes = actionLogsRepository.findStatisticsFilterByActionType(ActionType.FILTER_USED);
+        long end = System.nanoTime();
+        double elapsedMs = (end - start) / 1_000_000.0;
+        System.out.println("filtering 쿼리 실행 시간: " + elapsedMs + " ms");
+
+        return statisticsFilterRes;
     }
 
     public List<StatisticsRecommendationRes> findStatisticsRecommendationByCategoryAndBrand() {
-        return recommendationRepository.findStatisticsRecommendationByCategory();
+
+        long start = System.nanoTime();
+        List<StatisticsRecommendationRes> statisticsRecommendationRes = recommendationRepository.findStatisticsRecommendationByCategory();
+        long end = System.nanoTime();
+        double elapsedMs = (end - start) / 1_000_000.0;
+        System.out.println("recommendation 쿼리 실행 시간: " + elapsedMs + " ms");
+
+        return statisticsRecommendationRes;
     }
 
     public List<StatisticsMembershipUsageRes> findStatisticsMembershipUsageByCategoryAndBrand() {
-        return historyRepository.findStatisticsMembershipUsageByCategory();
+
+        long start = System.nanoTime();
+        List<StatisticsMembershipUsageRes> statisticsMembershipUsageRes = historyRepository.findStatisticsMembershipUsageByCategory();
+        long end = System.nanoTime();
+        double elapsedMs = (end - start) / 1_000_000.0;
+        System.out.println("membership usage 쿼리 실행 시간: " + elapsedMs + " ms");
+
+        return statisticsMembershipUsageRes;
     }
 
     public StatisticsTotalRes findStatisticsTotal() {
