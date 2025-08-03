@@ -13,5 +13,5 @@ public interface MapService {
     List<MapRes> getBookmarkedStores(User user);
     StoreDetailRes getStoreDetail(Long storeId, User user);
     MapBookmarkRes toggleBookmark(User user, Long storeId);
-    List<MapRes> findRecommendedStores(Double lat, Double lon, Double radius, User user);
+    List<MapRes> findRecommendedStores(Double lat, Double lon, User user);
 }

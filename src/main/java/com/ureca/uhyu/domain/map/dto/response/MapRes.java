@@ -60,4 +60,20 @@ public record MapRes(
                         store.getGeom().getX()
                 );
         }
+
+        public static MapRes from(Brand brand) {
+                String benefit = brand.getBenefitDescriptionByGradeOrDefault(Grade.GOOD);
+
+                return new MapRes(
+                        null,                                    //브랜드 정보를 가져오므로 storeId는 없음
+                        brand.getBrandName(),                          //매장 이름 대신 브랜드 명
+                        brand.getCategory().getCategoryName(),
+                        null,                               //브랜드 정보를 가져오므로 위치 정보는 없음
+                        benefit,
+                        brand.getLogoImage(),
+                        brand.getBrandName(),
+                        null,                                   //좌표값 없으므로 null
+                        null                                            //좌표값 없으므로 null
+                );
+        }
 }
