@@ -22,23 +22,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class RecommendationBaseDataService {
 
-    private final StoreRepository storeRepository;
+    private final BrandRepository brandRepository;
+    private final UserRepository userRepository;
     private final RecommendationBaseDataRepository recommendationBaseDataRepository;
     private final FastApiRecommendationClient fastApiRecommendationClient;
 
     @Transactional
     public SaveUserInfoRes excludeBrand(User user, ExcludeBrandRequest request) {
 
-        Store store = storeRepository.findById(request.storeId())
-                .orElseThrow(() -> new GlobalException(ResultCode.STORE_NOT_FOUND));
+        Brand brand = brandRepository.findById(request.brandId())
+                .orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
 
         // 이미 EXCLUDE로 등록된 경우 중복 저장 방지
-        boolean exists = recommendationBaseDataRepository.existsByUserAndBrandAndDataType(user, store.getBrand(), DataType.EXCLUDE);
+        boolean exists = recommendationBaseDataRepository.existsByUserAndBrandAndDataType(user, brand, DataType.EXCLUDE);
 
         if (!exists) {
             RecommendationBaseData data = RecommendationBaseData.builder()
                     .user(user)
-                    .brand(store.getBrand())
+                    .brand(brand)
                     .dataType(DataType.EXCLUDE)
                     .build();
             recommendationBaseDataRepository.save(data);

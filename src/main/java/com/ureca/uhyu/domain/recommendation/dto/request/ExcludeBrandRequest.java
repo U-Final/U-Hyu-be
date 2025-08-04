@@ -9,10 +9,10 @@ public record ExcludeBrandRequest(
                 description = "싫어요 누른 브랜드 id",
                 example = "2"
         )
-        @NotNull(message = "한 개의 매장 id가 선택되어야 합니다.")
-        Long storeId
+        @NotNull(message = "한 개의 브랜드 id가 선택되어야 합니다.")
+        Long brandId
 ) {
-    public static ExcludeBrandRequest from(Long storeId) {
-        return new ExcludeBrandRequest(storeId);
+    public static ExcludeBrandRequest from(Long brandId) {
+        return new ExcludeBrandRequest(brandId);
     }
 }

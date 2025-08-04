@@ -148,7 +148,7 @@ public interface RecommendationControllerDocs {
                                     name = "브랜드 제외 요청 예시",
                                     value = """
                                             {
-                                              "storeId": 42
+                                              "brandId": 2
                                             }
                                             """
                             )
