@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(description = "카테고리별 즐겨찾기 통계 응답 DTO")
+@Schema(description = "카테고리별 즐겨찾기 통계 및 MyMap 응답 DTO")
 public record StatisticsBookmarkMyMapRes(
         Long categoryId,
         String categoryName,
