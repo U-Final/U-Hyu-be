@@ -28,8 +28,8 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1754252637711-4" author="c">
-        <dropColumn columnName="deleted" tableName="brands"/>
+    <changeSet id="1754263355591-5" author="djlim00">
+        <dropUniqueConstraint constraintName="uc_action_logs_user" tableName="action_logs"/>
     </changeSet>
 
 </databaseChangeLog>
