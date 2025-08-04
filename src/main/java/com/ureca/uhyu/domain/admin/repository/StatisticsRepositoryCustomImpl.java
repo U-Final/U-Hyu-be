@@ -31,4 +31,44 @@ public class StatisticsRepositoryCustomImpl implements StatisticsRepositoryCusto
                 .groupBy(s.brandName, s.categoryId, s.categoryName, s.brandId)
                 .fetch();
     }
+
+    @Override
+    public List<Tuple> findFilterStatistics() {
+        return queryFactory
+                .select(s.categoryId, s.categoryName, s.count())
+                .from(s)
+                .where(s.statisticsType.eq(StatisticsType.FILTER))
+                .groupBy(s.categoryId, s.categoryName)
+                .fetch();
+    }
+
+    @Override
+    public List<Tuple> findRecommendationStatistics() {
+        return queryFactory
+                .select(
+                        s.brandName,
+                        s.categoryId,
+                        s.categoryName,
+                        s.count()
+                )
+                .from(s)
+                .where(s.statisticsType.eq(StatisticsType.RECOMMENDATION))
+                .groupBy(s.brandName, s.categoryId, s.categoryName)
+                .fetch();
+    }
+
+    @Override
+    public List<Tuple> findMembershipUsageStatistics() {
+        return queryFactory
+                .select(
+                        s.brandName,
+                        s.categoryId,
+                        s.categoryName,
+                        s.count()
+                )
+                .from(s)
+                .where(s.statisticsType.eq(StatisticsType.MEMBERSHIP_USAGE))
+                .groupBy(s.brandName, s.categoryId, s.categoryName)
+                .fetch();
+    }
 }

@@ -1,6 +1,5 @@
 package com.ureca.uhyu.domain.admin.dto.response;
 
-import com.ureca.uhyu.domain.admin.dto.StatisticsBookmarkMyMap;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;

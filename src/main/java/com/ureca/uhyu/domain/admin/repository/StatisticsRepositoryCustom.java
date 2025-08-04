@@ -7,4 +7,7 @@ import java.util.List;
 public interface StatisticsRepositoryCustom {
 
     List<Tuple> findBookmarkMyMapStatistics();
+    List<Tuple> findFilterStatistics();
+    List<Tuple> findRecommendationStatistics();
+    List<Tuple> findMembershipUsageStatistics();
 }
