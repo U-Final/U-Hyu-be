@@ -10,4 +10,8 @@ public interface StatisticsRepository extends JpaRepository<Statistics, Long>, S
     Long countByStatisticsTypeIn(Collection<StatisticsType> statisticsTypes);
 
     Long countByStatisticsType(StatisticsType statisticsType);
+
+    void deleteByUserIdAndStoreIdAndMyMapListIdAndStatisticsType(Long userId, Long storeId, Long myMapListId, StatisticsType statisticsType);
+
+    void deleteByUserIdAndStoreIdAndStatisticsType(Long userId, Long storeId, StatisticsType statisticsType);
 }

@@ -4,6 +4,7 @@ import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
+import com.ureca.uhyu.domain.map.event.BookmarkToggledEvent;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
 import com.ureca.uhyu.domain.store.entity.Store;
@@ -20,6 +21,7 @@ import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ public class MapServiceImpl implements MapService {
     private final BookmarkRepository bookmarkRepository;
     private final BookmarkListRepository bookmarkListRepository;
     private final RecommendationRepository recommendationRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public List<MapRes> getFilteredStores(Double lat, Double lon, Double radius, String categoryName, String brandName) {
@@ -103,9 +107,29 @@ public class MapServiceImpl implements MapService {
         if(bookmarkOpt.isPresent()){
             bookmarkRepository.delete(bookmarkOpt.get());
             isBookmarked = false;
+
+            eventPublisher.publishEvent(new BookmarkToggledEvent(
+                    user.getId(),
+                    store.getId(),
+                    store.getBrand().getId(),
+                    store.getBrand().getBrandName(),
+                    store.getBrand().getCategory().getId(),
+                    store.getBrand().getCategory().getCategoryName(),
+                    BookmarkToggledEvent.Action.REMOVE
+            ));
         }else{
             bookmarkRepository.save(new Bookmark(bookmarkList, store));
             isBookmarked = true;
+
+            eventPublisher.publishEvent(new BookmarkToggledEvent(
+                    user.getId(),
+                    store.getId(),
+                    store.getBrand().getId(),
+                    store.getBrand().getBrandName(),
+                    store.getBrand().getCategory().getId(),
+                    store.getBrand().getCategory().getCategoryName(),
+                    BookmarkToggledEvent.Action.ADD
+            ));
         }
 
         return new MapBookmarkRes(storeId,isBookmarked);
