@@ -72,7 +72,7 @@ public class AdminService {
 
         long end = System.nanoTime();
         double elapsedMs = (end - start) / 1_000_000.0;
-        System.out.println("Bookmark 쿼리 실행 시간: " + elapsedMs + " ms");
+        log.debug("Bookmark 쿼리 실행 시간: " + elapsedMs + " ms");
 
         //return statisticsBookmarkMyMapList.stream().map(StatisticsBookmarkRes::from).toList();
         return statisticsBookmarkMyMapResList;
@@ -94,7 +94,7 @@ public class AdminService {
                 .toList();
         long end = System.nanoTime();
         double elapsedMs = (end - start) / 1_000_000.0;
-        System.out.println("filtering 쿼리 실행 시간: " + elapsedMs + " ms");
+        log.debug("filtering 쿼리 실행 시간: " + elapsedMs + " ms");
 
         return statisticsFilterRes;
     }
@@ -143,7 +143,7 @@ public class AdminService {
 
         long end = System.nanoTime();
         double elapsedMs = (end - start) / 1_000_000.0;
-        System.out.println("recommendation 쿼리 실행 시간: " + elapsedMs + " ms");
+        log.debug("recommendation 쿼리 실행 시간: " + elapsedMs + " ms");
 
         return statisticsRecommendationResList;
     }
@@ -193,7 +193,7 @@ public class AdminService {
         }
         long end = System.nanoTime();
         double elapsedMs = (end - start) / 1_000_000.0;
-        System.out.println("membership usage 쿼리 실행 시간: " + elapsedMs + " ms");
+        log.debug("membership usage 쿼리 실행 시간: " + elapsedMs + " ms");
 
         return statisticsMembershipUsageResList;
     }
@@ -208,7 +208,7 @@ public class AdminService {
 
         long end = System.nanoTime();
         double elapsedMs = (end - start) / 1_000_000.0;
-        System.out.println("전체 통계 쿼리 실행 시간: " + elapsedMs + " ms");
+        log.debug("전체 통계 쿼리 실행 시간: " + elapsedMs + " ms");
 
         return StatisticsTotalRes.of(totalBookmarkMyMap, totalFiltering, totalMembershipUsage);
     }
