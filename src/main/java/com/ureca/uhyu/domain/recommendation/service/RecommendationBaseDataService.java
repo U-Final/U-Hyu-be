@@ -7,11 +7,8 @@ import com.ureca.uhyu.domain.recommendation.dto.request.ExcludeBrandRequest;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
-import com.ureca.uhyu.domain.store.entity.Store;
-import com.ureca.uhyu.domain.store.repository.StoreRepository;
 import com.ureca.uhyu.domain.user.dto.response.SaveUserInfoRes;
 import com.ureca.uhyu.domain.user.entity.User;
-import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.transaction.Transactional;
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Service;
 public class RecommendationBaseDataService {
 
     private final BrandRepository brandRepository;
-    private final UserRepository userRepository;
     private final RecommendationBaseDataRepository recommendationBaseDataRepository;
     private final FastApiRecommendationClient fastApiRecommendationClient;
 

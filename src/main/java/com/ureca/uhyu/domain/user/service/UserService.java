@@ -2,6 +2,7 @@ package com.ureca.uhyu.domain.user.service;
 
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.recommendation.api.FastApiRecommendationClient;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
@@ -43,6 +44,7 @@ public class UserService {
     private final HistoryRepository historyRepository;
     private final ActionLogsRepository actionLogsRepository;
     private final StoreRepository storeRepository;
+    private final FastApiRecommendationClient fastApiRecommendationClient;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingReq request, User user) {
@@ -84,6 +86,9 @@ public class UserService {
                     .build();
             bookmarkListRepository.save(bookmarkList);
         }
+
+        // Fast API에 요청 추천 로직 돌리게 하기 위해서 API 쏘기
+        fastApiRecommendationClient.requestRecomputeRecommendation(user.getId());
 
         return persistedUser.getId();
     }
