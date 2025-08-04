@@ -31,6 +31,9 @@ public record MapRes(
         @Schema(description = "브랜드 이름")
         String brandName,
 
+        @Schema(description = "브랜드 ID")
+        Long brandId,
+
         @Schema(description = "위도")
         Double latitude,
 
@@ -55,7 +58,8 @@ public record MapRes(
                         store.getAddrDetail(),
                         benefit,
                         brand.getLogoImage(),
-                        store.getBrand().getBrandName(),
+                        brand.getBrandName(),
+                        brand.getId(),
                         store.getGeom().getY(),
                         store.getGeom().getX()
                 );
@@ -72,6 +76,7 @@ public record MapRes(
                         benefit,
                         brand.getLogoImage(),
                         brand.getBrandName(),
+                        brand.getId(),
                         null,                                   //좌표값 없으므로 null
                         null                                            //좌표값 없으므로 null
                 );
