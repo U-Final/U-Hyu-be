@@ -4,8 +4,9 @@ import com.ureca.uhyu.domain.admin.entity.Statistics;
 import com.ureca.uhyu.domain.admin.enums.StatisticsType;
 import com.ureca.uhyu.domain.admin.repository.StatisticsRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
@@ -13,7 +14,7 @@ public class BookmarkEventListener {
 
     private final StatisticsRepository statisticsRepository;
 
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleBookmarkToggled(BookmarkToggledEvent event) {
         if (event.getAction() == BookmarkToggledEvent.Action.ADD) {
             Statistics statistics = Statistics.builder()
