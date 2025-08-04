@@ -73,7 +73,7 @@ public class AdminController {
 
     @Operation(summary = "카테고리, 브랜드별 즐겨찾기 수 통계", description = "관리자가 즐겨찾기 수에 대한 카테고리별, 브랜드 별 통계 확인 가능")
     @GetMapping("/statistics/bookmark")
-    public CommonResponse<List<StatisticsBookmarkRes>> getStatisticsBookmarkByCategoryAndBrand() {
+    public CommonResponse<List<StatisticsBookmarkMyMapRes>> getStatisticsBookmarkByCategoryAndBrand() {
         return CommonResponse.success(adminService.findStatisticsBookmarkByCategoryAndBrand());
     }
 
