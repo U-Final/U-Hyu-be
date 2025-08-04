@@ -52,8 +52,8 @@ logging:
     com.ureca.uhyu.domain.auth.jwt: debug
     com.ureca.uhyu.domain.auth.filter: debug
     com.ureca.uhyu.domain.auth.handler: debug
-    org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: debug
+    org.hibernate.SQL: off
+    org.hibernate.type.descriptor.sql.BasicBinder: off
 
 server:
   tomcat:
