@@ -1,7 +1,10 @@
 package com.ureca.uhyu.domain.user.service;
 
 import com.ureca.uhyu.domain.brand.entity.Brand;
+import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
+import com.ureca.uhyu.domain.map.event.BookmarkToggledEvent;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
@@ -13,8 +16,11 @@ import com.ureca.uhyu.domain.user.dto.request.UpdateUserReq;
 import com.ureca.uhyu.domain.user.dto.request.UserOnboardingReq;
 import com.ureca.uhyu.domain.user.dto.response.*;
 import com.ureca.uhyu.domain.user.entity.*;
+import com.ureca.uhyu.domain.user.enums.ActionType;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
+import com.ureca.uhyu.domain.user.event.FilterUsedEvent;
+import com.ureca.uhyu.domain.user.event.MembershipUsedEvent;
 import com.ureca.uhyu.domain.user.repository.*;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
@@ -24,6 +30,7 @@ import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +50,9 @@ public class UserService {
     private final HistoryRepository historyRepository;
     private final ActionLogsRepository actionLogsRepository;
     private final StoreRepository storeRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingReq request, User user) {
@@ -208,6 +218,16 @@ public class UserService {
         }
 
         bookmarkRepository.delete(bookmark);
+
+        eventPublisher.publishEvent(new BookmarkToggledEvent(
+                user.getId(),
+                bookmark.getStore().getId(),
+                bookmark.getStore().getBrand().getId(),
+                bookmark.getStore().getBrand().getBrandName(),
+                bookmark.getStore().getBrand().getCategory().getId(),
+                bookmark.getStore().getBrand().getCategory().getCategoryName(),
+                BookmarkToggledEvent.Action.REMOVE
+        ));
     }
 
     public UserStatisticsRes findUserStatistics(User user) {
@@ -238,6 +258,18 @@ public class UserService {
 
         actionLogsRepository.save(actionLogs);
 
+        //통계 테이블에 저장하기 위한 이벤트 발행, action_type이 필터링일때만 이벤트 실행
+        if (actionLogs.getActionType().equals(ActionType.FILTER_USED)) {
+            Category category = categoryRepository.findById(request.categoryId())
+                    .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_CATEGORY));
+
+            eventPublisher.publishEvent(new FilterUsedEvent(
+                    user.getId(),
+                    category.getId(),
+                    category.getCategoryName()
+            ));
+        }
+
         return SaveUserInfoRes.from(user);
     }
 
@@ -247,6 +279,15 @@ public class UserService {
                 .orElseThrow(() -> new GlobalException(ResultCode.STORE_NOT_FOUND));
 
         saveHistory(user, store.getBrand(), store, false);
+
+        eventPublisher.publishEvent(new MembershipUsedEvent(
+                user.getId(),
+                store.getId(),
+                store.getBrand().getId(),
+                store.getBrand().getBrandName(),
+                store.getBrand().getCategory().getId(),
+                store.getBrand().getCategory().getCategoryName()
+        ));
 
         return SaveUserInfoRes.from(user);
     }
