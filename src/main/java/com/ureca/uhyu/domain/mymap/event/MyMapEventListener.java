@@ -4,9 +4,8 @@ import com.ureca.uhyu.domain.admin.entity.Statistics;
 import com.ureca.uhyu.domain.admin.enums.StatisticsType;
 import com.ureca.uhyu.domain.admin.repository.StatisticsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
@@ -14,7 +13,7 @@ public class MyMapEventListener {
 
     private final StatisticsRepository statisticsRepository;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @EventListener
     public void handleMyMapToggled(MyMapToggledEvent event) {
         if (event.getAction() == MyMapToggledEvent.Action.ADD) {
             Statistics statistics = Statistics.builder()
