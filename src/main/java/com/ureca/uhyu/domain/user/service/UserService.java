@@ -5,6 +5,7 @@ import com.ureca.uhyu.domain.brand.repository.BrandRepository;
 import com.ureca.uhyu.domain.recommendation.api.FastApiRecommendationClient;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
+import com.ureca.uhyu.domain.recommendation.event.RecommendationEvent;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.store.repository.StoreRepository;
@@ -16,7 +17,7 @@ import com.ureca.uhyu.domain.user.dto.response.*;
 import com.ureca.uhyu.domain.user.entity.*;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
-import com.ureca.uhyu.domain.user.repository.*;
+import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
@@ -25,6 +26,7 @@ import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +47,7 @@ public class UserService {
     private final ActionLogsRepository actionLogsRepository;
     private final StoreRepository storeRepository;
     private final FastApiRecommendationClient fastApiRecommendationClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingReq request, User user) {
@@ -63,7 +66,6 @@ public class UserService {
         );
         userRepository.save(persistedUser);
 
-        // 방문 브랜드는 history 테이블에 저장 - store_id는 null
         List<Long> brandIds = request.recentBrands();
 
         for (Long brandId : brandIds) {
@@ -73,10 +75,8 @@ public class UserService {
             saveHistory(persistedUser, brand, null, true);
         }
 
-        // 관심 브랜드는 recommendation_base_data 테이블에 저장
         saveUserBrandData(persistedUser, request.interestedBrands(), DataType.INTEREST);
 
-        //온보딩 시 해당 user에 대한 즐겨찾기 List도 생성
         if (bookmarkListRepository.existsByUser(persistedUser)) {
             throw new GlobalException(ResultCode.BOOKMARK_LIST_ALREADY_EXISTS);
         }
@@ -87,8 +87,7 @@ public class UserService {
             bookmarkListRepository.save(bookmarkList);
         }
 
-        // Fast API에 요청 추천 로직 돌리게 하기 위해서 API 쏘기
-        fastApiRecommendationClient.requestRecomputeRecommendation(user.getId());
+        eventPublisher.publishEvent(new RecommendationEvent(persistedUser.getId()));
 
         return persistedUser.getId();
     }
@@ -255,4 +254,5 @@ public class UserService {
 
         return SaveUserInfoRes.from(user);
     }
+
 }
