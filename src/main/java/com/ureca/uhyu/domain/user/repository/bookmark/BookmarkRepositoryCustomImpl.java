@@ -5,7 +5,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrand;
-import com.ureca.uhyu.domain.admin.dto.response.StatisticsBookmarkRes;
+import com.ureca.uhyu.domain.admin.dto.response.StatisticsBookmarkMyMapRes;
 import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.brand.entity.QBrand;
 import com.ureca.uhyu.domain.brand.entity.QCategory;
@@ -27,7 +27,7 @@ public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<StatisticsBookmarkRes> findStatisticsBookmarkByCategoryAndBrand() {
+    public List<StatisticsBookmarkMyMapRes> findStatisticsBookmarkByCategoryAndBrand() {
         QBookmark bookmark = QBookmark.bookmark;
         QBookmarkList bookmarkList = QBookmarkList.bookmarkList;
         QMyMap myMap = QMyMap.myMap;
@@ -87,7 +87,7 @@ public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom {
                 ));
 
         // 카테고리 기준으로 그룹핑 및 DTO 조립
-        Map<Long, StatisticsBookmarkRes> resultMap = new LinkedHashMap<>();
+        Map<Long, StatisticsBookmarkMyMapRes> resultMap = new LinkedHashMap<>();
 
         for (Map.Entry<Long, Integer> entry : brandSaveCounts.entrySet()) {
             Long brandId = entry.getKey();
@@ -104,11 +104,11 @@ public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom {
 
             resultMap.compute(categoryId, (key, existing) -> {
                 if (existing == null) {
-                    return StatisticsBookmarkRes.of(categoryId, categoryName, count, new ArrayList<>(List.of(bookmarksByBrand)));
+                    return StatisticsBookmarkMyMapRes.of(categoryId, categoryName, count, new ArrayList<>(List.of(bookmarksByBrand)));
                 } else {
                     existing.bookmarksByBrandList().add(bookmarksByBrand);
                     int newSum = existing.sumStatisticsBookmarksByCategory() + count;
-                    return StatisticsBookmarkRes.of(categoryId, categoryName, newSum, existing.bookmarksByBrandList());
+                    return StatisticsBookmarkMyMapRes.of(categoryId, categoryName, newSum, existing.bookmarksByBrandList());
                 }
             });
         }

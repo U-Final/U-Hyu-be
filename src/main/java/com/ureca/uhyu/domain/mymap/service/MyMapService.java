@@ -7,6 +7,7 @@ import com.ureca.uhyu.domain.mymap.dto.request.UpdateMyMapListReq;
 import com.ureca.uhyu.domain.mymap.entity.MyMap;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
+import com.ureca.uhyu.domain.mymap.event.MyMapToggledEvent;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
 import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
 import com.ureca.uhyu.domain.store.entity.Store;
@@ -21,6 +22,7 @@ import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -39,6 +41,8 @@ public class MyMapService {
     private final StoreRepository storeRepository;
     private final BookmarkRepository bookmarkRepository;
     private final BookmarkListRepository bookmarkListRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<MyMapListRes> findMyMapList(User user) {
         List<MyMapList> myMapLists =  myMapListRepository.findByUser(user);
@@ -159,6 +163,18 @@ public class MyMapService {
             // 존재하면 해제
             myMapRepository.delete(existingMyMap.get());
             isMyMapped = false;
+
+            //삭제 성공 시 통계 테이블에서도 삭제하기 위한 이벤트 발행
+            eventPublisher.publishEvent(new MyMapToggledEvent(
+                    user.getId(),
+                    store.getId(),
+                    myMapList.getId(),
+                    store.getBrand().getId(),
+                    store.getBrand().getBrandName(),
+                    store.getBrand().getCategory().getId(),
+                    store.getBrand().getCategory().getCategoryName(),
+                    MyMapToggledEvent.Action.REMOVE
+            ));
         } else {
             // 없으면 추가
             MyMap newMyMap = MyMap.builder()
@@ -167,6 +183,18 @@ public class MyMapService {
                     .build();
             myMapRepository.save(newMyMap);
             isMyMapped = true;
+
+            //저장 성공 시 통계 테이블에서도 저장하기 위한 이벤트 발행
+            eventPublisher.publishEvent(new MyMapToggledEvent(
+                    user.getId(),
+                    store.getId(),
+                    myMapList.getId(),
+                    store.getBrand().getId(),
+                    store.getBrand().getBrandName(),
+                    store.getBrand().getCategory().getId(),
+                    store.getBrand().getCategory().getCategoryName(),
+                    MyMapToggledEvent.Action.ADD
+            ));
         }
 
         return ToggleMyMapRes.from(myMapList, store, isMyMapped);
