@@ -50,9 +50,10 @@ public class UserService {
     private final BookmarkRepository bookmarkRepository;
     private final HistoryRepository historyRepository;
     private final ActionLogsRepository actionLogsRepository;
-    private final StoreRepository storeRepository;;
-    private final ApplicationEventPublisher eventPublisher;
+    private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long saveOnboardingInfo(UserOnboardingReq request, User user) {
