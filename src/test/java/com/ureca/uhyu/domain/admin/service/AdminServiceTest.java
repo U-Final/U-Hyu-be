@@ -1,8 +1,6 @@
 package com.ureca.uhyu.domain.admin.service;
 
-import com.querydsl.core.Tuple;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterRes;
-import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.user.enums.ActionType;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
@@ -17,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -44,8 +41,8 @@ class AdminServiceTest {
     @Test
     void findStatisticsBookmarkByCategoryAndBrand() {
         // given
-        List<StatisticsBookmarkRes> mockResList = List.of(
-                StatisticsBookmarkRes.of(
+        List<StatisticsBookmarkMyMapRes> mockResList = List.of(
+                StatisticsBookmarkMyMapRes.of(
                         1L,
                         "카테고리A",
                         30,
@@ -54,7 +51,7 @@ class AdminServiceTest {
                                 BookmarksByBrand.of("브랜드2", 20)
                         ))
                 ),
-                StatisticsBookmarkRes.of(
+                StatisticsBookmarkMyMapRes.of(
                         2L,
                         "카테고리B",
                         15,
@@ -67,7 +64,7 @@ class AdminServiceTest {
         when(bookmarkRepository.findStatisticsBookmarkByCategoryAndBrand()).thenReturn(mockResList);
 
         // when
-        List<StatisticsBookmarkRes> result = adminService.findStatisticsBookmarkByCategoryAndBrand();
+        List<StatisticsBookmarkMyMapRes> result = adminService.findStatisticsBookmarkByCategoryAndBrand();
 
         // then
         assertEquals(2, result.size());
@@ -90,7 +87,7 @@ class AdminServiceTest {
         when(bookmarkRepository.findStatisticsBookmarkByCategoryAndBrand()).thenReturn(List.of());
 
         // when
-        List<StatisticsBookmarkRes> result = adminService.findStatisticsBookmarkByCategoryAndBrand();
+        List<StatisticsBookmarkMyMapRes> result = adminService.findStatisticsBookmarkByCategoryAndBrand();
 
         // then
         assertTrue(result.isEmpty());
