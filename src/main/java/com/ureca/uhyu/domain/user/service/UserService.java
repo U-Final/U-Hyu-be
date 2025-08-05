@@ -3,7 +3,6 @@ package com.ureca.uhyu.domain.user.service;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
-import com.ureca.uhyu.domain.recommendation.api.FastApiRecommendationClient;
 import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
 import com.ureca.uhyu.domain.map.event.BookmarkToggledEvent;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
@@ -21,10 +20,9 @@ import com.ureca.uhyu.domain.user.entity.*;
 import com.ureca.uhyu.domain.user.enums.ActionType;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.UserRole;
-import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.event.FilterUsedEvent;
 import com.ureca.uhyu.domain.user.event.MembershipUsedEvent;
-import com.ureca.uhyu.domain.user.repository.*;
+import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
@@ -52,10 +50,7 @@ public class UserService {
     private final BookmarkRepository bookmarkRepository;
     private final HistoryRepository historyRepository;
     private final ActionLogsRepository actionLogsRepository;
-    private final StoreRepository storeRepository;
-    private final FastApiRecommendationClient fastApiRecommendationClient;
-    private final ApplicationEventPublisher eventPublisher;
-
+    private final StoreRepository storeRepository;;
     private final ApplicationEventPublisher eventPublisher;
     private final CategoryRepository categoryRepository;
 
