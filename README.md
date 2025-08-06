@@ -5,17 +5,12 @@
 > U-HYU(유휴)는 사용자 주변의 LG U+ 멤버십 제휴처를 **지도 기반 UX**로 직관적으로 탐색하고, 다른 사용자의 이용 내역까지 함께 확인할 수 있는 **위치 기반 혜택 공유 플랫폼**입니다.  
 > 개인화 추천 및 즐겨찾기, 소셜 공유를 통해 **유휴 혜택 자원의 재발견**을 유도합니다.
 
-### 개발 기간
+### 🧑‍💻 개발 기간
 - 2025.07.05 ~ 2025.08.08
 
-### 🧑🏻‍💻 Backend 팀원 소개
-
-| <img src="https://avatars.githubusercontent.com/u/127932430?v=4" width="80"><br><a href="https://github.com/djlim00">👑 임동준</a> | <img src="https://avatars.githubusercontent.com/Leesowon" width="80"><br><a href="https://github.com/Leesowon">이소원</a> | <img src="https://avatars.githubusercontent.com/etoile0626" width="80"><br><a href="https://github.com/etoile0626">최윤제</a> |
-|-----------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
-
-### 🔗 배포 링크
-
-https://www.u-hyu.site/
+### 🚀 **서비스 오픈!**  
+> 지금 바로 👉 **[https://www.u-hyu.site](https://www.u-hyu.site)** 접속해서  
+> 내 주변 혜택을 확인해보세요 🎁  
 
 ---
 
@@ -59,20 +54,23 @@ https://www.u-hyu.site/
   
 ---
 
-## 🚀 핵심 / 주요 기능
+## 🚀 핵심 기능 & 기술 설계는 Wiki에서 확인하세요!
 
-저희 팀 핵심 기능 및 ~는 위키에서 확인할 수 있습니다!
+U-Hyu의 핵심 기능과 설계 과정에서의 고민은 아래 Wiki 문서에 상세히 정리되어 있습니다:
 
-1. 추천 시스템 : [[위키 링크]]
-2. postgis
-3. 관리자 통계 
+1.	[🧩 데이터 모델링 & 설계 고민](https://github.com/U-Final/U-Hyu-be/wiki/Data-Modeling)
+2.	[🧠 개인화 추천 시스템 설계](https://github.com/U-Final/U-Hyu-be/wiki/Recommendation-System)
+3.	[🌍 PostGIS 기반 위치 기반 탐색 로직]
+4.	[📊 관리자 통계 시스템]
 
+> Wiki 문서는 계속 업데이트됩니다. 
+> 💬 각 문서에 팀의 고민과 선택 배경도 함께 담아두었어요!
 
 ---
 
 ## 🔧 기술스택
 
-<img width="1256" height="1408" alt="image" src="https://github.com/user-attachments/assets/1bdf5490-8f6d-4105-9e2e-95e136a80636" />
+<img width="700" height="715" alt="image" src="https://github.com/user-attachments/assets/1bdf5490-8f6d-4105-9e2e-95e136a80636" />
 
 <br>
 
@@ -123,34 +121,11 @@ https://www.u-hyu.site/
 
 ---
 
-### 🧩 데이터 모델링 및 추천 시스템 설계 고민
+## 🙋‍♂️ Developer
 
-#### ✅ 문제 상황
+| 사진 | 이름 | GitHub |
+|------|------|--------|
+| <img src="https://avatars.githubusercontent.com/u/127932430?v=4" width="80"> | 👑임동준 | [djlim00](https://github.com/djlim00) |
+| <img src="https://avatars.githubusercontent.com/Leesowon" width="80"> | 이소원 | [Leesowon](https://github.com/Leesowon) |
+| <img src="https://avatars.githubusercontent.com/etoile0626" width="80"> | 최윤제 | [etoile0626](https://github.com/etoile0626) |
 
-1. **방문 정보의 이중 관리**  
-   - 사용자 온보딩 과정에서 **방문한 브랜드** 정보를 수집하고,
-   - 이후 앱 이용 중에는 **실제 매장 방문 기록**이 저장됨  
-   → 결국 두 데이터 모두 방문 정보지만, `recommendation_base_data`와 `history`라는 **서로 다른 테이블**에 저장되고 있음
-
-2. **데이터 복사 전략의 한계**  
-   - 추천 배치마다 `history` 데이터를 `recommendation_base_data`로 **복사**하는 방안도 고려했으나  
-     → **데이터 이중화** 및 **정합성 문제** 발생  
-     → 유지보수 및 데이터 관리에 불리
-
-#### 🔍 최종 설계 결정
-
-- **관심 브랜드**와 **방문 브랜드/매장 정보**를 **명확히 분리된 테이블**에 저장
-- 온보딩에서 입력받은 **방문 브랜드**에 대해서 `store_id = null`로 저장되지만, 초반에 최대 3개의 정보만 받아 수용 가능하다고 판단
-- `recommendation_base_data`는 **관심 브랜드 (DataType = INTEREST)** 저장
-- 테이블 명은 **추천 기반 데이터의 확장 가능성**을 고려하여 `recommendation_base_data` 그대로 유지
-
-#### 🧐 기타 고려 사항
-
-- **관심 브랜드를 `users` 테이블에 직접 저장하지 않음**  
-  → 추천 전용 도메인으로 분리하여 관리하는 것이 유지보수 및 확장성 측면에서 바람직
-- 추천 로직은  
-  - 초기 추천: `recommendation_base_data` 사용  
-
----
-
-#
