@@ -45,12 +45,29 @@ public class Brand extends BaseEntity {
         this.category = category;
     }
 
-    public void updateBrandInfo(String brandName, String logoImage, String usageMethod, String usageLimit, StoreType storeType) {
+    public void updateBrandName(String brandName) {
         this.brandName = brandName;
+    }
+
+    public void updateBrandImg(String logoImage) {
         this.logoImage = logoImage;
+    }
+
+    public void updateUsageMethod(String usageMethod) {
         this.usageMethod = usageMethod;
+    }
+
+    public void updateUsageLimit(String usageLimit) {
         this.usageLimit = usageLimit;
+    }
+
+    public void updateStoreType(StoreType storeType) {
         this.storeType = storeType;
+    }
+
+    public void setBenefits(List<Benefit> benefits) {
+        this.benefits.clear();
+        this.benefits.addAll(benefits);
     }
 
     public String getBenefitDescriptionByGradeOrDefault(Grade grade) {
