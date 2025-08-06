@@ -129,7 +129,9 @@
 📙 통계 테이블 설계에 대한 저희의 고민과 설계 과정은 [통계 기능 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/%ED%86%B5%EA%B3%84-%ED%85%8C%EC%9D%B4%EB%B8%94-%EC%B6%94%EA%B0%80-%EB%B0%8F-%EC%BF%BC%EB%A6%AC-%EA%B0%9C%EC%84%A0) 에서 더 볼 수 있습니다.
 
 ---
-## [ERD](https://www.erdcloud.com/d/5L2T7EXZsYoxjPYGk)
+## ERD
+
+[ERD Link](https://www.erdcloud.com/d/5L2T7EXZsYoxjPYGk)
 
 ### 1. 사용자 데이터 - users, token, history, action_logs, recommendation_base_data
 
