@@ -118,36 +118,36 @@
 - 기존: 추천이 배치로 동작하여 사용자의 행동 로그 등에 대한 재추천 및 반영이 배치마다 시간이 걸림
 - 현재: 유저 행동에 대한 즉각적인 추천 재실행 및 결과 제공 **→ 즉각적인 피드백 기반 개인화 추천 경험 제공**
 
-📙 추천 시스템에 대한 저희의 고민과 설계 과정은 [개인화 추천 시스템 설계 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/Recommendation-System)에서 더 볼 수 있습니다.
+📙 추천 시스템에 대한 저희의 고민과 설계 과정은 [개인화 추천 시스템 설계 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/Recommendation-System) 에서 더 볼 수 있습니다.
 
 ### 2. PostGIS
 
-📙 PostGIS 쿼리 개선에 대한 저희의 고민과 개선 과정은 [지도 기능 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/PostGIS-%EC%A7%80%EB%8F%84-%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EC%B5%9C%EC%A0%81%ED%99%94-(1))에서 더 볼 수 있습니다.
+📙 PostGIS 쿼리 개선에 대한 저희의 고민과 개선 과정은 [지도 기능 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/PostGIS-%EC%A7%80%EB%8F%84-%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EC%B5%9C%EC%A0%81%ED%99%94-(1)) 에서 더 볼 수 있습니다.
 
 ### 3. 통계
 
-📙 통계 테이블 설계에 대한 저희의 고민과 설계 과정은 [통계 기능 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/%ED%86%B5%EA%B3%84-%ED%85%8C%EC%9D%B4%EB%B8%94-%EC%B6%94%EA%B0%80-%EB%B0%8F-%EC%BF%BC%EB%A6%AC-%EA%B0%9C%EC%84%A0)에서 더 볼 수 있습니다.
+📙 통계 테이블 설계에 대한 저희의 고민과 설계 과정은 [통계 기능 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/%ED%86%B5%EA%B3%84-%ED%85%8C%EC%9D%B4%EB%B8%94-%EC%B6%94%EA%B0%80-%EB%B0%8F-%EC%BF%BC%EB%A6%AC-%EA%B0%9C%EC%84%A0) 에서 더 볼 수 있습니다.
 
 ---
 ## ERD
 
-### 1. 사용자 정보 - user
+### 1. 사용자 데이터 - users, token, history, action_logs, recommendation_base_data
 
 <img width="781" height="522" alt="Image" src="https://github.com/user-attachments/assets/8a52bd8c-489b-4179-af1a-f25f5682ce60" />
 
-### 2. 제휴처 정보 - brand, store, categories
+### 2. 제휴처 데이터 - brands, store, categories, benefit
 
 <img width="1188" height="360" alt="Image" src="https://github.com/user-attachments/assets/b89bcd54-dadf-4e0d-9e18-4ef514f8a825" />
 
-### 3. 사용자가 서비스를 이용하면서 개인화하는 정보 - bookmark, mymap
+### 3. 사용자가 서비스를 이용하며 축적되는 개인화 데이터 - bookmark, bookmark_list, my_map, my_map_list
 
 <img width="994" height="526" alt="Image" src="https://github.com/user-attachments/assets/5aa92bb1-80a0-4b84-808f-dc04cdfb4a88" />
 
-### 4. 추천 관련 - recommendation
+### 4. 추천 결과 데이터 - recommendation
 
 <img width="1354" height="745" alt="Image" src="https://github.com/user-attachments/assets/063b6427-a645-4014-941f-96ce64f31ca6" />
 
-### 5. 어드민 통계 - statistics
+### 5. 어드민 통계 데이터 - statistics
 
 <img width="656" height="280" alt="Image" src="https://github.com/user-attachments/assets/7657e1b1-cec0-40b4-ba9b-d1666c5a397d" />
 
@@ -155,7 +155,7 @@
 
 <img width="1311" height="553" alt="Image" src="https://github.com/user-attachments/assets/d06cbaab-dc23-4cc2-9544-7b30ff0a040d" />
 
-📙 ERD 및 Database에 대한 저희의 고민과 설계 과정은 [데이터베이스 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%AA%A8%EB%8D%B8%EB%A7%81-%EB%B0%8F-%EC%B6%94%EC%B2%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%84%A4%EA%B3%84-%EA%B3%A0%EB%AF%BC)에서 더 볼 수 있습니다.
+📙 ERD 및 Database에 대한 저희의 고민과 설계 과정은 [데이터베이스 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%AA%A8%EB%8D%B8%EB%A7%81-%EB%B0%8F-%EC%B6%94%EC%B2%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%84%A4%EA%B3%84-%EA%B3%A0%EB%AF%BC) 에서 더 볼 수 있습니다.
 
 ---
 
@@ -182,7 +182,7 @@
 
 <img width="891" height="551" alt="image" src="https://github.com/user-attachments/assets/d8e93731-92a6-4de9-b986-a113497ea794" />
 
-📙 아키텍쳐에 대한 저희의 고민과 설계 과정은 [인프라 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/Recommendation-System)에서 더 볼 수 있습니다.
+📙 아키텍쳐에 대한 저희의 고민과 설계 과정은 [인프라 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/Recommendation-System) 에서 더 볼 수 있습니다.
 
 ---
 
