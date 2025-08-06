@@ -6,18 +6,16 @@
 > 개인화 추천 및 즐겨찾기, 소셜 공유를 통해 **유휴 혜택 자원의 재발견**을 유도합니다.
 
 ### 개발 기간
-- 2025.07.05 ~ 2025.08.07
+- 2025.07.05 ~ 2025.08.08
 
-### 🧑🏻‍💻 역할 분담
+### 🧑🏻‍💻 Backend 팀원 소개
 
 | <img src="https://avatars.githubusercontent.com/u/127932430?v=4" width="80"><br><a href="https://github.com/djlim00">👑 임동준</a> | <img src="https://avatars.githubusercontent.com/Leesowon" width="80"><br><a href="https://github.com/Leesowon">이소원</a> | <img src="https://avatars.githubusercontent.com/etoile0626" width="80"><br><a href="https://github.com/etoile0626">최윤제</a> |
 |-----------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
-| <ul><li>인프라</li><li>DB 모델링</li><li>지도 시스템</li></ul>                                                                                          | <ul><li>인증 / 인가 시스템</li><li>추천 시스템</li></ul>                                                             | <ul><li>회원 시스템</li><li>어드민 / 통계 시스템</li></ul>                                                                              |
 
 ### 🔗 배포 링크
 
 https://www.u-hyu.site/
-
 
 ---
 
@@ -63,49 +61,12 @@ https://www.u-hyu.site/
 
 ## 🚀 핵심 / 주요 기능
 
-### 1. 추천 시스템 설계
+저희 팀 핵심 기능 및 ~는 위키에서 확인할 수 있습니다!
 
-- **사용 라이브러리** : [LightFM](https://pypi.org/project/lightfm/)   
-   콘텐츠 기반 + 협업 필터링을 동시에 학습 가능한 **하이브리드 추천 라이브러리**
-  
-- **입력 요소**
-  - `user_features`: 관심 브랜드, 최근 방문 브랜드, 즐겨찾기 브랜드, 성별, 연령대
-  - `item_features`: 브랜드 id, 카테고리 id
-  - `interactions`: 클릭 매장 및 카테고리에 대한 클릭 로그(action_logs)
+1. 추천 시스템 : [[위키 링크]]
+2. postgis
+3. 관리자 통계 
 
-- **Cold Start 대응 전략**
-  - 회원가입 시 **선호 브랜드 및 방문 브랜드 설문 수집**
-  - 수집된 정보를 `user_features`에 반영하여 초기 추천 생성
-
-- **추천 결과 저장 구조**
-  - 추천 결과는 (user_id, brand_id, score, rank) 형태로 DB에 저장
-  - spring 서버에 api 요청을 통해 추천 결과 조회
-
-> ✅ 사용자 데이터 부족 상황에서도 유의미한 초기 추천 가능  
-> ✅ 추천 서버와 서비스 로직 간의 분리 설계로 확장성 확보
-
-추천 결과 예시
-
-<img width="1490" height="951" alt="Image" src="https://github.com/user-attachments/assets/d4d3a9e5-0065-4f70-a9e5-41e5c346ecf9" />
-
-#### 🔍 추천 방식 안내
-
-로그인 여부에 따라 추천 방식이 달라집니다.
-
-- **비로그인 사용자**: 전체 사용자 중 가장 많이 방문한 브랜드 Top 3를 제공  
-- **로그인 사용자**: 개인화 추천 시스템을 기반으로 추천된 브랜드 Top 3를 제공
-
-### 2. 관리자 통계 관리 시스템
-
-- 관리자에게 전체 사용자의 이용 데이터를 토대로 통계 데이터를 조회할 수 있는 기능 제공
-- 전체 사용자들의 즐겨찾기(+My Map) 데이터, 어느 카테고리를 사용해 지도 필터링을 이용했는지, 어떤 브랜드들이 자주 추천 받았는지, 멤버십은 얼마나 사용했는지 등의 다양한 통계 데이터를 카테고별, 카테고리 내 브랜드별로 조회 가능
-- QueryDSL 기반 쿼리를 통한 복잡하고 동적인 통계 데이터 조회 쿼리 작성 완료
-
-### 3. My Map
-
-- 단순 즐겨찾기뿐만 아니라 제휴 매장을 나만의 카테고리에 저장하여 관리하는 기능
-- 사용자의 각 My Map에 고유한 uuid를 할당하여 uuid를 기반으로 My Map 조회 및 타 사용자들에게 공유, 비로그인 사용자도 타인의 My Map url이 존재할 시 타인의 My Map 조회 가능
-- My Map에 속한 제휴 매장의 경우 각 My Map에 지정한 색으로 마커 색 변경하여 지도에 표시됨
 
 ---
 
@@ -136,7 +97,29 @@ https://www.u-hyu.site/
 
 ## ERD
 
-<img width="1465" height="959" alt="image" src="https://github.com/user-attachments/assets/c61e625b-4ac7-4c35-b6a5-daa592f924d9" />
+### 1. 사용자 정보 - user
+
+<img width="781" height="522" alt="Image" src="https://github.com/user-attachments/assets/8a52bd8c-489b-4179-af1a-f25f5682ce60" />
+
+### 2. 제휴처 정보 - brand, store, categories
+
+<img width="1188" height="360" alt="Image" src="https://github.com/user-attachments/assets/b89bcd54-dadf-4e0d-9e18-4ef514f8a825" />
+
+### 3. 사용자가 서비스를 이용하면서 개인화하는 정보 - bookmark, mymap
+
+<img width="994" height="526" alt="Image" src="https://github.com/user-attachments/assets/5aa92bb1-80a0-4b84-808f-dc04cdfb4a88" />
+
+### 4. 추천 관련
+
+<img width="1354" height="745" alt="Image" src="https://github.com/user-attachments/assets/063b6427-a645-4014-941f-96ce64f31ca6" />
+
+### 5. 어드민 통계
+
+<img width="656" height="280" alt="Image" src="https://github.com/user-attachments/assets/7657e1b1-cec0-40b4-ba9b-d1666c5a397d" />
+
+### 전체 erd 구성
+
+<img width="1311" height="553" alt="Image" src="https://github.com/user-attachments/assets/d06cbaab-dc23-4cc2-9544-7b30ff0a040d" />
 
 ---
 
