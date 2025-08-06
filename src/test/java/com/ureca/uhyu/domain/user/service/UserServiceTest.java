@@ -5,6 +5,7 @@ import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.brand.repository.BrandRepository;
+import com.ureca.uhyu.domain.brand.repository.CategoryRepository;
 import com.ureca.uhyu.domain.recommendation.entity.RecommendationBaseData;
 import com.ureca.uhyu.domain.recommendation.enums.DataType;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationBaseDataRepository;
@@ -32,6 +33,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -42,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class UserServiceTest {
 
     @Mock
@@ -64,6 +68,12 @@ class UserServiceTest {
 
     @Mock
     private ActionLogsRepository actionLogsRepository;
+
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private UserService userService;
@@ -236,6 +246,7 @@ class UserServiceTest {
         setId(bookmark, 100L);
 
         // mock
+        when(bookmarkListRepository.findByUser(user)).thenReturn(Optional.of(bookmarkList));
         when(bookmarkRepository.findById(100L)).thenReturn(Optional.of(bookmark));
 
         // when
@@ -496,6 +507,10 @@ class UserServiceTest {
         User user = createUser();
         setId(user, 2L);
         ActionLogsReq req = new ActionLogsReq(ActionType.FILTER_USED, null, 5L);
+        // mock categoryRepository.findById(5L)
+        Category category = Category.builder().categoryName("카테고리").build();
+        setId(category, 5L);
+        when(categoryRepository.findById(5L)).thenReturn(Optional.of(category));
 
         // when
         SaveUserInfoRes res = userService.saveActionLogs(user, req);

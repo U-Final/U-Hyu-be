@@ -23,7 +23,6 @@ import com.ureca.uhyu.domain.user.enums.Gender;
 import com.ureca.uhyu.domain.user.enums.Grade;
 import com.ureca.uhyu.domain.user.enums.Status;
 import com.ureca.uhyu.domain.user.enums.UserRole;
-import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
 import com.ureca.uhyu.global.exception.GlobalException;

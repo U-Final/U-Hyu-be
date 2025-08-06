@@ -1,6 +1,7 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsFilterRes;
+import com.ureca.uhyu.domain.admin.repository.StatisticsRepository;
 import com.ureca.uhyu.domain.user.enums.ActionType;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkRepository;
@@ -36,6 +37,9 @@ class AdminServiceTest {
 
     @InjectMocks
     private AdminService adminService;
+
+    @Mock
+    private StatisticsRepository statisticsRepository;
 
     @DisplayName("카테고리, 브랜드 별 즐겨찾기 갯수 통계 조회 - 성공")
     @Test
@@ -242,7 +246,7 @@ class AdminServiceTest {
         StatisticsTotalRes result = adminService.findStatisticsTotal();
 
         // then
-        assertEquals(bookmarkCount, result.totalBookmark());
+        assertEquals(bookmarkCount, result.totalBookmarkMyMap());
         assertEquals(filterCount, result.totalFiltering());
         assertEquals(historyCount, result.totalMembershipUsage());
 
@@ -263,7 +267,7 @@ class AdminServiceTest {
         StatisticsTotalRes result = adminService.findStatisticsTotal();
 
         // then
-        assertEquals(0L, result.totalBookmark());
+        assertEquals(0L, result.totalBookmarkMyMap());
         assertEquals(0L, result.totalFiltering());
         assertEquals(0L, result.totalMembershipUsage());
 
