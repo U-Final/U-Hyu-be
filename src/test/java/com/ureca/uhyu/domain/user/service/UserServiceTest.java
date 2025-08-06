@@ -18,6 +18,7 @@ import com.ureca.uhyu.domain.user.entity.Bookmark;
 import com.ureca.uhyu.domain.user.entity.BookmarkList;
 import com.ureca.uhyu.domain.user.entity.User;
 import com.ureca.uhyu.domain.user.enums.*;
+import com.ureca.uhyu.domain.user.event.FilterUsedEvent;
 import com.ureca.uhyu.domain.user.repository.*;
 import com.ureca.uhyu.domain.user.repository.actionLogs.ActionLogsRepository;
 import com.ureca.uhyu.domain.user.repository.bookmark.BookmarkListRepository;
@@ -35,6 +36,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -73,7 +75,7 @@ class UserServiceTest {
     private CategoryRepository categoryRepository;
 
     @Mock
-    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private UserService userService;
@@ -246,7 +248,6 @@ class UserServiceTest {
         setId(bookmark, 100L);
 
         // mock
-        when(bookmarkListRepository.findByUser(user)).thenReturn(Optional.of(bookmarkList));
         when(bookmarkRepository.findById(100L)).thenReturn(Optional.of(bookmark));
 
         // when
@@ -507,9 +508,17 @@ class UserServiceTest {
         User user = createUser();
         setId(user, 2L);
         ActionLogsReq req = new ActionLogsReq(ActionType.FILTER_USED, null, 5L);
+
         // mock categoryRepository.findById(5L)
-        Category category = Category.builder().categoryName("카테고리").build();
+//        Category category = Category.builder().categoryName("카테고리").build();
+//        setId(category, 5L);
+//        when(categoryRepository.findById(5L)).thenReturn(Optional.of(category));
+
+        Brand brand = createBrand("brand1", "brand1.img");
+
+        Category category = new Category("카페", List.of(brand));
         setId(category, 5L);
+
         when(categoryRepository.findById(5L)).thenReturn(Optional.of(category));
 
         // when
@@ -526,6 +535,8 @@ class UserServiceTest {
         assertEquals(ActionType.FILTER_USED, saved.getActionType());
 
         assertEquals(2L, res.userId());
+
+        verify(eventPublisher).publishEvent(any(FilterUsedEvent.class));
     }
 
     @Test

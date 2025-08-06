@@ -7,6 +7,8 @@ import com.ureca.uhyu.domain.brand.enums.BenefitType;
 import com.ureca.uhyu.domain.brand.enums.StoreType;
 import com.ureca.uhyu.domain.map.dto.response.MapBookmarkRes;
 import com.ureca.uhyu.domain.map.dto.response.MapRes;
+import com.ureca.uhyu.domain.map.event.BookmarkEventListener;
+import com.ureca.uhyu.domain.map.event.BookmarkToggledEvent;
 import com.ureca.uhyu.domain.recommendation.entity.Recommendation;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
 import com.ureca.uhyu.domain.store.dto.response.StoreDetailRes;
@@ -34,6 +36,7 @@ import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -64,6 +67,9 @@ class MapServiceImplTest {
 
     @Mock
     private BookmarkListRepository bookmarkListRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     private final GeometryFactory geometryFactory = new GeometryFactory();
     private final Point dummyPoint = geometryFactory.createPoint(new Coordinate(127.0, 37.5));
@@ -409,6 +415,8 @@ class MapServiceImplTest {
 
             assertThat(res.storeId()).isEqualTo(1L);
             assertThat(res.isBookmarked()).isTrue(); // 추가된 상태
+
+            verify(eventPublisher).publishEvent(any(BookmarkToggledEvent.class));
         }
 
         @Test
@@ -425,6 +433,8 @@ class MapServiceImplTest {
 
             assertThat(res.storeId()).isEqualTo(1L);
             assertThat(res.isBookmarked()).isFalse(); // 삭제된 상태
+
+            verify(eventPublisher).publishEvent(any(BookmarkToggledEvent.class));
         }
     }
 }

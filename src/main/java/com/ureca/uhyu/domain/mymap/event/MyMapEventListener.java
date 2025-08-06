@@ -2,18 +2,21 @@ package com.ureca.uhyu.domain.mymap.event;
 
 import com.ureca.uhyu.domain.admin.entity.Statistics;
 import com.ureca.uhyu.domain.admin.enums.StatisticsType;
-import com.ureca.uhyu.domain.admin.repository.StatisticsRepository;
+import com.ureca.uhyu.domain.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MyMapEventListener {
 
-    private final StatisticsRepository statisticsRepository;
+    private final AdminService adminService;
 
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleMyMapToggled(MyMapToggledEvent event) {
         if (event.getAction() == MyMapToggledEvent.Action.ADD) {
             Statistics statistics = Statistics.builder()
@@ -26,10 +29,10 @@ public class MyMapEventListener {
                     .categoryName(event.getCategoryName())
                     .statisticsType(StatisticsType.MYMAP)
                     .build();
-            statisticsRepository.save(statistics);
+            adminService.saveStatistics(statistics);
         }
         else if (event.getAction() == MyMapToggledEvent.Action.REMOVE) {
-            statisticsRepository.deleteByUserIdAndStoreIdAndMyMapListIdAndStatisticsType(
+            adminService.deleteStatisticsMyMapType(
                     event.getUserId(),
                     event.getStoreId(),
                     event.getMyMapListId(),

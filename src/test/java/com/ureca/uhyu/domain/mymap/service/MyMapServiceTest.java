@@ -11,6 +11,7 @@ import com.ureca.uhyu.domain.mymap.dto.response.*;
 import com.ureca.uhyu.domain.mymap.entity.MyMap;
 import com.ureca.uhyu.domain.mymap.entity.MyMapList;
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
+import com.ureca.uhyu.domain.mymap.event.MyMapToggledEvent;
 import com.ureca.uhyu.domain.mymap.repository.MyMapListRepository;
 import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
 import com.ureca.uhyu.domain.recommendation.repository.RecommendationRepository;
@@ -36,6 +37,7 @@ import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -66,7 +68,7 @@ class MyMapServiceTest {
     private StoreRepository storeRepository;
 
     @Mock
-    private RecommendationRepository recommendationRepository;
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private MyMapService myMapService;
@@ -511,6 +513,8 @@ class MyMapServiceTest {
 
         verify(myMapRepository).save(any(MyMap.class));
         verify(myMapRepository, never()).delete(any(MyMap.class));
+
+        verify(eventPublisher).publishEvent(any(MyMapToggledEvent.class));
     }
 
     @DisplayName("MyMap 토글 - 매장 해제 성공")
@@ -542,6 +546,8 @@ class MyMapServiceTest {
         assertFalse(result.isMyMapped());
         verify(myMapRepository).delete(existing);
         verify(myMapRepository, never()).save(any(MyMap.class));
+
+        verify(eventPublisher).publishEvent(any(MyMapToggledEvent.class));
     }
 
     @DisplayName("MyMap 토글 - 다른 유저의 마이맵에 접근 시 실패")
@@ -597,10 +603,23 @@ class MyMapServiceTest {
                 .build();
         setId(category, 1L);
 
-        Benefit benefit = Benefit.builder()
+        Benefit benefit1 = Benefit.builder()
                 .description("혜택1")
+                .grade(Grade.GOOD)
                 .build();
-        setId(benefit, 2L);
+        setId(benefit1, 1L);
+
+        Benefit benefit2 = Benefit.builder()
+                .description("혜택2")
+                .grade(Grade.VIP)
+                .build();
+        setId(benefit2, 2L);
+
+        Benefit benefit3 = Benefit.builder()
+                .description("혜택3")
+                .grade(Grade.VVIP)
+                .build();
+        setId(benefit3, 3L);
 
         Brand brand = Brand.builder()
                 .category(category)
@@ -609,7 +628,7 @@ class MyMapServiceTest {
                 .usageMethod("모바일 바코드 제시")
                 .usageLimit("1일 1회")
                 .storeType(StoreType.OFFLINE)
-                .benefits(List.of(benefit))
+                .benefits(List.of(benefit1, benefit2, benefit3))
                 .build();
         return brand;
     }

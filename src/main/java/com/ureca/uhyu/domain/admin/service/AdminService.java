@@ -3,6 +3,7 @@ package com.ureca.uhyu.domain.admin.service;
 import com.querydsl.core.Tuple;
 import com.ureca.uhyu.domain.admin.dto.StatisticsDto;
 import com.ureca.uhyu.domain.admin.dto.response.*;
+import com.ureca.uhyu.domain.admin.entity.Statistics;
 import com.ureca.uhyu.domain.admin.enums.StatisticsType;
 import com.ureca.uhyu.domain.admin.repository.StatisticsRepository;
 import com.ureca.uhyu.domain.mymap.repository.MyMapRepository;
@@ -13,6 +14,8 @@ import com.ureca.uhyu.domain.user.repository.history.HistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -211,5 +214,22 @@ public class AdminService {
         log.debug("전체 통계 쿼리 실행 시간: " + elapsedMs + " ms");
 
         return StatisticsTotalRes.of(totalBookmarkMyMap, totalFiltering, totalMembershipUsage);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveStatistics(Statistics statistics) {
+        statisticsRepository.save(statistics);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deleteStatisticsMyMapType(Long userId, Long storeId, Long myMapListId, StatisticsType statisticsType) {
+        statisticsRepository
+                .deleteByUserIdAndStoreIdAndMyMapListIdAndStatisticsType(userId, storeId, myMapListId, statisticsType);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deleteStatisticsBookmarkType(Long userId, Long storeId, StatisticsType statisticsType) {
+        statisticsRepository
+                .deleteByUserIdAndStoreIdAndStatisticsType(userId, storeId, statisticsType);
     }
 }
