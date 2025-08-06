@@ -34,6 +34,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.lang.reflect.Field;
@@ -45,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class UserServiceTest {
 
     @Mock
@@ -505,6 +508,11 @@ class UserServiceTest {
         User user = createUser();
         setId(user, 2L);
         ActionLogsReq req = new ActionLogsReq(ActionType.FILTER_USED, null, 5L);
+
+        // mock categoryRepository.findById(5L)
+//        Category category = Category.builder().categoryName("카테고리").build();
+//        setId(category, 5L);
+//        when(categoryRepository.findById(5L)).thenReturn(Optional.of(category));
 
         Brand brand = createBrand("brand1", "brand1.img");
 

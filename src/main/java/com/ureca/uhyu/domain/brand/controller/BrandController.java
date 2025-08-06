@@ -26,30 +26,12 @@ public class BrandController implements BrandControllerDocs {
     @Override
     @GetMapping("/brand-list")
     public CommonResponse<BrandListRes> getBrands(
-            @Parameter(
-                    description = "카테고리 필터",
-                    example = "카페"
-            ) @RequestParam(required = false) String category,
-            @Parameter(
-                    description = "매장 타입 필터 (복수 선택 가능)",
-                    example = "[\"OFFLINE\", \"ONLINE\"]"
-            ) @RequestParam(required = false) List<String> storeType,
-            @Parameter(
-                    description = "혜택 타입 필터 (복수 선택 가능)",
-                    example = "[\"DISCOUNT\", \"GIFT\"]"
-            ) @RequestParam(required = false) List<String> benefitType,
-            @Parameter(
-                    description = "브랜드명 검색",
-                    example = "스타벅스"
-            ) @RequestParam(required = false, name = "brand_name") String brandName,
-            @Parameter(
-                    description = "페이지 번호 (0부터 시작)",
-                    example = "0"
-            ) @RequestParam(defaultValue = "0") @Min(0) int page,
-            @Parameter(
-                    description = "페이지당 항목 수 (1-100)",
-                    example = "10"
-            ) @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) List<String> storeType,
+            @RequestParam(required = false) List<String> benefitType,
+            @RequestParam(required = false, name = "brand_name") String brandName,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size
     ){
         return CommonResponse.success(
                 brandService.findBrands(category, storeType, benefitType, brandName, page, size)
@@ -59,10 +41,7 @@ public class BrandController implements BrandControllerDocs {
     @Override
     @GetMapping("/brand-list/{brand_id}")
     public CommonResponse<BrandInfoRes> getBrandInfo(
-            @Parameter(
-                    description = "제휴처 ID",
-                    example = "1"
-            ) @PathVariable(name = "brand_id") Long brandId){
+            @PathVariable(name = "brand_id") Long brandId){
         return CommonResponse.success(brandService.findBrandInfo(brandId));
     }
 

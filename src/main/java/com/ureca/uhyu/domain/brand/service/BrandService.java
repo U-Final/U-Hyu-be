@@ -124,40 +124,44 @@ public class BrandService {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
 
-        if (brandRepository.existsByBrandName(request.brandName())) {
-            throw new GlobalException(ResultCode.BRAND_NAME_DUPLICATED);
-        }
+        request.brandName().ifPresent(brandName -> {
+            if (brandRepository.existsByBrandNameAndIdNot(brandName, brandId)) {
+                throw new GlobalException(ResultCode.BRAND_NAME_DUPLICATED);
+            }
+            brand.updateBrandName(brandName);
+        });
 
-        try {
-            StoreType.valueOf(request.storeType().name());
-        } catch (IllegalArgumentException e) {
-            throw new GlobalException(ResultCode.INVALID_STORE_TYPE);
-        }
+        request.brandImg().ifPresent(brand::updateBrandImg);
+        request.usageMethod().ifPresent(brand::updateUsageMethod);
+        request.usageLimit().ifPresent(brand::updateUsageLimit);
 
-        Category category = categoryRepository.findById(request.categoryId())
-                .orElseThrow(() -> new GlobalException(ResultCode.CATEGORY_NOT_FOUND));
-        brand.changeCategory(category);
+        request.storeType().ifPresent(storeType -> {
+            try {
+                StoreType.valueOf(storeType.name()); // 유효성 체크
+                brand.updateStoreType(storeType);
+            } catch (IllegalArgumentException e) {
+                throw new GlobalException(ResultCode.INVALID_STORE_TYPE);
+            }
+        });
 
-        brand.updateBrandInfo(
-                request.brandName(),
-                request.brandImg(),
-                request.usageMethod(),
-                request.usageLimit(),
-                request.storeType()
-        );
+        request.categoryId().ifPresent(categoryId -> {
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new GlobalException(ResultCode.CATEGORY_NOT_FOUND));
+            brand.changeCategory(category);
+        });
 
-        List<Benefit> updateBenefits = request.data().stream()
-                .map(dto -> Benefit.builder()
-                        .brand(brand)
-                        .grade(dto.grade())
-                        .description(dto.description())
-                        .benefitType(dto.benefitType())
-                        .build())
-                .toList();
-
-//        brand.setBenefits(updateBenefits);
-        brand.getBenefits().clear();
-        brand.getBenefits().addAll(updateBenefits);
+        request.data().ifPresent(benefitList -> {
+            List<Benefit> updateBenefits = benefitList.stream()
+                    .map(dto -> Benefit.builder()
+                            .brand(brand)
+                            .grade(dto.grade())
+                            .description(dto.description())
+                            .benefitType(dto.benefitType())
+                            .build())
+                    .toList();
+            brand.getBenefits().clear();
+            brand.getBenefits().addAll(updateBenefits);
+        });
 
         return new CreateUpdateBrandRes(brand.getId());
     }

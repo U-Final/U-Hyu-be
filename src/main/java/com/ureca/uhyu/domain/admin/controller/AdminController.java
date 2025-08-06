@@ -51,7 +51,7 @@ public class AdminController {
     }
 
     @Operation(summary = "관리자 제휴 브랜드 수정", description = "관리자 유저 제휴 브랜드 수정 기능")
-    @PutMapping("/brands/{brand_id}")
+    @PatchMapping("/brands/{brand_id}")
     public CommonResponse<CreateUpdateBrandRes> updateBrand(
             @PathVariable(name = "brand_id") Long brandId,
             @Valid @RequestBody UpdateBrandReq updateBrandReq) {

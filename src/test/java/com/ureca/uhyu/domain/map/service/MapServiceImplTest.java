@@ -39,6 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,9 +60,6 @@ class MapServiceImplTest {
     @Mock
     private RecommendationRepository recommendationRepository;
 
-    @InjectMocks
-    private MapServiceImpl mapService;
-
     @Mock
     private BookmarkRepository bookmarkRepository;
 
@@ -70,6 +68,9 @@ class MapServiceImplTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @InjectMocks
+    private MapServiceImpl mapService;
 
     private final GeometryFactory geometryFactory = new GeometryFactory();
     private final Point dummyPoint = geometryFactory.createPoint(new Coordinate(127.0, 37.5));
@@ -100,7 +101,7 @@ class MapServiceImplTest {
             .brandName("이디야")
             .category(category)
             .logoImage("logo.jpg")
-            .benefits(List.of(benefit1, benefit2, benefit3))
+            .benefits(new ArrayList<>(List.of(benefit1, benefit2, benefit3)))
             .usageLimit("1일 1회")
             .usageMethod("매장 제시")
             .build();
@@ -333,7 +334,7 @@ class MapServiceImplTest {
                     .brand(brand)
                     .build();
 
-            brand.setBenefits(List.of(vipBenefit));
+            brand.setBenefits(new ArrayList<>(List.of(vipBenefit)));
             when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
 
             StoreDetailRes res = mapService.getStoreDetail(1L, user);
@@ -353,7 +354,7 @@ class MapServiceImplTest {
                     .brand(brand)
                     .build();
 
-            brand.setBenefits(List.of(goodBenefit));
+            brand.setBenefits(new ArrayList<>(List.of(goodBenefit)));
             when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
 
             StoreDetailRes res = mapService.getStoreDetail(1L, user);
@@ -368,7 +369,7 @@ class MapServiceImplTest {
             User user = mock(User.class);
             when(user.getGrade()).thenReturn(Grade.VIP);
 
-            brand.setBenefits(List.of()); // 빈 리스트 설정
+            brand.setBenefits(new ArrayList<>()); // 빈 리스트 설정
             when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
             when(user.getGrade()).thenReturn(Grade.VIP);
 
@@ -387,7 +388,7 @@ class MapServiceImplTest {
                     .brand(brand)
                     .build();
 
-            brand.setBenefits(List.of(vipBenefit));
+            brand.setBenefits(new ArrayList<>(List.of(vipBenefit)));
             when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
             when(bookmarkRepository.existsByBookmarkListUserAndStore(user, store)).thenReturn(true);
             when(bookmarkRepository.countByStore(store)).thenReturn(42);
