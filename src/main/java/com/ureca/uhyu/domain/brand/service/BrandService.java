@@ -125,7 +125,7 @@ public class BrandService {
                 .orElseThrow(() -> new GlobalException(ResultCode.BRAND_NOT_FOUND));
 
         request.brandName().ifPresent(brandName -> {
-            if (brandRepository.existsByBrandName(brandName)) {
+            if (brandRepository.existsByBrandNameAndIdNot(brandName, brandId)) {
                 throw new GlobalException(ResultCode.BRAND_NAME_DUPLICATED);
             }
             brand.updateBrandName(brandName);
