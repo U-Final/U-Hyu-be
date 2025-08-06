@@ -18,7 +18,7 @@ app:
   frontend:
     url:
       local: http://localhost:5173
-      prod: https://www.u-hyu.site
+      prod: https://u-hyu.site
 
 management:
   endpoints:
