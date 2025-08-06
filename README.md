@@ -59,7 +59,7 @@
    - 프론트에서는 React Query + 마커 클러스터링 적용으로 렌더링 효율 개선
 
 5. **관리자 통계 시스템 구축**
-   - 즐겨찾기, 접속 현황, 추천 이력, 멤버십 이용 내역 등에 대해
+   - 즐겨찾기, 필터링 수, 추천 이력, 멤버십 이용 내역 등에 대해
    - 카테고리별 / 브랜드별로 정량 분석할 수 있는 기능 제공
   
 ---
@@ -129,7 +129,7 @@
 📙 통계 테이블 설계에 대한 저희의 고민과 설계 과정은 [통계 기능 관련 Wiki](https://github.com/U-Final/U-Hyu-be/wiki/%ED%86%B5%EA%B3%84-%ED%85%8C%EC%9D%B4%EB%B8%94-%EC%B6%94%EA%B0%80-%EB%B0%8F-%EC%BF%BC%EB%A6%AC-%EA%B0%9C%EC%84%A0) 에서 더 볼 수 있습니다.
 
 ---
-## ERD
+## [ERD](https://www.erdcloud.com/d/5L2T7EXZsYoxjPYGk)
 
 ### 1. 사용자 데이터 - users, token, history, action_logs, recommendation_base_data
 
