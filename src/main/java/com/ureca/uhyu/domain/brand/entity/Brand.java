@@ -9,6 +9,7 @@ import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -37,20 +38,37 @@ public class Brand extends BaseEntity {
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Store> stores;
 
-    @Setter
+    @Builder.Default
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Benefit> benefits;
+    private List<Benefit> benefits = new ArrayList<>();
 
     public void changeCategory(Category category) {
         this.category = category;
     }
 
-    public void updateBrandInfo(String brandName, String logoImage, String usageMethod, String usageLimit, StoreType storeType) {
+    public void updateBrandName(String brandName) {
         this.brandName = brandName;
+    }
+
+    public void updateBrandImg(String logoImage) {
         this.logoImage = logoImage;
+    }
+
+    public void updateUsageMethod(String usageMethod) {
         this.usageMethod = usageMethod;
+    }
+
+    public void updateUsageLimit(String usageLimit) {
         this.usageLimit = usageLimit;
+    }
+
+    public void updateStoreType(StoreType storeType) {
         this.storeType = storeType;
+    }
+
+    public void setBenefits(List<Benefit> benefits) {
+        this.benefits.clear();
+        this.benefits.addAll(benefits);
     }
 
     public String getBenefitDescriptionByGradeOrDefault(Grade grade) {
