@@ -9,6 +9,7 @@ import com.ureca.uhyu.global.response.ResultCode;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -37,9 +38,9 @@ public class Brand extends BaseEntity {
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Store> stores;
 
-    @Setter
+    @Builder.Default
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Benefit> benefits;
+    private List<Benefit> benefits = new ArrayList<>();
 
     public void changeCategory(Category category) {
         this.category = category;
