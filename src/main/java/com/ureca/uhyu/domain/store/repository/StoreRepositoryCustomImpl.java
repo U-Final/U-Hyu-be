@@ -1,21 +1,28 @@
 package com.ureca.uhyu.domain.store.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.uhyu.domain.brand.entity.QBenefit;
 import com.ureca.uhyu.domain.brand.entity.QBrand;
 import com.ureca.uhyu.domain.brand.entity.QCategory;
+import com.ureca.uhyu.domain.map.dto.response.MapRes;
 import com.ureca.uhyu.domain.store.entity.QStore;
 import com.ureca.uhyu.domain.store.entity.Store;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.querydsl.core.types.Projections.constructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,29 +35,19 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
     private final QCategory category = QCategory.category;
     private final QBenefit benefit = QBenefit.benefit;
 
-    private Predicate withinRadius(double lat, double lon, double radius) {
+    private Predicate withinRadius(double lat, double lon, double radiusInMeters) {
+        // 미터(m) 단위의 radiusMeters를 degree(각도) 단위로 변환
+        double radiusInDegrees = radiusInMeters / (111_320.0 * Math.cos(Math.toRadians(lat)));
+
         return Expressions.booleanTemplate(
-                "cast(ST_DWithin(" +
-                        "ST_Transform({0}, 3857), " +
-                        "ST_Transform(ST_SetSRID(ST_MakePoint({1}, {2}), 4326), 3857), " +
-                        "{3}) as boolean)",
-                store.geom, lon, lat, radius
+                "CAST(ST_DWithin({0}, ST_SetSRID(ST_MakePoint({1}, {2}), 4326), {3}) AS boolean)",
+                store.geom, lon, lat, radiusInDegrees
         );
     }
 
-    private JPAQuery<Store> baseStoreQuery() {
-        return queryFactory
-                .selectFrom(store)
-                .leftJoin(store.brand, brand).fetchJoin()
-                .leftJoin(brand.category, category).fetchJoin()
-                .leftJoin(brand.benefits, benefit).fetchJoin()
-                .distinct();
-    }
-
     @Override
-    public List<Store> findStoresByFilters(Double lat, Double lon, Double radius, String categoryName, String brandName) {
+    public List<MapRes> findStoresByFilters(Double lat, Double lon, Double radius, String categoryName, String brandName) {
         BooleanBuilder builder = new BooleanBuilder();
-
         builder.and(withinRadius(lat, lon, radius));
 
         if (categoryName != null && !categoryName.isBlank()) {
@@ -61,7 +58,35 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
             builder.and(brand.brandName.containsIgnoreCase(brandName));
         }
 
-        return baseStoreQuery()
+        // ✅ grade.GOOD에 해당하는 혜택 하나만 가져오기 위한 서브쿼리
+        QBenefit subBenefit = new QBenefit("subBenefit");
+
+        var benefitSubQuery = JPAExpressions
+                .select(subBenefit.description)
+                .from(subBenefit)
+                .where(
+                        subBenefit.brand.id.eq(brand.id),
+                        subBenefit.grade.eq(Grade.GOOD)
+                )
+                .limit(1);
+
+        // ✅ DTO로 바로 Projection
+        return queryFactory
+                .select(constructor(MapRes.class,
+                        store.id,
+                        store.name,
+                        category.categoryName,
+                        store.addrDetail,
+                        benefitSubQuery, // 🟢 benefit을 조인하지 않고 서브쿼리로
+                        brand.logoImage,
+                        brand.brandName,
+                        brand.id,
+                        Expressions.numberTemplate(Double.class, "ST_Y({0})", store.geom),
+                        Expressions.numberTemplate(Double.class, "ST_X({0})", store.geom)
+                ))
+                .from(store)
+                .leftJoin(store.brand, brand)
+                .leftJoin(brand.category, category)
                 .where(builder)
                 .fetch();
     }
@@ -72,29 +97,36 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
             return List.of();
         }
 
+        // ST_Distance 사용으로 성능 개선 (구면 거리 계산 제거)
         NumberTemplate<Double> distanceExpr = Expressions.numberTemplate(Double.class,
-                "ST_DistanceSphere({0}, ST_SetSRID(ST_MakePoint({1}, {2}), 4326))",
+                "ST_Distance({0}, ST_SetSRID(ST_MakePoint({1}, {2}), 4326))",
                 store.geom, lon, lat
         );
 
-        List<Store> result = new ArrayList<>();
+        // 단일 쿼리로 모든 브랜드의 매장 조회
+        List<Tuple> results = queryFactory
+                .select(store, distanceExpr.as("distance"))
+                .from(store)
+                .leftJoin(store.brand, brand).fetchJoin()
+                .leftJoin(brand.category, category).fetchJoin()
+                .leftJoin(brand.benefits, benefit).fetchJoin()
+                .where(store.brand.id.in(brandIds))
+                .orderBy(store.brand.id.asc(), distanceExpr.asc())
+                .fetch();
 
-        for (Long brandId : brandIds) {
-            Store nearest = queryFactory
-                    .selectFrom(store)
-                    .leftJoin(store.brand, brand).fetchJoin()
-                    .leftJoin(brand.category, category).fetchJoin()
-                    .leftJoin(brand.benefits, benefit).fetchJoin()
-                    .where(store.brand.id.eq(brandId))
-                    .orderBy(distanceExpr.asc())
-                    .limit(1)
-                    .fetchOne();
+        // 브랜드별로 가장 가까운 매장만 선택 (LinkedHashMap으로 순서 보장)
+        Map<Long, Store> nearestByBrand = new LinkedHashMap<>();
 
-            if (nearest != null) {
-                result.add(nearest);
+        for (Tuple tuple : results) {
+            Store storeEntity = tuple.get(store);
+            Long brandId = storeEntity.getBrand().getId();
+
+            // 각 브랜드별로 첫 번째(가장 가까운) 매장만 저장
+            if (!nearestByBrand.containsKey(brandId)) {
+                nearestByBrand.put(brandId, storeEntity);
             }
         }
 
-        return result;
+        return new ArrayList<>(nearestByBrand.values());
     }
 }
