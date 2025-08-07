@@ -188,7 +188,7 @@
 
 ## 아키텍쳐
 
-<img width="891" height="551" alt="image" src="https://github.com/user-attachments/assets/d8e93731-92a6-4de9-b986-a113497ea794" />
+<img width="4920" height="2841" alt="Image" src="https://github.com/user-attachments/assets/22041aab-a045-4216-ab0e-588d11d3e6f6" />
 
 ---
 
