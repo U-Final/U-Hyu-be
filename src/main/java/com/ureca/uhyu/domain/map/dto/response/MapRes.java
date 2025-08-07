@@ -81,4 +81,19 @@ public record MapRes(
                         null                                            //좌표값 없으므로 null
                 );
         }
+
+        public MapRes(Long storeId, String storeName, String categoryName, String addressDetail,
+                      String benefit, String logoImage, String brandName, Long brandId,
+                      Double latitude, Double longitude) {
+                this.storeId = storeId;
+                this.storeName = storeName;
+                this.categoryName = categoryName;
+                this.addressDetail = addressDetail;
+                this.benefit = benefit;
+                this.logoImage = logoImage;
+                this.brandName = brandName;
+                this.brandId = brandId;
+                this.latitude = latitude;
+                this.longitude = longitude;
+        }
 }

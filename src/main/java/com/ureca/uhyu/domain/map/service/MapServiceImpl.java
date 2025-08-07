@@ -45,10 +45,7 @@ public class MapServiceImpl implements MapService {
 
     @Override
     public List<MapRes> getFilteredStores(Double lat, Double lon, Double radius, String categoryName, String brandName) {
-        List<Store> stores = storeRepositoryCustom.findStoresByFilters(lat, lon, radius, categoryName, brandName);
-        return stores.stream()
-                .map(MapRes::from)
-                .toList();
+        return storeRepositoryCustom.findStoresByFilters(lat, lon, radius, categoryName, brandName);
     }
 
     @Override
