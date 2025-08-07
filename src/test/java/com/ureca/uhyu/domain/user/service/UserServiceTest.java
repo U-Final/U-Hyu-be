@@ -225,7 +225,7 @@ class UserServiceTest {
         assertEquals("logo.png", res.logoImage());
         assertEquals("스토어A", res.storeName());
         assertEquals("서울시 마포구", res.addressDetail());
-        assertNull(res.benefit());
+        assertEquals(brand.getBenefits().get(0).getDescription(), res.benefit());
     }
 
     @DisplayName("즐겨찾기 삭제 - 성공")
@@ -416,6 +416,7 @@ class UserServiceTest {
 
         Benefit benefit = Benefit.builder()
                 .description("혜택1")
+                .grade(Grade.GOOD)
                 .build();
         setId(benefit, 2L);
 

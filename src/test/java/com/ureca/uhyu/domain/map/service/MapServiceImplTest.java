@@ -255,6 +255,8 @@ class MapServiceImplTest {
     @Nested
     class GetFilteredStoresTest {
 
+        private final MapRes mapRes = MapRes.from(store);
+
         @Test
         void shouldReturnStoresWithCategoryAndBrandFilters() {
             double lat = 37.5;
@@ -264,7 +266,7 @@ class MapServiceImplTest {
             String brandName = "이디야";
 
             when(storeRepositoryCustom.findStoresByFilters(lat, lon, radius, categoryName, brandName))
-                    .thenReturn(List.of(store));
+                    .thenReturn(List.of(mapRes));
 
             List<MapRes> result = mapService.getFilteredStores(lat, lon, radius, categoryName, brandName);
 
@@ -280,7 +282,7 @@ class MapServiceImplTest {
             String categoryName = "카페";
 
             when(storeRepositoryCustom.findStoresByFilters(lat, lon, radius, categoryName, null))
-                    .thenReturn(List.of(store));
+                    .thenReturn(List.of(mapRes));
 
             List<MapRes> result = mapService.getFilteredStores(lat, lon, radius, categoryName, null);
 
@@ -296,7 +298,7 @@ class MapServiceImplTest {
             String brandName = "이디야";
 
             when(storeRepositoryCustom.findStoresByFilters(lat, lon, radius, null, brandName))
-                    .thenReturn(List.of(store));
+                    .thenReturn(List.of(mapRes));
 
             List<MapRes> result = mapService.getFilteredStores(lat, lon, radius, null, brandName);
 
@@ -311,7 +313,7 @@ class MapServiceImplTest {
             double radius = 1000.0;
 
             when(storeRepositoryCustom.findStoresByFilters(lat, lon, radius, null, null))
-                    .thenReturn(List.of(store));
+                    .thenReturn(List.of(mapRes));
 
             List<MapRes> result = mapService.getFilteredStores(lat, lon, radius, null, null);
 
