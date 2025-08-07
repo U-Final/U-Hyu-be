@@ -31,7 +31,6 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    // JWT token 생성
     public String generateToken(String userId, UserRole userRole) {
         return Jwts.builder()
                 .setSubject(userId)
