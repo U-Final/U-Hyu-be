@@ -1,7 +1,10 @@
 package com.ureca.uhyu.domain.admin.service;
 
 import com.querydsl.core.Tuple;
-import com.ureca.uhyu.domain.admin.dto.response.StatisticsDto;
+import com.ureca.uhyu.domain.admin.dto.BookmarksByBrand;
+import com.ureca.uhyu.domain.admin.dto.MembershipUsageByBrand;
+import com.ureca.uhyu.domain.admin.dto.RecommendationsByBrand;
+import com.ureca.uhyu.domain.admin.dto.StatisticsDto;
 import com.ureca.uhyu.domain.admin.dto.response.*;
 import com.ureca.uhyu.domain.admin.entity.Statistics;
 import com.ureca.uhyu.domain.admin.enums.StatisticsType;

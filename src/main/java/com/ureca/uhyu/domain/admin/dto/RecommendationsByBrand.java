@@ -1,4 +1,4 @@
-package com.ureca.uhyu.domain.admin.dto.response;
+package com.ureca.uhyu.domain.admin.dto;
 
 public record RecommendationsByBrand(
         String brandName,

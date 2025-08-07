@@ -3,7 +3,7 @@ package com.ureca.uhyu.domain.recommendation.repository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsRecommendationRes;
-import com.ureca.uhyu.domain.admin.dto.response.RecommendationsByBrand;
+import com.ureca.uhyu.domain.admin.dto.RecommendationsByBrand;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.brand.entity.QBrand;
 import com.ureca.uhyu.domain.brand.entity.QCategory;
