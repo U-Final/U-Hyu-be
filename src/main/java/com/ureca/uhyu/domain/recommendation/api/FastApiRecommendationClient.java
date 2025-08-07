@@ -22,8 +22,8 @@ public class FastApiRecommendationClient {
                     .bodyValue(Map.of("user_id", userId))
                     .retrieve()
                     .bodyToMono(Void.class)
-                    .timeout(Duration.ofSeconds(10)) // ⏱ 타임아웃 설정
-                    .retry(3)                         // 🔁 최대 3회 재시도
+                    .timeout(Duration.ofSeconds(10))
+                    .retry(3)
                     .subscribe(
                             unused -> log.info("FastAPI 재추천 요청 성공 - userId: {}", userId),
                             error -> log.error("FastAPI 재추천 요청 실패 - userId: {}, message: {}", userId, error.getMessage())

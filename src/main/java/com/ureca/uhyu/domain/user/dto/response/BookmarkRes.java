@@ -3,6 +3,8 @@ package com.ureca.uhyu.domain.user.dto.response;
 import com.ureca.uhyu.domain.brand.entity.Brand;
 import com.ureca.uhyu.domain.store.entity.Store;
 import com.ureca.uhyu.domain.user.entity.Bookmark;
+import com.ureca.uhyu.domain.user.entity.User;
+import com.ureca.uhyu.domain.user.enums.Grade;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "즐겨찾기 1개 요소 응답 DTO")
@@ -15,11 +17,12 @@ public record BookmarkRes (
         String benefit
 ) {
     public static BookmarkRes from(Bookmark bookmark) {
+        User user = bookmark.getBookmarkList().getUser();
         Store store = bookmark.getStore();
         Brand brand = store.getBrand();
 
-        // TODO : 헤택(Benefit) 회원 등급별로 표시되는건지 확인 후 로직 수정
-        String benefit = null;
+        Grade grade = (user != null) ? user.getGrade() : Grade.GOOD;
+        String benefit = brand.getBenefitDescriptionByGradeOrDefault(grade);
 
         return new BookmarkRes(
                 bookmark.getId(),

@@ -1,12 +1,9 @@
 package com.ureca.uhyu.domain.recommendation.entity;
 
 import com.ureca.uhyu.domain.brand.entity.Brand;
-import com.ureca.uhyu.domain.brand.entity.Category;
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "recommendation")

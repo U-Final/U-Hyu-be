@@ -5,7 +5,6 @@ import com.ureca.uhyu.domain.brand.dto.response.BrandInfoRes;
 import com.ureca.uhyu.domain.brand.dto.response.BrandListRes;
 import com.ureca.uhyu.domain.brand.service.BrandService;
 import com.ureca.uhyu.global.response.CommonResponse;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

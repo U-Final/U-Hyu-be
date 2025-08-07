@@ -90,7 +90,6 @@ public class BrandService {
             throw new GlobalException(ResultCode.INVALID_STORE_TYPE);
         }
 
-        // 카테고리 조회
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new GlobalException(ResultCode.CATEGORY_NOT_FOUND));
 

@@ -2,8 +2,6 @@ package com.ureca.uhyu.domain.auth.service;
 
 import com.ureca.uhyu.domain.auth.jwt.JwtTokenProvider;
 import com.ureca.uhyu.domain.auth.repository.TokenRepository;
-import com.ureca.uhyu.domain.user.entity.User;
-import com.ureca.uhyu.domain.user.repository.UserRepository;
 import com.ureca.uhyu.global.exception.GlobalException;
 import com.ureca.uhyu.global.response.ResultCode;
 import com.ureca.uhyu.global.util.TokenCookieUtil;

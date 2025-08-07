@@ -2,7 +2,7 @@ package com.ureca.uhyu.domain.brand.entity;
 
 import com.ureca.uhyu.global.entity.BaseEntity;
 import jakarta.persistence.*;
-        import lombok.*;
+import lombok.*;
 
 import java.util.List;
 

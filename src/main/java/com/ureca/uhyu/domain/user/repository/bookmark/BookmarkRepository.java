@@ -9,8 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface BookmarkRepository
-        extends JpaRepository<Bookmark, Long>, BookmarkRepositoryCustom {
+public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Bookmark> findByBookmarkList(BookmarkList bookmarkList);
     Optional<Bookmark> findByBookmarkListAndStore(BookmarkList bookmarkList, Store store);
     boolean existsByBookmarkListUserAndStore(User user, Store store);
