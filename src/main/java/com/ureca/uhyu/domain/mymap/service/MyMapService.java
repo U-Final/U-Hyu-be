@@ -113,13 +113,10 @@ public class MyMapService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new GlobalException(ResultCode.NOT_FOUND_STORE));
 
-        //MyMap 안에 store가 있는지 검증
         List<MyMapList> myMapLists = myMapListRepository.findByUser(user);
 
-        // 모든 MyMapList에 대한 MyMap을 한 번에 조회
         List<MyMap> allMyMaps = myMapRepository.findByMyMapListIn(myMapLists);
 
-        // MyMapList별로 그룹화
         Map<Long, List<MyMap>> myMapsByListId = allMyMaps.stream()
                 .collect(Collectors.groupingBy(myMap -> myMap.getMyMapList().getId()));
 
@@ -132,7 +129,6 @@ public class MyMapService {
                 })
                 .toList();
 
-        //Bookmark 안에 store가 있는지 검증
         BookmarkList bookmarkList = bookmarkListRepository.findByUser(user)
                 .orElseThrow(() -> new GlobalException(ResultCode.BOOKMARK_LIST_NOT_FOUND));
 

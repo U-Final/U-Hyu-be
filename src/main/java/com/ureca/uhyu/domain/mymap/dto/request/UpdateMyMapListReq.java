@@ -1,9 +1,10 @@
 package com.ureca.uhyu.domain.mymap.dto.request;
 
 import com.ureca.uhyu.domain.mymap.enums.MarkerColor;
-import jakarta.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 
+@Schema(description = "My Map 수정 요청 DTO")
 public record UpdateMyMapListReq(
     Long myMapListId,
 
