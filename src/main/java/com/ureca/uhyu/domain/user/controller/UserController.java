@@ -95,6 +95,7 @@ public class UserController implements UserControllerDocs {
         return CommonResponse.success(userService.findUserStatistics(user));
     }
 
+
     @PostMapping("/action-logs")
     public CommonResponse<SaveUserInfoRes> actionLogs(
         @CurrentUser User user,
@@ -102,6 +103,7 @@ public class UserController implements UserControllerDocs {
     ){
         return CommonResponse.success(userService.saveActionLogs(user, request));
     }
+
 
     @PostMapping("/visited")
     public CommonResponse<SaveUserInfoRes> visited(

@@ -10,7 +10,6 @@ import java.util.List;
 
 @Schema(description = "신규 사용자 온보딩 정보 요청 DTO")
 public record UserOnboardingReq(
-
         @Schema(
                 description = "사용자 나이",
                 example = "26",
