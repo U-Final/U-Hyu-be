@@ -6,7 +6,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.uhyu.domain.admin.dto.response.BookmarksByBrand;
 import com.ureca.uhyu.domain.admin.dto.response.StatisticsBookmarkMyMapRes;
-import com.ureca.uhyu.domain.admin.dto.response.UserBrandPair;
 import com.ureca.uhyu.domain.brand.entity.QBrand;
 import com.ureca.uhyu.domain.brand.entity.QCategory;
 import com.ureca.uhyu.domain.mymap.entity.QMyMap;

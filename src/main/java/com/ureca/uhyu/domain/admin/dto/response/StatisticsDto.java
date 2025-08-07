@@ -1,6 +1,5 @@
-package com.ureca.uhyu.domain.admin.dto;
+package com.ureca.uhyu.domain.admin.dto.response;
 
-//통계 쿼리들 결과 저장할 중간 dto
 public record StatisticsDto(
         String brandName,
         Long categoryId,
